@@ -36,6 +36,5 @@ class Run(object):
 
     def __repr__(self):
         out = 'FactRun('
-        out += "path '" + self._path + "', "
         out += str(len(self.events)) + ' events)\n'
         return out
