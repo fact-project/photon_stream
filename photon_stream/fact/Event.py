@@ -8,10 +8,8 @@ class Event(object):
     def __init__(self): 
         self.geometry = None
         self.photon_stream = None
-        self.photon_stream_start_time = 20.0e-9
-        self.photon_stream_end_time = 50.0e-9
 
-    def flatten_photon_stream(self):
+    def flatten_photon_stream(self, start_time=15e-9, end_time=55e-9):
         xyt = []
         for px, pixel_photons in enumerate(self.photon_stream.time_lines):
             for photon_slice in pixel_photons:
@@ -21,8 +19,8 @@ class Event(object):
                         photon_slice*self.photon_stream.slice_duration
                         ]))
         xyt = np.array(xyt) 
-        past_start = xyt[:,2] >= self.photon_stream_start_time
-        before_end = xyt[:,2] <= self.photon_stream_end_time
+        past_start = xyt[:,2] >= start_time
+        before_end = xyt[:,2] <= end_time
         return xyt[past_start*before_end]
 
     def plot(self, mask=None):
