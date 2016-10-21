@@ -5,12 +5,12 @@ import tempfile
 import os
 
 def test_read_fact_tools_json():
-    run = ps.fact.Run('photon_stream/photon_stream/tests/resources/20150123_016_first25_events.json.gz')
+    run = ps.fact.Run('photon_stream/tests/resources/20150123_016_first25_events.json.gz')
     assert len(run.events) == 25
 
 
 def test_binary_io():
-    run = ps.fact.Run('photon_stream/photon_stream/tests/resources/20150123_016_first25_events.json.gz')
+    run = ps.fact.Run('photon_stream/tests/resources/20150123_016_first25_events.json.gz')
 
     with tempfile.TemporaryDirectory() as tmp:
 
