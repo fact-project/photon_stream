@@ -13,6 +13,10 @@ def append_photonstream_to_binary_file(photonstream, file_handle):
     number_of_time_lines = np.uint64(len(photonstream.time_lines))
     file_handle.write(number_of_time_lines.tobytes())
 
+    # WRITE NUMBER OF PHOTONS
+    number_of_photons = np.uint64(photonstream._number_photons())
+    file_handle.write(number_of_photons.tobytes())
+
     # WRITE SLICE DURATION
     slice_duration = np.float64(photonstream.slice_duration)
     file_handle.write(slice_duration.tobytes())
@@ -48,6 +52,9 @@ def read_photonstream_from_binary_file(file_handle):
     # READ NUMBER OF TIMELINES
     number_of_time_lines = np.fromfile(file_handle, dtype=np.uint64, count=1)[0]
 
+    # READ NUMBER OF PHOTONS
+    number_of_photons = np.fromfile(file_handle, dtype=np.uint64, count=1)[0]
+
     # READ SLICE DURATION
     slice_duration = np.fromfile(file_handle, dtype=np.float64, count=1)[0]
     ps.slice_duration = slice_duration
@@ -66,15 +73,20 @@ def read_photonstream_from_binary_file(file_handle):
     else:
         raise
 
-    ps.time_lines = []
+    # READ PHOTONSTREAM
+    photn_stream = np.fromfile(
+        file_handle, 
+        dtype=dtype, 
+        count=number_of_photons+number_of_time_lines)
+
     linebreak = np.array([np.iinfo(dtype).max], dtype=dtype)
-    for time_line_index in range(number_of_time_lines):
-        time_line = []  
-        while True:
-            arrival_slice = np.fromfile(file_handle, dtype=dtype, count=1)[0]
-            if arrival_slice == linebreak:
-                break
-            else:
-                time_line.append(np.int64(arrival_slice))
-        ps.time_lines.append(time_line)
+
+    ps.time_lines = []
+    time_line = []
+    for arrival_slice in photn_stream:
+        if arrival_slice == linebreak:
+            ps.time_lines.append(time_line.copy())
+            time_line.clear()
+        else:
+            time_line.append(arrival_slice)
     return ps
