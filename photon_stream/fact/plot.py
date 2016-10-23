@@ -8,14 +8,14 @@ import tempfile
 import subprocess
 
 def add_event_2_ax(event, ax, mask=None, color='b'):
-    if mask is None:
-        xyt = event.flatten_photon_stream()
-    else:
-        xyt = event.flatten_photon_stream()[mask]
+    xyt = event.flatten_photon_stream()
 
     xyt[:,2] *= 1e9
     min_time = xyt[:,2].min()
     max_time = xyt[:,2].max()
+
+    if mask is not None:
+        xyt = xyt[mask]
 
     ax.set_title('FactEvent')
     fovR = event.geometry.fov_radius
@@ -43,7 +43,8 @@ def save_image_sequence(
     steps=27, 
     start_number=0, 
     start_azimuth=0.0, 
-    end_azimuth=360.0):
+    end_azimuth=360.0,
+    mask=None):
     plt.rcParams.update({'font.size': 12})
     plt.rc('text', usetex=True)
     plt.rc('font', family='serif')
@@ -51,7 +52,7 @@ def save_image_sequence(
     fig = plt.figure(figsize=(12, 6.75))
     ax = fig.gca(projection='3d')
 
-    add_event_2_ax(event, ax)
+    add_event_2_ax(event, ax, mask=mask)
     azimuths = np.linspace(start_azimuth, end_azimuth, steps, endpoint=False)
     step = start_number
     for azimuth in azimuths:
@@ -66,7 +67,7 @@ def save_image_sequence(
 
     plt.close()
 
-def save_video(event, path, steps=12, fps=25, threads='auto'):
+def save_video(event, path, mask=None ,steps=12, fps=25, threads='auto'):
     with tempfile.TemporaryDirectory() as work_dir:
         
         azimuths = np.linspace(0, 360, 10, endpoint=False)
@@ -78,7 +79,8 @@ def save_video(event, path, steps=12, fps=25, threads='auto'):
                 steps=steps,
                 start_azimuth=az,
                 end_azimuth=az+18,
-                start_number=(i*steps*2))
+                start_number=(i*steps*2),
+                mask=mask)
             
             save_image_sequence(
                 event=event,
