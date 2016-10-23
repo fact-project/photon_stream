@@ -1460,6 +1460,7 @@ class Geometry(object):
         self.dir_x *= self.pixel_pitch_deg
         self.dir_y *= self.pixel_pitch_deg
         self.fov_radius = 2.25
+        self.pixel_order = 'softID'
 
     def __repr__(self):
         out = 'FactGeometry('
