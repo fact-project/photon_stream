@@ -10,6 +10,8 @@ setup(
     license='MIT',
     packages=[
         'photon_stream',
+        'photon_stream.fact',
+    ],
     ],
     install_requires=[
         'docopt',
