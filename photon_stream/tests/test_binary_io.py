@@ -4,8 +4,13 @@ import photon_stream as ps
 import tempfile
 import os
 
-def test_read_fact_tools_json():
+def test_read_fact_tools_json_gzipped():
     run = ps.fact.Run('photon_stream/tests/resources/20150123_016_first25_events.json.gz')
+    assert len(run.events) == 25
+
+
+def test_read_fact_tools_json():
+    run = ps.fact.Run('photon_stream/tests/resources/20150123_016_first25_events.json')
     assert len(run.events) == 25
 
 
