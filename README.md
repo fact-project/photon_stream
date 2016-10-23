@@ -1,3 +1,3 @@
 # The Photon Stream
 
-![img](examples/example_event_small.gif)
+![img](example/example_event_small.gif)
