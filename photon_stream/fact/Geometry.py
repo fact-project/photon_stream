@@ -1448,6 +1448,7 @@ class Geometry(object):
     def __init__(self):
         pixel_map = np.genfromtxt(io.BytesIO(fact_pixel_map_csv.encode()), delimiter=',')[1:]
 
+        self.pixel_order = 'hardID'
         pixel_map = pixel_map[pixel_map[:,1].argsort()] # use the hardID
 
         self.dir_x = pixel_map[:,10]
@@ -1460,7 +1461,6 @@ class Geometry(object):
         self.dir_x *= self.pixel_pitch_deg
         self.dir_y *= self.pixel_pitch_deg
         self.fov_radius = 2.25
-        self.pixel_order = 'softID'
 
     def __repr__(self):
         out = 'FactGeometry('
