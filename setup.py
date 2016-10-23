@@ -14,7 +14,7 @@ setup(
     ],
     install_requires=[
         'docopt',
-        'matplotlib',
+        'scipy',
     ],
     zip_safe=False,
 )
