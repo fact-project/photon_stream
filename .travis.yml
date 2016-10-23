@@ -2,6 +2,7 @@ language: python
 python:
 - '3.5'
 install:
+- pip install matplotlib
 - pip install scipy
 - pip install .
 script:
