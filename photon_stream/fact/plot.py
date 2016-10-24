@@ -25,8 +25,8 @@ def add_event_2_ax(event, ax, mask=None, color='b'):
     ax.set_xlim(-fovR, fovR)
     ax.set_ylim(-fovR, fovR)
     ax.set_zlim(min_time, max_time)
-    ax.set_xlabel('X/deg')
-    ax.set_ylabel('Y/deg')
+    ax.set_xlabel('azimuth/deg')
+    ax.set_ylabel('zenith/deg')
     ax.set_zlabel('t/ns')
     ax.scatter(
         xyt[:,0],

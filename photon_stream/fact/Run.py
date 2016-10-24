@@ -3,6 +3,7 @@ from .Event import Event
 from .._input_output import read_photonstream_from_fact_tools_event_dict
 import gzip
 import json
+import datetime as dt
 
 class Run(object):
     def __init__(self, path=None):
@@ -35,6 +36,14 @@ class Run(object):
             event = Event()
             event.geometry = self.geometry
             event.photon_stream = ps
+            event.trigger_type = event_dict['TriggerType']
+            event.zd = event_dict['ZdPointing']
+            event.az = event_dict['AzPointing']
+            event.number = event_dict['EventNum']
+            event.night = event_dict['NIGHT']
+            event.run_number = event_dict['RUNID']
+            event.time = dt.datetime.utcfromtimestamp(
+                event_dict['UnixTimeUTC'][0]+event_dict['UnixTimeUTC'][1]/1e6)
             self.events.append(event)            
 
     def __getitem__(self, index):

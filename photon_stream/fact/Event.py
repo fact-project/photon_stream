@@ -9,13 +9,13 @@ class Event(object):
         self.geometry = None
         self.photon_stream = None
 
-    def flatten_photon_stream(self, start_time=15e-9, end_time=55e-9):
+    def flatten_photon_stream(self, start_time=15e-9, end_time=65e-9):
         xyt = []
         for px, pixel_photons in enumerate(self.photon_stream.time_lines):
             for photon_slice in pixel_photons:
                     xyt.append(np.array([
-                        self.geometry.dir_x[px],
-                        self.geometry.dir_y[px],
+                        self.geometry.pixel_azimuth[px],
+                        self.geometry.pixel_zenith[px],
                         photon_slice*self.photon_stream.slice_duration
                         ]))
         xyt = np.array(xyt) 

@@ -1,4 +1,4 @@
-fact_pixel_map_csv = """softID,hardID,geom_i,geom_j,G-APD,V_op,crate,board,patch,CHID,pos_X,pos_Y
+fact_geometry_table_csv = """softID,hardID,geom_i,geom_j,G-APD,V_op,crate,board,patch,CHID,pos_X,pos_Y
     0,1036,0,0,957,70.59,1,0,3,393,0,0.5
     1,1033,0,1,997,70622,1,0,3,390,0,-0.5
     2,1034,-1,0,1087,70.59,1,0,3,391,-0.87,0
@@ -1446,27 +1446,53 @@ import io
 
 class Geometry(object):
     def __init__(self):
-        pixel_map = np.genfromtxt(io.BytesIO(fact_pixel_map_csv.encode()), delimiter=',')[1:]
+        geometry_table = self._read_geometry_table(fact_geometry_table_csv)
+        geometry_table = self._use_hardID_ordering(geometry_table)
 
-        self.pixel_order = 'hardID'
-        pixel_map = pixel_map[pixel_map[:,1].argsort()] # use the hardID
-
-        self.dir_x = pixel_map[:,10]
-        self.dir_y = pixel_map[:,11]
-
-        self.pixel_pitch = 0.0095
-        self.focal_length = 4.889
-        self.pixel_pitch_deg = np.rad2deg(self.pixel_pitch/self.focal_length)
-
-        self.dir_x *= self.pixel_pitch_deg
-        self.dir_y *= self.pixel_pitch_deg
-        self.fov_radius = 2.25
+        self._init_camera_mapping(geometry_table)
+        self._init_camera_geometry(geometry_table)
 
         self.position = {
             'latitude':{'dir':'N', 'deg':28, 'min':45, 'sec':41.9}, 
             'longitude':{'dir':'W', 'deg':17, 'min':53, 'sec':28.0},
             'altitude_above_sea_level':2200
         }
+
+    def _use_hardID_ordering(self, geometry_table):
+        self.pixel_order = 'CHID'
+        return geometry_table[geometry_table[:,9].argsort()] 
+
+    def _read_geometry_table(self, geometry_table_str):
+        file_object = io.BytesIO(fact_geometry_table_csv.encode())
+        return np.genfromtxt(file_object, delimiter=',')[1:]
+
+    def _init_camera_mapping(self, geometry_table):
+        self.softID = geometry_table[:,0]
+        self.hardID = geometry_table[:,1]
+        self.crate = geometry_table[:,6]
+        self.board = geometry_table[:,7]
+        self.patch = geometry_table[:,8]
+        self.CHID = geometry_table[:,9]
+
+    def _init_camera_geometry(self, geometry_table):
+        self.pixel_spacing_positions = 0.0095
+        self.focal_length = 4.889
+        self.pixel_spacing = np.rad2deg(self.pixel_spacing_positions/self.focal_length)
+        self.distortion_slope = 0.031/1.5
+
+        self.pixel_relative_pos_x = geometry_table[:,10]
+        self.pixel_relative_pos_y = geometry_table[:,11]
+
+        self.pixel_pos_x = self.pixel_relative_pos_x*self.pixel_spacing_positions
+        self.pixel_pos_y = self.pixel_relative_pos_y*self.pixel_spacing_positions
+
+        expected_pixel_dir_x = np.arctan(self.pixel_pos_x/self.focal_length)
+        expected_pixel_dir_y = np.arctan(self.pixel_pos_y/self.focal_length) 
+
+        self.pixel_azimuth = np.rad2deg(expected_pixel_dir_x*(1+self.distortion_slope))
+        self.pixel_zenith  = np.rad2deg(expected_pixel_dir_y*(1+self.distortion_slope))
+
+        self.fov_radius = np.hypot(self.pixel_azimuth, self.pixel_zenith).max()
 
     def __repr__(self):
         out = 'FactGeometry('
