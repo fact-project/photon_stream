@@ -1462,6 +1462,12 @@ class Geometry(object):
         self.dir_y *= self.pixel_pitch_deg
         self.fov_radius = 2.25
 
+        self.position = {
+            'latitude':{'dir':'N', 'deg':28, 'min':45, 'sec':41.9}, 
+            'longitude':{'dir':'W', 'deg':17, 'min':53, 'sec':28.0},
+            'altitude_above_sea_level':2200
+        }
+
     def __repr__(self):
         out = 'FactGeometry('
         out +='focal length '+str(self.focal_length)+'m, '
