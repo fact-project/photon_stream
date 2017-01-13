@@ -1,6 +1,5 @@
 import numpy as np
 from .PhotonCluster import PhotonClusterOnTimeSeries
-from .Run import JsonLRun
 import tqdm
 import json
 
