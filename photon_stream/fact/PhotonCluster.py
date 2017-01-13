@@ -13,3 +13,17 @@ class PhotonCluster(object):
 
         # Number of clusters in labels, ignoring noise if present.
         self.number = len(set(self.labels)) - (1 if -1 in self.labels else 0)
+
+
+class PhotonClusterOnTimeSeries(object):
+    def __init__(self, time_series, eps=10):
+
+        time_series_array = np.array(time_series)
+        time_series_array_rs = time_series_array.reshape(-1,1)
+
+        dbscan = DBSCAN(eps=eps, min_samples=2)
+        dbfit = dbscan.fit(time_series_array_rs)
+
+        self.labels = dbfit.labels_
+        # Number of clusters in labels, ignoring noise if present.
+        self.number = len(set(self.labels)) - (1 if -1 in self.labels else 0)
