@@ -5,6 +5,59 @@ import gzip
 import json
 import datetime as dt
 
+
+class JsonLRun(object):
+    """
+    Read in runs from the 'JSON lines' format
+    """
+    def __init__(self, path):
+        self.path = path
+        self.file = gzip.open(path, "rt")
+        self.geometry = Geometry()
+
+
+    def __exit__(self):
+        self.file.close()
+
+
+    def __iter__(self):
+        return self
+
+
+    def __next__(self):
+        line = self.file.readline()
+        try:
+            if line[-2] == ',':
+                line = line[:-2]
+        except:
+            raise StopIteration
+        event_dict = json.loads(line)
+
+        ps = read_photonstream_from_fact_tools_event_dict(event_dict)
+        event = Event()
+        event.geometry = self.geometry
+        event.photon_stream = ps
+        try:
+            event.trigger_type = event_dict['TriggerType']
+            event.time = dt.datetime.utcfromtimestamp(
+                event_dict['UnixTimeUTC'][0]+event_dict['UnixTimeUTC'][1]/1e6)
+            event.number = event_dict['EventNum']
+            event.run_number = event_dict['RUNID']
+            event.night = event_dict['NIGHT']
+            event.zd = event_dict['ZdPointing']
+            event.az = event_dict['AzPointing']
+        except:
+            pass
+
+        return event
+
+
+    def __repr__(self):
+        out = 'FactRun('
+        out += self.path+')\n'
+        return out
+
+
 class Run(object):
     def __init__(self, path=None):
         self.geometry = Geometry()
