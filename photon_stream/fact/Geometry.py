@@ -1497,6 +1497,6 @@ class Geometry(object):
     def __repr__(self):
         out = 'FactGeometry('
         out +='focal length '+str(self.focal_length)+'m, '
-        out += str(len(self.dir_x))+' pixel'
+        out += str(len(self.pixel_pos_x))+' pixel'
         out += ')\n'
         return out
