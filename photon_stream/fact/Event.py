@@ -8,6 +8,8 @@ class Event(object):
     def __init__(self): 
         self.geometry = None
         self.photon_stream = None
+        self.id = None
+        self.run = None
 
     def flatten_photon_stream(self, start_time=15e-9, end_time=65e-9):
         xyt = []
@@ -31,5 +33,6 @@ class Event(object):
 
     def __repr__(self):
         out = 'FactEvent('
+        out += 'id '+str(self.id)
         out += ')\n'
         return out
