@@ -8,6 +8,7 @@ from .plot import add_event_2_ax
 class Event(object):
     def __init__(self): 
         self.geometry = None
+        self.trigger_type = None
         self.photon_stream = None
         self.id = None
         self.run = None
