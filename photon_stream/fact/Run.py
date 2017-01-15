@@ -1,13 +1,11 @@
 from .Geometry import Geometry
 from .Event import Event
-from .._input_output import read_photonstream_from_raw_photonstream
-import gzip
-import json
+from .JsonLinesGzipReader import JsonLinesGzipReader
 
 
 class Run(object):
-    def __init__(self, reader):
-        self.reader = reader
+    def __init__(self, path):
+        self.reader = JsonLinesGzipReader(path)
         self.geometry = Geometry()
         self._event_iterator = 0
         self._read_first_event_to_learn_about_run()
@@ -46,5 +44,8 @@ class Run(object):
 
     def __repr__(self):
         out = 'Run('
-        out += "path:'"+self.reader.path+"', Night "+str(self.night)+", Id "+str(self.id)+")\n"
+        out += "path:'"+self.reader.path+"', "
+        out += 'Night '+str(self.night)+', '
+        out += 'Id '+str(self.id)
+        out += ')\n'
         return out

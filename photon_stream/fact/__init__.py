@@ -4,4 +4,3 @@ from .Run import Run
 from .PhotonCluster import PhotonCluster
 from .PhotonCluster import PhotonClusterOnTimeSeries
 from . import finger_histogram
-from . import pass2
