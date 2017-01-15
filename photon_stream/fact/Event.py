@@ -41,6 +41,6 @@ class Event(object):
 
     def __repr__(self):
         out = 'FactEvent('
-        out += 'id '+str(self.id)
+        out += 'Id '+str(self.id)
         out += ')\n'
         return out

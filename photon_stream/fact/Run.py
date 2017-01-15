@@ -33,13 +33,13 @@ class Run(object):
         event._time_unix_s = event_dict['UnixTimeUTC'][0]
         event._time_unix_us = event_dict['UnixTimeUTC'][1]
         event.run = self
-        event.photon_stream = event_dict['PhotonStream']
+        event.photon_stream = event_dict['PhotonArrivals']
         return event
 
     def _read_first_event_to_learn_about_run(self):
         first_event_dict = self.reader.__next__()
-        self.id = first_event_dict['RunId']
-        self.night = first_event_dict['NightId']
+        self.id = first_event_dict['RUNID']
+        self.night = first_event_dict['NIGHT']
         self._first_event = self._event_dict2event(first_event_dict)
 
     def __repr__(self):

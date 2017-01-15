@@ -30,9 +30,9 @@ def reduce_event(
     drop_baselinses=False):
 
     evt_out = {}
-    evt_out['RunId'] = evt_in['RUNID'] 
-    evt_out['NightId'] = evt_in['NIGHT']
-    evt_out['EventId'] = evt_in['EventNum']
+    evt_out['RUNID'] = evt_in['RUNID'] 
+    evt_out['NIGHT'] = evt_in['NIGHT']
+    evt_out['EventNum'] = evt_in['EventNum']
     evt_out['TriggerType'] = evt_in['TriggerType']
     evt_out['ZdPointing'] = evt_in['ZdPointing']
     evt_out['AzPointing'] = evt_in['AzPointing']
@@ -50,16 +50,16 @@ def reduce_event(
                     trunc_pixel.append(pulse_slice)
             trunc_ps.append(trunc_pixel)
 
-        evt_out['PhotonStream'] = trunc_ps
+        evt_out['PhotonArrivals'] = trunc_ps
     else:
-        evt_out['PhotonStream'] = evt_in['PhotonArrivals']
+        evt_out['PhotonArrivals'] = evt_in['PhotonArrivals']
 
     if not drop_baselinses:
         base_lines = evt_in['PhotonArrivalsBaseLine']
         comp_base_lines = []
         for base_line in base_lines:
             comp_base_lines.append(int(base_line*100))
-        evt_out['BaseLines'] = comp_base_lines
+        evt_out['PhotonArrivalsBaseLine100'] = comp_base_lines
     return evt_out
 
 
