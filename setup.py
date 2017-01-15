@@ -10,7 +10,7 @@ setup(
     license='MIT',
     packages=[
         'photon_stream',
-        'photon_stream.fact'
+        'photon_stream.fact',
         'photon_stream.experimental'
     ],
     install_requires=[
