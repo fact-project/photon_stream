@@ -1,14 +1,6 @@
 import numpy as np
 from .PhotonStream import PhotonStream
 
-def read_photonstream_from_raw_photonstream(
-    raw_photon_stream, 
-    slice_duration):
-
-    rps = PhotonStream()
-    rps.slice_duration = np.float64(slice_duration)
-    rps.time_lines = raw_photon_stream
-    return rps
 
 def append_photonstream_to_binary_file(photonstream, file_handle):
     
@@ -48,6 +40,7 @@ def append_photonstream_to_binary_file(photonstream, file_handle):
         if arrivals.shape[0] > 0:
             file_handle.write(arrivals.tobytes())
         file_handle.write(linebreak.tobytes())
+
 
 def read_photonstream_from_binary_file(file_handle):
     ps = PhotonStream()

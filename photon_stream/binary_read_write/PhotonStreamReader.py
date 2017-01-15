@@ -1,10 +1,9 @@
 import numpy as np
-from ..._input_output import append_photonstream_to_binary_file
-from ..._input_output import read_photonstream_from_binary_file
-import gzip
+from ._input_output import append_photonstream_to_binary_file
+from ._input_output import read_photonstream_from_binary_file
 
 
-class SpeGzipReader(object):
+class PhotonStreamReader(object):
     def __init__(self, path, baselines=True):
         self.path = path
         self.file = open(path, "rb")
