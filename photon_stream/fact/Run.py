@@ -1,6 +1,7 @@
 from .Geometry import Geometry
 from .Event import Event
 from .JsonLinesGzipReader import JsonLinesGzipReader
+from ..PhotonStream import PhotonStream
 
 
 class Run(object):
@@ -29,11 +30,15 @@ class Run(object):
         event.trigger_type = event_dict['TriggerType']
         event.zd = event_dict['ZdPointing']
         event.az = event_dict['AzPointing']
-        event.id = event_dict['EventId']
+        event.id = event_dict['EventNum']
         event._time_unix_s = event_dict['UnixTimeUTC'][0]
         event._time_unix_us = event_dict['UnixTimeUTC'][1]
         event.run = self
-        event.photon_stream = event_dict['PhotonArrivals']
+
+        ps = PhotonStream()
+        ps.slice_duration = event_dict['SliceDuration']
+        ps.time_lines = event_dict['PhotonArrivals']
+        event.photon_stream = ps
         return event
 
     def _read_first_event_to_learn_about_run(self):

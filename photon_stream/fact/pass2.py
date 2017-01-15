@@ -1,9 +1,7 @@
 from .JsonLinesGzipReader import JsonLinesGzipReader
-from ..._input_output import append_photonstream_to_binary_file
-from ..._input_output import read_photonstream_from_raw_photonstream
+from ..PhotonStream import truncate_time_lines
 import gzip
 import json
-import numpy as np
 
 # Size test 20151001_11, 12309 events [MByte]
 #               raw   15-65ns     15-65ns 
@@ -37,20 +35,14 @@ def reduce_event(
     evt_out['ZdPointing'] = evt_in['ZdPointing']
     evt_out['AzPointing'] = evt_in['AzPointing']
     evt_out['UnixTimeUTC'] = evt_in['UnixTimeUTC']
+    evt_out['SliceDuration'] = 0.5e-9
 
     if truncate_photon_stream: 
-        ps = evt_in['PhotonArrivals']
-
-        trunc_ps = []
-        for pixel in ps:
-            trunc_pixel = []
-            for pulse_slice in pixel:
-                pulse_time = pulse_slice*0.5e-9
-                if pulse_time >= 15e-9 and pulse_time < 65e-9:
-                    trunc_pixel.append(pulse_slice)
-            trunc_ps.append(trunc_pixel)
-
-        evt_out['PhotonArrivals'] = trunc_ps
+        evt_out['PhotonArrivals'] = truncate_time_lines(
+            evt_in['PhotonArrivals'], 
+            slice_duration=evt_out['SliceDuration'],
+            start_time=15e-9, 
+            end_time=65e-9)
     else:
         evt_out['PhotonArrivals'] = evt_in['PhotonArrivals']
 

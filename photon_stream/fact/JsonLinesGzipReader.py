@@ -1,7 +1,6 @@
 import gzip
 import json
 import os
-from ..PhotonStream import PhotonStream
 
 class JsonLinesGzipReader(object):
     def __init__(self, path):
@@ -21,14 +20,7 @@ class JsonLinesGzipReader(object):
                 line = line[:-2]
         except:
             raise StopIteration
-        event_dict = json.loads(line)
-        
-        ps = PhotonStream()
-        ps.slice_duration = 0.5e-9
-        ps.time_lines = event_dict['PhotonStream']
-        
-        event_dict['PhotonStream'] = ps
-        return event_dict
+        return json.loads(line)
 
     def __repr__(self):
         out = 'JsonLinesGzipReader('
