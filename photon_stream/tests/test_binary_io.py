@@ -20,13 +20,13 @@ def test_binary_io():
         with open(bin_run_path, 'wb') as bf:
             for evt in run:
                 run_ps.append(evt.photon_stream)
-                ps.binary_read_write.io.append_photonstream_to_binary_file(evt.photon_stream, bf)
+                ps.experimental.io.append_photonstream_to_binary_file(evt.photon_stream, bf)
 
         run_ps_back = []
         with open(bin_run_path, 'rb') as bf:
             while True:
                 try:
-                    phs = ps.binary_read_write.io.read_photonstream_from_binary_file(bf)
+                    phs = ps.experimental.io.read_photonstream_from_binary_file(bf)
                     run_ps_back.append(phs)
                 except IndexError:
                     break
