@@ -63,5 +63,3 @@ def make_run_1pe_multiplicity(run, output_path, max_multiplicity=20):
             f_evt = finger_event(event, max_multiplicity)
             f_evt_json = json.dumps(f_evt)
             f.write(f_evt_json+'\n')
-        
-
