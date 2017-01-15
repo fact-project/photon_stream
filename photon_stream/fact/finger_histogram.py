@@ -1,5 +1,5 @@
 import numpy as np
-from .PhotonCluster import PhotonClusterOnTimeSeries
+from .PhotonCluster import PhotonTimeSeriesCluster
 import tqdm
 import json
 
@@ -9,7 +9,7 @@ def finger_histogram(time_series, max_multiplicity=20):
     if len(time_series) < 1:
         return counts
 
-    clusters = PhotonClusterOnTimeSeries(time_series)
+    clusters = PhotonTimeSeriesCluster(time_series)
     # single photons
     counts[0] = (clusters.labels == -1).sum()
 

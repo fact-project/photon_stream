@@ -1,7 +1,7 @@
 from sklearn.cluster import DBSCAN
 import numpy as np
 
-class PhotonCluster(object):
+class PhotonStreamCluster(object):
     def __init__(self, event, eps=0.1, min_samples=20, deg_over_s=0.35e9):
         xyt = event.flatten_photon_stream()
 
@@ -14,8 +14,14 @@ class PhotonCluster(object):
         # Number of clusters in labels, ignoring noise if present.
         self.number = len(set(self.labels)) - (1 if -1 in self.labels else 0)
 
+    def __repr__(self):
+        out = 'PhotonStreamCluster('
+        out += 'number of clusters '+str(self.number)
+        out += ')\n'
+        return out
 
-class PhotonClusterOnTimeSeries(object):
+
+class PhotonTimeSeriesCluster(object):
     def __init__(self, time_series, eps=10):
 
         time_series_array = np.array(time_series)
@@ -27,3 +33,9 @@ class PhotonClusterOnTimeSeries(object):
         self.labels = dbfit.labels_
         # Number of clusters in labels, ignoring noise if present.
         self.number = len(set(self.labels)) - (1 if -1 in self.labels else 0)
+
+    def __repr__(self):
+        out = 'PhotonTimeSeriesCluster('
+        out += 'number of clusters '+str(self.number)
+        out += ')\n'
+        return out
