@@ -44,7 +44,6 @@ class Run(object):
 
     def __repr__(self):
         out = 'Run('
-        out += "path:'"+self.reader.path+"', "
         out += 'Night '+str(self.night)+', '
         out += 'Id '+str(self.id)
         out += ')\n'
