@@ -1,10 +1,13 @@
 import numpy as np
 from .PhotonStream import PhotonStream
 
-def read_photonstream_from_fact_tools_event_dict(event_dict):
+def read_photonstream_from_raw_photonstream(
+    raw_photon_stream, 
+    slice_duration):
+
     rps = PhotonStream()
-    rps.slice_duration = np.float64(0.5e-9)
-    rps.time_lines = event_dict['PhotonArrivals']
+    rps.slice_duration = np.float64(slice_duration)
+    rps.time_lines = raw_photon_stream
     return rps
 
 def append_photonstream_to_binary_file(photonstream, file_handle):

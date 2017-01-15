@@ -25,6 +25,20 @@ class PhotonStream(object):
 
         return min_slice, max_slice      
 
+    def truncate(self, start_time, end_time):
+        trunc_ps = PhotonStream()
+        trunc_ps.slice_duration = self.slice_duration
+
+        for time_line in self.time_lines:
+            trunc_time_line = []
+            for arrival_slice in time_line:
+                arrival_time = arrival_slice*self.slice_duration
+                if arrival_time >= start_time and arrival_time < end_time:
+                    trunc_time_line.append(arrival_slice)
+            trunc_ps.time_lines.append(trunc_time_line)       
+
+        return trunc_ps
+
     def __repr__(self):
         info = 'PhotonStream('
         info+= str(len(self.time_lines))+' time lines, '
