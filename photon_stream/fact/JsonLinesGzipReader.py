@@ -1,10 +1,11 @@
 import gzip
 import json
-
+import os
+from ..PhotonStream import PhotonStream
 
 class JsonLinesGzipReader(object):
     def __init__(self, path):
-        self.path = path
+        self.path = os.path.abspath(path)
         self.file = gzip.open(path, "rt")
 
     def __exit__(self):
