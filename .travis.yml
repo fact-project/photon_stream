@@ -5,6 +5,7 @@ install:
 - pip install matplotlib
 - pip install sklearn
 - pip install scipy
+- pip install tqdm
 - pip install .
 script:
 - py.test
