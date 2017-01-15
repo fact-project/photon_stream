@@ -13,7 +13,7 @@ setup(
         'photon_stream.fact',
         'photon_stream.experimental'
     ],
-    package_data={'photon_stream.tests': ['resources/*']},
+    package_data={'photon_stream': ['tests/resources/*']},
     install_requires=[
         'docopt',
         'scipy',
