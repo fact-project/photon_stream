@@ -3,7 +3,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from .plot import add_event_2_ax
-import datetime as dt
 
 
 class Event(object):
@@ -14,6 +13,7 @@ class Event(object):
         self.run = None
         self._time_unix_s = None
         self._time_unix_us = None
+        self.time = None
 
     def flatten_photon_stream(self, start_time=15e-9, end_time=65e-9):
         xyt = []
@@ -28,10 +28,6 @@ class Event(object):
         past_start = xyt[:,2] >= start_time
         before_end = xyt[:,2] <= end_time
         return xyt[past_start*before_end]
-
-    def time(self):
-        return dt.datetime.utcfromtimestamp(
-            self._time_unix_s+self._time_unix_us/1e6)
 
     def plot(self, mask=None):
         fig = plt.figure()

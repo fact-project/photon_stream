@@ -43,9 +43,9 @@ def finger_histogram_of_event(event, max_multiplicity=20):
 def finger_event(event, max_multiplicity=20):
     finger_event = {}
     finger_event['UnixTimeUTC'] = event.time.timestamp()
-    finger_event['RUNID'] = event.run_number
-    finger_event['EventNum'] = event.number
-    finger_event['NIGHT'] = event.night
+    finger_event['RUNID'] = event.run.id
+    finger_event['EventNum'] = event.id
+    finger_event['NIGHT'] = event.run.night
     
     fhist = finger_histogram_of_event(
         event=event,

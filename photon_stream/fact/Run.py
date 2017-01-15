@@ -2,10 +2,13 @@ from .Geometry import Geometry
 from .Event import Event
 from .JsonLinesGzipReader import JsonLinesGzipReader
 from ..PhotonStream import PhotonStream
+import datetime as dt
 
 
 class Run(object):
     def __init__(self, path):
+        self.id = None
+        self.night = None
         self.reader = JsonLinesGzipReader(path)
         self.geometry = Geometry()
         self._event_iterator = 0
@@ -39,6 +42,9 @@ class Run(object):
         ps.slice_duration = event_dict['SliceDuration']
         ps.time_lines = event_dict['PhotonArrivals']
         event.photon_stream = ps
+
+        event.time = dt.datetime.utcfromtimestamp(
+            event._time_unix_s+event._time_unix_us/1e6)
         return event
 
     def _read_first_event_to_learn_about_run(self):
