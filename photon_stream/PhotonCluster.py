@@ -1,5 +1,8 @@
+from photon_stream import Geometry
 from sklearn.cluster import DBSCAN
 import numpy as np
+
+geo = Geometry()
 
 class PhotonStreamCluster(object):
     def __init__(self, event, eps=0.1, min_samples=20, deg_over_s=0.35e9):
@@ -11,8 +14,8 @@ class PhotonStreamCluster(object):
             self.number = 0
             return
 
-        xyt[:,0:2] /= (event.geometry.fov_radius*2.0)
-        xyt[:,2] /= (event.geometry.fov_radius*2.0)/deg_over_s
+        xyt[:,0:2] /= (geo.fov_radius*2.0)
+        xyt[:,2] /= (geo.fov_radius*2.0)/deg_over_s
 
         dbscan = DBSCAN(eps=eps, min_samples=min_samples).fit(xyt)
         self.labels = dbscan.labels_

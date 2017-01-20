@@ -1,4 +1,3 @@
-from .Geometry import Geometry
 from .Event import Event
 from .JsonLinesGzipReader import JsonLinesGzipReader
 
@@ -6,7 +5,6 @@ from .JsonLinesGzipReader import JsonLinesGzipReader
 class Run(object):
     def __init__(self, path):
         self.reader = JsonLinesGzipReader(path)
-        self.geometry = Geometry()
 
         preview_event = next(JsonLinesGzipReader(path))
         self.id = preview_event['RUNID']

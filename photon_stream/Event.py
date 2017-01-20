@@ -6,7 +6,6 @@ from .plot import add_event_2_ax
 
 class Event(object):
     def __init__(self):
-        self.geometry = None
         self.trigger_type = None
         self.photon_stream = None
         self.id = None
@@ -31,7 +30,6 @@ class Event(object):
             event._time_unix_s + event._time_unix_us / 1e6)
 
         event.run = run
-        event.geometry = run.geometry
 
         event.photon_stream = PhotonStream.from_event_dict(event_dict)
         return event
