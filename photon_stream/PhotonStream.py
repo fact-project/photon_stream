@@ -5,11 +5,9 @@ class PhotonStream(object):
         self.slice_duration = 0.0
         self.time_lines = []
 
-    def _number_photons(self):
-        number_photons = 0
-        for time_line in self.time_lines:
-            number_photons += len(time_line)
-        return number_photons
+    @property
+    def number_photons(self):
+        return sum(len(tl) for tl in self.time_lines)
 
     def _min_max_arrival_slice(self):
         max_slice = 0
@@ -23,22 +21,22 @@ class PhotonStream(object):
                 if min_slice_on_current_time_line < min_slice:
                     min_slice = min_slice_on_current_time_line
 
-        return min_slice, max_slice      
+        return min_slice, max_slice
 
     def truncate_time_lines(self, start_time, end_time):
         trunc_ps = PhotonStream()
         trunc_ps.slice_duration = self.slice_duration
         trunc_ps.time_lines = truncate_time_lines(
-            time_lines=self.time_lines, 
-            slice_duration=self.slice_duration, 
-            start_time=start_time, 
+            time_lines=self.time_lines,
+            slice_duration=self.slice_duration,
+            start_time=start_time,
             end_time=end_time)
         return trunc_ps
 
     def __repr__(self):
         info = 'PhotonStream('
         info+= str(len(self.time_lines))+' time lines, '
-        info+= str(self._number_photons())+' photons'
+        info+= str(self.number_photons)+' photons'
         info+= ')'
         return info
 
@@ -51,6 +49,6 @@ def truncate_time_lines(time_lines, slice_duration, start_time, end_time):
             arrival_time = arrival_slice*slice_duration
             if arrival_time >= start_time and arrival_time < end_time:
                 trunc_time_line.append(arrival_slice)
-        trunc_time_lines.append(trunc_time_line)       
+        trunc_time_lines.append(trunc_time_line)
 
     return trunc_time_lines
