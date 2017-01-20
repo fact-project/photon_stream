@@ -4,7 +4,7 @@ import numpy as np
 class PhotonStreamCluster(object):
     def __init__(self, event, eps=0.1, min_samples=20, deg_over_s=0.35e9):
 
-        xyt = event.flatten_photon_stream()
+        xyt = event.photon_stream.flatten()
 
         if xyt.shape[0] == 0:
             self.labels = np.array([])
