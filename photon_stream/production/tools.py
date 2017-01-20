@@ -57,6 +57,7 @@ def write_worker_script(
     sh += '# Production of the compact photon-stream files from raw data.\n'
     sh += '# https://github.com/fact-project/photon_stream\n'
     sh += '# Sebastian A. Mueller, sebmuell@phys.ethz.ch\n'
+    sh += '# Dominik Neise, neised@phys.ethz.ch\n'
     sh += '\n'
     sh += 'START_TIME=`date -Is`\n'
     sh += 'echo "{'
