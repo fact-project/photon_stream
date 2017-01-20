@@ -1,5 +1,3 @@
-import pandas as pd
-
 
 def add2ax_photon_count_vs_saturations(
         axis,

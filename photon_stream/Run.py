@@ -1,3 +1,5 @@
+import pandas as pd
+
 from .Event import Event
 from .JsonLinesGzipReader import JsonLinesGzipReader
 
