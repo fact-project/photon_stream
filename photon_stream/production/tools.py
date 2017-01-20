@@ -1,12 +1,12 @@
 import os
 import stat
-import subprocess
+import subprocess as sp
 
 
 job_run_template = {
     'stdout_path': './stdout.txt',
     'stderr_path': './stderr.txt',
-    'worker_node_script_path': './worker_node_script_path'
+    'worker_node_script_path': './worker_node_script_path.sh'
 }
 
 
@@ -32,14 +32,15 @@ def submit_qsub_job(
 
 def write_worker_script(
     path,
-    java_path,
-    fact_tools_jar_path,
-    fact_tools_xml_path,
-    in_run_path,
-    drs_path,
-    aux_dir,
-    out_dir,
-    out_base_name):
+    java_path='/usr/java/jdk1.8.0_77/bin',
+    fact_tools_jar_path='/fac_tools.jar',
+    fact_tools_xml_path='/fac_tools.xml',
+    in_run_path='fact/raw/YYYY/mm/dd/YYYYmmdd_RRR.fits.fz',
+    drs_path='fact/raw/YYYY/mm/dd/YYYYmmdd_RRR.drs.fits.gz',
+    aux_dir='fact/aux/YYYY/mm/dd/',
+    out_dir='/home/photon_stream/YYYY/mm/dd/',
+    out_base_name='YYYYmmdd_RRR.phs.jsonl.gz',
+    tmp_dir_base_name='fact_photon_stream_JOB_ID_'):
     """
     Writes an executable bash script for a worker node to process one fact 
     raw date run into a photon-stream run. The intermediate output is stroed to 
@@ -51,6 +52,7 @@ def write_worker_script(
     sh = ''
     sh += '#!/bin/bash\n'
     sh += '\n'
+
     sh += '# FACT Telescope\n'
     sh += '# --------------\n'
     sh += '#\n'
@@ -59,6 +61,7 @@ def write_worker_script(
     sh += '# Sebastian A. Mueller, sebmuell@phys.ethz.ch\n'
     sh += '# Dominik Neise, neised@phys.ethz.ch\n'
     sh += '\n'
+
     sh += 'START_TIME=`date -Is`\n'
     sh += 'echo "{'
     sh +=         '\"JOB_ID\": \"$JOB_ID\", '
@@ -67,10 +70,16 @@ def write_worker_script(
     sh +=         '\"HOSTNAME\": \"$HOSTNAME\", '
     sh +=         '\"USER\": \"$USER\"}"\n'
     sh += '\n'
-    sh += 'export tmp_dir=/tmp/fact_photon_stream_JOB_ID_$JOB_ID\n'
+
+    sh += '# Create tmp_dir for this run\n'
+    sh += 'export tmp_dir=/tmp/'+tmp_dir_base_name+'$JOB_ID\n'
     sh += 'mkdir -p $tmp_dir\n'
-    sh += 'export PATH='+java_path+':$PATH\n' #/usr/java/jdk1.8.0_77/bin
     sh += '\n'
+
+    sh += '# Use specific a JAVA\n'
+    sh += 'export PATH='+java_path+':$PATH\n'
+    sh += '\n'
+
     sh += 'CALL="java \\\n'
     sh += '    -XX:MaxHeapSize=1024m \\\n'
     sh += '    -XX:InitialHeapSize=512m \\\n'
@@ -85,19 +94,23 @@ def write_worker_script(
     sh += '    -DauxFolder='+aux_dir+' \\\n'
     sh += '    -Doutput=$tmp_dir/'+out_base_name+'" \\\n'
     sh += '\n'
+
     sh += 'echo $CALL\n'
     sh += 'eval $CALL\n'
     sh += '\n'
+
     sh += 'mkdir -p $out_dir\n'
     sh += 'cp $tmp_dir/* $out_dir/.\n'
     sh += 'rm -rf $tmp_dir\n'
     sh += '\n'
+
     sh += 'END_TIME=`date -Is`\n'
     sh += 'echo "{'
     sh +=         '\"JOB_ID\": \"$JOB_ID\", '
     sh +=         '\"JOB_NAME\": \"$JOB_NAME\", '
     sh +=         '\"START_TIME\": \"$START_TIME\", '
-    sh +=         '\"END_TIME\": \"$END_TIME\"}"\n'
+    sh +=         '\"END_TIME\": \"$END_TIME\", '
+    sh +=         '\"JAVA\": \"$'+java_path+'\"}"\n'
     
     with open(path, 'w') as fout:
         fout.write(sh)
