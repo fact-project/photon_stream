@@ -10,7 +10,6 @@ setup(
     license='MIT',
     packages=[
         'photon_stream',
-        'photon_stream.fact',
         'photon_stream.experimental'
     ],
     package_data={'photon_stream': ['tests/resources/*']},
