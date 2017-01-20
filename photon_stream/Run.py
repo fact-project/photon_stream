@@ -18,6 +18,19 @@ class Run(object):
             run=self
         )
 
+    def inspect(self):
+        return pd.DataFrame([{
+            'analog_amplitude_saturations': len(event.amplitude_saturated_pixels),
+            'trigger_types': event.trigger_type,
+            'total_photon_counts': event.photon_stream.photon_count.sum(),
+            'times': event.time,
+            'zenith_distances': event.zd,
+            'azimuths': event.az,
+            'ids': event.id,
+            }
+            for event in self])
+
+
     def __repr__(self):
         out = 'Run('
         out += 'Night '+str(self.night)+', '
