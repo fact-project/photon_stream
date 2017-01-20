@@ -1,5 +1,9 @@
+from photon_stream import Geometry
+import numpy as np
 from math import nan
 from copy import deepcopy
+
+geo = Geometry()
 
 class PhotonStream(object):
     def __init__(self, time_lines=None, slice_duration=0.):
@@ -9,9 +13,14 @@ class PhotonStream(object):
         else:
             self.time_lines = time_lines
 
+
+    @property
+    def photon_count(self):
+        return np.array([len(tl) for tl in self.time_lines], dtype=np.int16)
+
     @property
     def number_photons(self):
-        return sum(len(tl) for tl in self.time_lines)
+        return self.photon_count.sum()
 
     @property
     def min_arrival_slice(self):
@@ -52,6 +61,20 @@ class PhotonStream(object):
                     time_line.remove(arrival_slice)
                 if arrival_time >= end_time:
                     time_line.remove(arrival_slice)
+
+    def flatten(self, start_time=15e-9, end_time=65e-9):
+        xyt = []
+        for px, pixel_photons in enumerate(self.time_lines):
+            for photon_slice in pixel_photons:
+                    xyt.append([
+                        geo.pixel_azimuth[px],
+                        geo.pixel_zenith[px],
+                        photon_slice * self.slice_duration
+                        ])
+        xyt = np.array(xyt)
+        past_start = xyt[:, 2] >= start_time
+        before_end = xyt[:, 2] <= end_time
+        return xyt[past_start*before_end]
 
     def __repr__(self):
         info = 'PhotonStream('
