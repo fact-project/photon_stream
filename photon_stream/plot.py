@@ -8,7 +8,7 @@ import tempfile
 import subprocess
 
 def add_event_2_ax(event, ax, mask=None, color='b'):
-    xyt = event.flatten_photon_stream()
+    xyt = event.photon_stream.flatten()
 
     xyt[:,2] *= 1e9
     min_time = xyt[:,2].min()
@@ -38,11 +38,11 @@ def add_event_2_ax(event, ax, mask=None, color='b'):
         c=color)
 
 def save_image_sequence(
-    event, 
+    event,
     path,
-    steps=27, 
-    start_number=0, 
-    start_azimuth=0.0, 
+    steps=27,
+    start_number=0,
+    start_azimuth=0.0,
     end_azimuth=360.0,
     mask=None):
     plt.rcParams.update({'font.size': 12})
@@ -60,8 +60,8 @@ def save_image_sequence(
         plt.subplots_adjust(left=0.01, right=0.99, top=0.99, bottom=0.01)
         plt.savefig(
             os.path.join(
-                path, 
-                '3D_'+str(step).zfill(6) + '.png'), 
+                path,
+                '3D_'+str(step).zfill(6) + '.png'),
             dpi=180)
         step += 1
 
@@ -69,7 +69,7 @@ def save_image_sequence(
 
 def save_video(event, path, mask=None ,steps=12, fps=25, threads='auto'):
     with tempfile.TemporaryDirectory() as work_dir:
-        
+
         azimuths = np.linspace(0, 360, 10, endpoint=False)
         for i, az in enumerate(azimuths):
 
@@ -81,7 +81,7 @@ def save_video(event, path, mask=None ,steps=12, fps=25, threads='auto'):
                 end_azimuth=az+18,
                 start_number=(i*steps*2),
                 mask=mask)
-            
+
             save_image_sequence(
                 event=event,
                 path=work_dir,
