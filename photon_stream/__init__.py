@@ -1,5 +1,4 @@
 from .PhotonStream import PhotonStream
-from .PhotonStream import truncate_time_lines
 
 from .Geometry import Geometry
 from .Event import Event

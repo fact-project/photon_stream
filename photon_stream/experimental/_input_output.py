@@ -17,7 +17,7 @@ def append_photonstream_to_binary_file(photonstream, file_handle):
     file_handle.write(slice_duration.tobytes())
 
     # DETERMINE SLICE WIDTH IN BYTE
-    min_slice, max_slice = photonstream._min_max_arrival_slice()
+    max_slice = photonstream.max_arrival_slice
     if max_slice < np.iinfo(np.uint8).max:
         dtype = np.uint8
     elif max_slice < np.iinfo(np.uint16).max:
