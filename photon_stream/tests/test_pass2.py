@@ -12,10 +12,10 @@ def test_fact_tools_pass2_jsonl_conversion():
 
     with tempfile.TemporaryDirectory(prefix='photon_stream_test_fact_tools_pass2') as tmp:
         tidy_run_path = os.path.join(tmp, '20151001_011.jsonl.gz')
-        ps.fact.pass2.finalize_jsonl2jsonl(test_run_path, tidy_run_path)
+        ps.experimental.pass2.finalize_jsonl2jsonl(test_run_path, tidy_run_path)
 
-        raw_run = ps.fact.JsonLinesGzipReader(test_run_path)
-        tidy_run = ps.fact.JsonLinesGzipReader(tidy_run_path)
+        raw_run = ps.JsonLinesGzipReader(test_run_path)
+        tidy_run = ps.JsonLinesGzipReader(tidy_run_path)
 
         for raw_event_dict in raw_run:
             tidy_event_dict = tidy_run.__next__()

@@ -1,4 +1,4 @@
-from .JsonLinesGzipReader import JsonLinesGzipReader
+from ..JsonLinesGzipReader import JsonLinesGzipReader
 from ..PhotonStream import truncate_time_lines
 import gzip
 import json

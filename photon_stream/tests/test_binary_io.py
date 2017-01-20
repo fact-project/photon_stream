@@ -8,9 +8,9 @@ def test_binary_io():
 
     run_path = pkg_resources.resource_filename(
         'photon_stream', 
-        'tests/resources/20151001_011_pass2_100_events.jsonl.gz')
+        'tests/resources/20151001_011_pass3beta_100_events.jsonl.gz')
 
-    run = ps.fact.Run(run_path)
+    run = ps.Run(run_path)
 
     with tempfile.TemporaryDirectory(prefix='photon_stream_test_binary') as tmp:
 
