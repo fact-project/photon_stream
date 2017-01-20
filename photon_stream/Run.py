@@ -4,11 +4,10 @@ from .JsonLinesGzipReader import JsonLinesGzipReader
 
 class Run(object):
     def __init__(self, path):
-        self.reader = JsonLinesGzipReader(path)
-
         preview_event = next(JsonLinesGzipReader(path))
         self.id = preview_event['RUNID']
         self.night = preview_event['NIGHT']
+        self.reader = JsonLinesGzipReader(path)
 
     def __iter__(self):
         return self
