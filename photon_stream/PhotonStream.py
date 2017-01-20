@@ -3,7 +3,8 @@ import numpy as np
 from math import nan
 from copy import deepcopy
 
-geo = Geometry()
+geo = Geometry.Geometry()
+
 
 class PhotonStream(object):
     def __init__(self, time_lines=None, slice_duration=0.):
@@ -13,6 +14,12 @@ class PhotonStream(object):
         else:
             self.time_lines = time_lines
 
+    @classmethod
+    def from_event_dict(cls, event_dict):
+        ps = cls()
+        ps.slice_duration = 0.5e-9
+        ps.time_lines = event_dict['PhotonArrivals']
+        return ps
 
     @property
     def photon_count(self):
@@ -35,6 +42,20 @@ class PhotonStream(object):
             return max(max(tl) for tl in self.time_lines if tl)
         else:
             return nan
+
+    def flatten(self, start_time=15e-9, end_time=65e-9):
+        xyt = []
+        for px, pixel_photons in enumerate(self.time_lines):
+            for photon_slice in pixel_photons:
+                    xyt.append([
+                        geo.pixel_azimuth[px],
+                        geo.pixel_zenith[px],
+                        photon_slice * self.slice_duration
+                        ])
+        xyt = np.array(xyt)
+        past_start = xyt[:, 2] >= start_time
+        before_end = xyt[:, 2] <= end_time
+        return xyt[past_start*before_end]
 
     def truncated_time_lines(self, start_time, end_time):
         ''' return new PhotonStream with truncated time_lines
@@ -61,20 +82,6 @@ class PhotonStream(object):
                     time_line.remove(arrival_slice)
                 if arrival_time >= end_time:
                     time_line.remove(arrival_slice)
-
-    def flatten(self, start_time=15e-9, end_time=65e-9):
-        xyt = []
-        for px, pixel_photons in enumerate(self.time_lines):
-            for photon_slice in pixel_photons:
-                    xyt.append([
-                        geo.pixel_azimuth[px],
-                        geo.pixel_zenith[px],
-                        photon_slice * self.slice_duration
-                        ])
-        xyt = np.array(xyt)
-        past_start = xyt[:, 2] >= start_time
-        before_end = xyt[:, 2] <= end_time
-        return xyt[past_start*before_end]
 
     def __repr__(self):
         info = 'PhotonStream('
