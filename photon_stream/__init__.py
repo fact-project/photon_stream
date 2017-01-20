@@ -8,6 +8,7 @@ from .PhotonCluster import PhotonStreamCluster
 from .PhotonCluster import PhotonTimeSeriesCluster
 from .JsonLinesGzipReader import JsonLinesGzipReader
 from . import finger_histogram
+from . import inspect
 
 from . import production
 from . import experimental
