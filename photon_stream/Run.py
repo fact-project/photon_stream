@@ -1,7 +1,7 @@
 from .Geometry import Geometry
 from .Event import Event
 from .JsonLinesGzipReader import JsonLinesGzipReader
-from ..PhotonStream import PhotonStream
+from .PhotonStream import PhotonStream
 import datetime as dt
 
 
