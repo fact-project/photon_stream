@@ -37,9 +37,10 @@ class Run(object):
         event._time_unix_s = event_dict['UnixTimeUTC'][0]
         event._time_unix_us = event_dict['UnixTimeUTC'][1]
         event.run = self
+        event.amplitude_saturated_pixels = event_dict['SaturatedPixels']
 
         ps = PhotonStream()
-        ps.slice_duration = event_dict['SliceDuration']
+        ps.slice_duration = 0.5e-9
         ps.time_lines = event_dict['PhotonArrivals']
         event.photon_stream = ps
 

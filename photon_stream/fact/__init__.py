@@ -5,4 +5,5 @@ from .PhotonCluster import PhotonStreamCluster
 from .PhotonCluster import PhotonTimeSeriesCluster
 from . import finger_histogram
 from . import pass2
+from . import inspect
 from .JsonLinesGzipReader import JsonLinesGzipReader

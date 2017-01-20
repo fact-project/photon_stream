@@ -15,6 +15,7 @@ class Event(object):
         self._time_unix_s = None
         self._time_unix_us = None
         self.time = None
+        self.amplitude_saturated_pixels = None
 
     def flatten_photon_stream(self, start_time=15e-9, end_time=65e-9):
         xyt = []
