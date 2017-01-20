@@ -1,8 +1,38 @@
 import os
 import stat
+import subprocess
+
+
+job_run_template = {
+    'stdout_path': './stdout.txt',
+    'stderr_path': './stderr.txt',
+    'worker_node_script_path': './worker_node_script_path'
+}
+
+
+def submit_qsub_job(
+    job_run=job_run_template, 
+    queu='fact_medium', 
+    email='sebmuell@phys.ethz.ch',
+    print_only=True):
+
+    cmd = [ 'qsub ',
+            '-q', queu,
+            '-o', job_run['stdout_path'],
+            '-e', job_run['stderr_path'],
+            '-m', 'ae', # send email in case of (e)nd or (a)bort
+            '-M', email,
+            job_run['worker_node_script_path']]
+   
+    if print_only:
+        print(cmd)
+    else:
+        sp.check_output(cmd)
+
 
 def write_worker_script(
     path,
+    java_path,
     fact_tools_jar_path,
     fact_tools_xml_path,
     in_run_path,
@@ -38,7 +68,7 @@ def write_worker_script(
     sh += '\n'
     sh += 'export tmp_dir=/tmp/fact_photon_stream_JOB_ID_$JOB_ID\n'
     sh += 'mkdir -p $tmp_dir\n'
-    sh += 'export PATH=/usr/java/jdk1.8.0_77/bin:$PATH\n'
+    sh += 'export PATH='+java_path+':$PATH\n' #/usr/java/jdk1.8.0_77/bin
     sh += '\n'
     sh += 'CALL="java \\\n'
     sh += '    -XX:MaxHeapSize=1024m \\\n'

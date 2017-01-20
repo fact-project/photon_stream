@@ -1,0 +1,80 @@
+<container>
+  <properties url="classpath:/default/settings.properties" />
+
+  <property name="infile" value="file:src/main/resources/testDataFile.fits.gz" />
+  <property name="drsfile" value="file:src/main/resources/testDrsFile.drs.fits.gz" />
+  <property name="output_basename" value="output" />
+  <property name="aux_dir" value="file:src/main/resources/aux/" />
+
+  <property name="integralGainFile" value="classpath:/default/gain_sorted_20131127.csv" />
+  <property name="pixelDelayFile" value="classpath:/default/delays_lightpulser_20150217.csv" />
+
+  <service id="auxService" class="fact.auxservice.AuxFileService" auxFolder="${aux_dir}" />
+  <service id="calibService" class="fact.calibrationservice.ConstantCalibService" />
+
+  <stream id="fact" class="fact.io.zfits.ZFitsStream"  url="${infile}"/>
+
+  <process id="2" input="fact">
+    <fact.utils.PreviousEventInfo
+      startCellKey="StartCellData"
+      outputKey="prevEvents"
+      limitEvents="${prevEvents_limitEvents}"
+    />
+    <stream.flow.Skip condition="%{data.TriggerType} == 30720" /> <!-- kLPset -->
+    <stream.flow.Skip condition="%{data.TriggerType} == 32768" /> <!-- kTIM -->
+    <stream.flow.Skip condition="%{data.TriggerType} == 256" /> <!-- kLPext -->
+    <stream.flow.Skip condition="%{data.TriggerType} == 512" /> <!-- kLPint -->
+
+    <include url="classpath:/default/data/calibration.xml" />
+    <include url="classpath:/default/data/extraction.xml" />
+
+    <stream.flow.If condition="%{data.timeOverThreshold_numPixel} &lt; 100">
+      <fact.extraction.SinglePulseExtraction
+        dataKey="DataCalibrated"
+        outputKey="PhotonArrivals"
+        maxIterations="500"
+      />
+    </stream.flow.If>
+    <stream.flow.If condition="%{data.timeOverThreshold_numPixel} &gt; 99">
+      <fact.extraction.SinglePulseExtraction
+        dataKey="DataCalibrated"
+        outputKey="PhotonArrivals"
+        maxIterations="0"
+      />
+    </stream.flow.If>
+
+    <fact.features.source.SourcePosition
+      outputKey="sourcePosition"
+      auxService="auxService"
+    />
+
+    <fact.utils.ElementwiseMultiplyDoubleArray
+      inputKey="PhotonArrivalsBaseLine"
+      outputKey="CentiBaseLines"
+      factor="100.0"
+    />
+
+    <fact.utils.CastDoubleArrayToIntArray
+      inputKey="CentiBaseLines"
+      outputKey="CentiBaseLines"
+    />
+
+    <fact.io.JSONWriter 
+      keys="NIGHT,RUNID,EventNum,UnixTimeUTC,TriggerType,AzPointing,ZdPointing,PhotonArrivals,timeOverThresholdSet"
+      url="file:${output_basename}.jsonl.gz" 
+      writeListOfItems="true"
+      pixelSetsAsInt="true"
+      gzip="true"
+      jsonl="true"
+    />
+
+    <fact.io.JSONWriter 
+      keys="NIGHT,RUNID,EventNum,CentiBaseLines"
+      url="file:${output_basename}.bsl.jsonl.gz" 
+      writeListOfItems="true"
+      pixelSetsAsInt="true"
+      gzip="true"
+      jsonl="true"
+    />
+  </process>
+</container>
