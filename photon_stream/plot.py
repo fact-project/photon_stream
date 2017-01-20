@@ -17,7 +17,7 @@ def add_event_2_ax(event, ax, mask=None, color='b'):
     if mask is not None:
         xyt = xyt[mask]
 
-    ax.set_title('FactEvent')
+    ax.set_title('Night '+str(event.run.night)+', Run '+str(event.run.id)+', Event '+str(event.id))
     fovR = event.geometry.fov_radius
     p = Circle((0, 0), fovR, edgecolor='k', facecolor='none', lw=1.)
     ax.add_patch(p)
