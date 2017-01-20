@@ -11,20 +11,14 @@ class Run(object):
         self.night = None
         self.reader = JsonLinesGzipReader(path)
         self.geometry = Geometry()
-        self._event_iterator = 0
-        self._read_first_event_to_learn_about_run()
+        self._read_first_event_to_learn_about_run(path)
 
     def __iter__(self):
         return self
 
     def __next__(self):
-        if self._event_iterator == 0:
-            self._event_iterator += 1
-            return self._first_event
-        else:
-            event_dict = self.reader.__next__()
-            self._event_iterator += 1
-            return self._event_dict2event(event_dict)
+        event_dict = self.reader.__next__()
+        return self._event_dict2event(event_dict)
 
     def _event_dict2event(self, event_dict):
         event = Event()
@@ -48,11 +42,10 @@ class Run(object):
             event._time_unix_s+event._time_unix_us/1e6)
         return event
 
-    def _read_first_event_to_learn_about_run(self):
-        first_event_dict = self.reader.__next__()
-        self.id = first_event_dict['RUNID']
-        self.night = first_event_dict['NIGHT']
-        self._first_event = self._event_dict2event(first_event_dict)
+    def _read_first_event_to_learn_about_run(self, path):
+        preview_event = next(JsonLinesGzipReader(path))
+        self.id = preview_event['RUNID']
+        self.night = preview_event['NIGHT']
 
     def __repr__(self):
         out = 'Run('
