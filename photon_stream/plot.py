@@ -9,14 +9,18 @@ import subprocess
 def add_event_2_ax(event, ax, mask=None, color='b'):
     xyt = event.photon_stream.flatten()
 
-    xyt[:,2] *= 1e9
-    min_time = xyt[:,2].min()
-    max_time = xyt[:,2].max()
+    xyt[:, 2] *= 1e9
+    min_time = xyt[:, 2].min()
+    max_time = xyt[:, 2].max()
 
     if mask is not None:
         xyt = xyt[mask]
 
-    ax.set_title('Night '+str(event.night)+', Run '+str(event.run)+', Event '+str(event.id))
+    ax.set_title(
+        'Night ' + str(event.night) +
+        ', Run ' + str(event.run) +
+        ', Event ' + str(event.id)
+    )
     fovR = event.geometry.fov_radius
     p = Circle((0, 0), fovR, edgecolor='k', facecolor='none', lw=1.)
     ax.add_patch(p)
@@ -28,22 +32,22 @@ def add_event_2_ax(event, ax, mask=None, color='b'):
     ax.set_ylabel('zenith/deg')
     ax.set_zlabel('t/ns')
     ax.scatter(
-        xyt[:,0],
-        xyt[:,1],
-        xyt[:,2],
+        xyt[:, 0],
+        xyt[:, 1],
+        xyt[:, 2],
         lw=0,
         alpha=0.075,
         s=55.,
         c=color)
 
 def save_image_sequence(
-    event,
-    path,
-    steps=27,
-    start_number=0,
-    start_azimuth=0.0,
-    end_azimuth=360.0,
-    mask=None):
+        event,
+        path,
+        steps=27,
+        start_number=0,
+        start_azimuth=0.0,
+        end_azimuth=360.0,
+        mask=None):
     plt.rcParams.update({'font.size': 12})
     plt.rc('text', usetex=True)
     plt.rc('font', family='serif')
@@ -66,7 +70,7 @@ def save_image_sequence(
 
     plt.close()
 
-def save_video(event, path, mask=None ,steps=12, fps=25, threads='auto'):
+def save_video(event, path, mask=None, steps=12, fps=25, threads='auto'):
     with tempfile.TemporaryDirectory() as work_dir:
 
         azimuths = np.linspace(0, 360, 10, endpoint=False)
