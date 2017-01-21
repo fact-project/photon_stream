@@ -1,4 +1,4 @@
-from ..JsonLinesGzipReader import JsonLinesGzipReader
+from photon_stream import JsonLinesGzipReader
 import gzip
 import json
 

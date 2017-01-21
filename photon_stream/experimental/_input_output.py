@@ -1,5 +1,5 @@
 import numpy as np
-from ..PhotonStream import PhotonStream
+from photon_stream import PhotonStream
 
 
 def append_photonstream_to_binary_file(photonstream, file_handle):
