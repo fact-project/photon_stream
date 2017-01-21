@@ -1,4 +1,4 @@
-import datetime as dt
+from datetime import datetime
 import matplotlib.pyplot as plt
 from .PhotonStream import PhotonStream
 from .plot import add_event_2_ax
@@ -9,11 +9,17 @@ class Event(object):
         self.trigger_type = None
         self.photon_stream = None
         self.id = None
-        self.run = None
-        self._time_unix_s = None
-        self._time_unix_us = None
+        self._run = None
         self.time = None
         self.amplitude_saturated_pixels = None
+
+    @property
+    def night(self):
+        return self._run.night
+
+    @property
+    def run(self):
+        return self._run.id
 
     @classmethod
     def from_event_dict_and_run(cls, event_dict, run):
@@ -23,13 +29,12 @@ class Event(object):
         event.zd = event_dict['ZdPointing']
         event.az = event_dict['AzPointing']
         event.id = event_dict['EventNum']
-        event._time_unix_s = event_dict['UnixTimeUTC'][0]
-        event._time_unix_us = event_dict['UnixTimeUTC'][1]
         event.amplitude_saturated_pixels = event_dict['SaturatedPixels']
-        event.time = dt.datetime.utcfromtimestamp(
-            event._time_unix_s + event._time_unix_us / 1e6)
+        event.time = datetime.utcfromtimestamp(
+            event_dict['UnixTimeUTC'][0] + event_dict['UnixTimeUTC'][1] / 1e6
+        )
 
-        event.run = run
+        event._run = run
 
         event.photon_stream = PhotonStream.from_event_dict(event_dict)
         return event
