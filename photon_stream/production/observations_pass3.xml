@@ -69,14 +69,14 @@
             outputKey="CentiBaseLines"
         />       
 
-        <stream.data.RenameKey oldKey="NIGHT" newKey="Night"/>
-        <stream.data.RenameKey oldKey="RUNID" newKey="Run"/>
-        <stream.data.RenameKey oldKey="EventNum" newKey="Event"/>
-        <stream.data.RenameKey oldKey="UnixTimeUTC" newKey="UnixTime_s_us"/>
-        <stream.data.RenameKey oldKey="TriggerType" newKey="Trigger"/>
-        <stream.data.RenameKey oldKey="AzPointing" newKey="Az_deg"/>
-        <stream.data.RenameKey oldKey="ZdPointing" newKey="Zd_deg"/>
-        <stream.data.RenameKey oldKey="PhotonArrivals" newKey="PhotonArrivals_500ps"/>
+        <stream.data.RenameKey from="NIGHT" to="Night"/>
+        <stream.data.RenameKey from="RUNID" to="Run"/>
+        <stream.data.RenameKey from="EventNum" to="Event"/>
+        <stream.data.RenameKey from="UnixTimeUTC" to="UnixTime_s_us"/>
+        <stream.data.RenameKey from="TriggerType" to="Trigger"/>
+        <stream.data.RenameKey from="AzPointing" to="Az_deg"/>
+        <stream.data.RenameKey from="ZdPointing" to="Zd_deg"/>
+        <stream.data.RenameKey from="PhotonArrivals" to="PhotonArrivals_500ps"/>
 
         <fact.io.JSONWriter 
             keys="Night,Run,Event,UnixTime_s_us,Trigger,Az_deg,Zd_deg,PhotonArrivals_500ps,SaturatedPixels"
