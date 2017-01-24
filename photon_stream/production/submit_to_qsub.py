@@ -113,7 +113,7 @@ def submit_to_qsub(
             out_base_name=job['base_name'],
             tmp_dir_base_name=job['worker_tmp_dir_base_name'],)
 
-        cmd = [ 'qsub ',
+        cmd = [ 'qsub',
                 '-q', queue,
                 '-o', job['stdout_path'],
                 '-e', job['stderr_path'],
