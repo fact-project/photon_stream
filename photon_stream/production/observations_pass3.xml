@@ -35,17 +35,17 @@
         <fact.extraction.AboveThreshold 
             dataKey="Data" 
             threshold="1800" 
-            outputKey="SaturatedPixels"
+            outputKey="Saturation"
         />
 
-        <stream.flow.If condition="%{data.SaturatedPixelsCount} &lt; 100">
+        <stream.flow.If condition="%{data.SaturationPixelCount} &lt; 100">
             <fact.extraction.SinglePulseExtraction
                 dataKey="DataCalibrated"
                 outputKey="PhotonArrivals"
                 maxIterations="500"
             />
         </stream.flow.If>
-        <stream.flow.If condition="%{data.SaturatedPixelsCount} &gt; 99">
+        <stream.flow.If condition="%{data.SaturationPixelCount} &gt; 99">
             <fact.extraction.SinglePulseExtraction
                 dataKey="DataCalibrated"
                 outputKey="PhotonArrivals"
@@ -79,7 +79,7 @@
         <stream.data.RenameKey from="PhotonArrivals" to="PhotonArrivals_500ps"/>
 
         <fact.io.JSONWriter 
-            keys="Night,Run,Event,UnixTime_s_us,Trigger,Az_deg,Zd_deg,PhotonArrivals_500ps,SaturatedPixels"
+            keys="Night,Run,Event,UnixTime_s_us,Trigger,Az_deg,Zd_deg,PhotonArrivals_500ps,Saturation"
             url="${out_path_basename}.phs.jsonl.gz" 
             writeListOfItems="true"
             pixelSetsAsInt="true"
