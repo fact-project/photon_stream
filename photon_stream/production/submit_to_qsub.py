@@ -13,15 +13,17 @@ def submit_to_qsub(
     start_nigth=20110101, 
     end_nigth=20501231,
     fact_dir='/fact/', 
-    java_path='/usr/java/jdk1.8.0_77/bin',
-    fact_tools_jar_path='fac_tools.jar',
-    fact_tools_xml_path='observations_pass3.xml',
+    java_path='/home/guest/relleums/java8/jdk1.8.0_111',
+    fact_tools_jar_path='/home/guest/relleums/fact_photon_stream/fact-tools/target/fact-tools-0.18.0.jar',
+    fact_tools_xml_path='/home/guest/relleums/fact_photon_stream/photon_stream/photon_stream/production/observations_pass3.xml',
     tmp_dir_base_name='fact_photon_stream_JOB_ID_',
     queue='fact_medium', 
     email='sebmuell@phys.ethz.ch',
     print_only=True,
     runinfo=None):
     
+    print('Start single pulse conversion ...')
+
     out_dir = os.path.abspath(out_dir)
     fact_dir = os.path.abspath(fact_dir)
 
@@ -77,6 +79,7 @@ def submit_to_qsub(
     jobs = tools.jobs_where_path_exists(jobs=jobs, path='drs_path')
 
     print('Found '+str(len(jobs))+' with accesible drs files.')
+    print('Submitt jobs into qsub ...')
 
     for job in tqdm(jobs): 
         job['std_dir'] = std_dir
@@ -121,3 +124,4 @@ def submit_to_qsub(
             job['qsub_return_code'] = sp.check_output(cmd)
 
         tools.write_json(job['job_path'], job)
+        print('Done.')
