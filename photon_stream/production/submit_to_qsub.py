@@ -123,9 +123,8 @@ def submit_to_qsub(
    
         if print_only:
             print(cmd)
-            job['qsub_return_code'] = 0
         else:
-            job['qsub_return_code'] = sp.check_output(cmd)
+            sp.check_output(cmd)
 
         tools.write_json(job['job_path'], job)
         print('Done.')
