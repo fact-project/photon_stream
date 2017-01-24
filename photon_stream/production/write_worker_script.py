@@ -41,9 +41,9 @@ def write_worker_script(
     sh +=         '\\\"USER\\\": \\\"$USER\\\"}"\n'
     sh += '\n'
 
-    sh += '# Create tmp_dir for this run\n'
-    sh += 'export tmp_dir=/tmp/'+tmp_dir_base_name+'$JOB_ID\n'
-    sh += 'mkdir -p $tmp_dir\n'
+    sh += '# Create TMP_DIR for this run\n'
+    sh += 'TMP_DIR=/tmp/'+tmp_dir_base_name+'$JOB_ID\n'
+    sh += 'mkdir -p $TMP_DIR\n'
     sh += '\n'
 
     sh += '# Use a specific JAVA\n'
@@ -61,17 +61,17 @@ def write_worker_script(
     sh += '    '+fact_tools_xml_path+' \\\n'
     sh += '    -Dinfile=file:'+in_run_path+' \\\n'
     sh += '    -Ddrsfile=file:'+drs_path+' \\\n'
-    sh += '    -DauxFolder=file:'+aux_dir+' \\\n'
-    sh += '    -Doutput=file:$tmp_dir/'+out_base_name+'" \\\n'
+    sh += '    -Daux_dir=file:'+aux_dir+' \\\n'
+    sh += '    -Dout_path_basename=file:$TMP_DIR/'+out_base_name+'" \\\n'
     sh += '\n'
 
     sh += 'echo $CALL\n'
     sh += 'eval $CALL\n'
     sh += '\n'
 
-    sh += 'mkdir -p $out_dir\n'
-    sh += 'cp $tmp_dir/* $out_dir/.\n'
-    sh += 'rm -rf $tmp_dir\n'
+    sh += 'mkdir -p '+out_dir+'\n'
+    sh += 'cp $TMP_DIR/* '+os.path.join(out_dir,'.')+'\n'
+    sh += 'rm -rf $TMP_DIR\n'
     sh += '\n'
 
     sh += 'END_TIME=`date -Is`\n'
