@@ -1,0 +1,7 @@
+matplotlib
+sklearn
+scipy
+tqdm
+docopt
+pyfact
+pandas
