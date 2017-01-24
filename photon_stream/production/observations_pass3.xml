@@ -11,7 +11,7 @@
     <property name="output_basename" value="output" />
 
     <property name="aux_dir" value="file:src/main/resources/aux/" />
-    <service id="auxService" class="fact.auxservice.AuxFileService" auxFolder=":file${aux_dir}" />
+    <service id="auxService" class="fact.auxservice.AuxFileService" auxFolder="file:${aux_dir}" />
 
     <service id="calibService" class="fact.calibrationservice.ConstantCalibService" />
 
