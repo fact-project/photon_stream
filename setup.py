@@ -20,7 +20,8 @@ setup(
         'sklearn',
         'matplotlib',
         'pyfact',
-        'pytables',
+        'pandas',
+        'tqdm'
     ],
     zip_safe=False,
 )
