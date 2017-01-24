@@ -19,9 +19,7 @@ import subprocess as sp
 import numpy as np
 import json
 
-from .submit_qsub_job import submit_qsub_job
 from .runinfo import get_runinfo
-from .tools import mkdirs
 from .tools import jobs_where_path_exists
 from .write_worker_script import write_worker_script
 
@@ -31,7 +29,7 @@ def submit_single_pulse_conversion_to_qsub(
     start_nigth=20110101, 
     end_nigth=20501231,
     fact_dir='/fact/', 
-    java_path='/usr/java/jdk1.8.0_77/bin'
+    java_path='/usr/java/jdk1.8.0_77/bin',
     fact_tools_jar_path='/fac_tools.jar',
     fact_tools_xml_path='/observations_pass3.xml',
     tmp_dir_base_name='fact_photon_stream_JOB_ID_',
@@ -42,9 +40,9 @@ def submit_single_pulse_conversion_to_qsub(
     std_dir = os.path.join(out_dir, 'std')
     job_dir = os.path.join(out_dir, 'job')
 
-    mkdirs(dir=out_dir)
-    mkdirs(dir=std_dir)
-    mkdirs(dir=job_dir)
+    os.makedirs(out_dir, exist_ok=True)
+    os.makedirs(std_dir, exist_ok=True)
+    os.makedirs(job_dir, exist_ok=True)
 
     runinfo = get_runinfo()
 
@@ -58,7 +56,7 @@ def submit_single_pulse_conversion_to_qsub(
     print('Found '+str(len(jobs))+' runs in database.')
     print('Find intersection with runs accessible in "'+raw_dir+'" ...')
 
-    jobs = add_run_path_info(fact_dir=fact_dir, runs=jobs)
+    jobs = add_run_path_info(jobs=jobs, fact_dir=fact_dir)
     jobs = jobs_where_path_exists(jobs, path='raw_path')
 
     print('Found '+str(len(jobs))+' runs both in database and accesible in "'+raw_dir+'".')

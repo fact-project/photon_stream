@@ -19,6 +19,7 @@ setup(
         'scipy',
         'sklearn',
         'matplotlib',
+        'pyfact',
     ],
     zip_safe=False,
 )

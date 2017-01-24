@@ -1,6 +1,6 @@
 import os
 
-def add_runs_path_info(fact_dir='/fact/', jobs):
+def add_runs_path_info(jobs, fact_dir='/fact/'):
     for job in jobs:
         job['yyyy'] = job['NightId'] // 10000
         job['mm'] = (job['NightId'] // 100) % 100
@@ -32,9 +32,3 @@ def jobs_where_path_exists(jobs, path='raw_path'):
         if os.path.exists(job[path]):
             accesible_jobs.append(job)
     return accesible_jobs
-
-
-def mkdirs(dir):
-    try:
-        os.makedirs(dir)
-    except:
