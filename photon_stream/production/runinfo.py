@@ -6,26 +6,22 @@ from . import tools
 drs_key = 2
 observation_key = 1
 
-def download_latest_runinfo(path='runinfo.h5'):
+def download_latest_runinfo():
     factdb = credentials.create_factdb_engine()
     print("Reading fresh RunInfo table, takes about 1min.")
-    runinfo = pd.read_sql_table("RunInfo", factdb)
-    with pd.HDFStore('runinfo.h5') as store:
-        store.put("runinfo", runinfo)
-    return runinfo
+    return pd.read_sql_table("RunInfo", factdb)
 
+def read_runinfo_from_file(path='runinfo.msg'):
+    return pd.read_msgpack(path)
 
-def read_runinfo_from_file(path='runinfo.h5'):
-    with pd.HDFStore(path) as store:
-        return store["runinfo"]
+def write_runinfo_to_file(runinfo, path='runinfo.msg'):
+    runinfo.to_msgpack(path)
 
 def get_runinfo():
-    if os.path.exists('runinfo.h5'):
-        with pd.HDFStore('runinfo.h5') as store:
-            return store["runinfo"]
+    if os.path.exists('runinfo.msg'):
+        return read_runinfo_from_file('runinfo.msg')
     else:
     	return download_latest_runinfo()
-
 
 def observation_runs_in_runinfo_in_night_range(
     runinfo, 
