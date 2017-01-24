@@ -3,8 +3,8 @@ import os, stat
 def write_worker_script(
     path,
     java_path='/usr/java/jdk1.8.0_77/bin',
-    fact_tools_jar_path='/fac_tools.jar',
-    fact_tools_xml_path='/fac_tools.xml',
+    fact_tools_jar_path='/fact_tools.jar',
+    fact_tools_xml_path='/fact_tools.xml',
     in_run_path='fact/raw/YYYY/mm/dd/YYYYmmdd_RRR.fits.fz',
     drs_path='fact/raw/YYYY/mm/dd/YYYYmmdd_RRR.drs.fits.gz',
     aux_dir='fact/aux/YYYY/mm/dd/',

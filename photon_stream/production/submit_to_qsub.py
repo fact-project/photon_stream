@@ -31,11 +31,13 @@ def submit_to_qsub(
         runinfo = get_runinfo()
     
     std_dir = os.path.join(out_dir, 'std')
-    job_dir = os.path.join(out_dir, 'job')
+    jobs_dir = os.path.join(out_dir, 'jobs')
+    scripts_dir = os.path.join(out_dir, 'worker_scripts')
 
     os.makedirs(out_dir, exist_ok=True)
     os.makedirs(std_dir, exist_ok=True)
-    os.makedirs(job_dir, exist_ok=True)
+    os.makedirs(jobs_dir, exist_ok=True)
+    os.makedirs(scripts_dir, exist_ok=True)
 
     print('Find runs in night range '+str(start_nigth)+' to '+str(end_nigth)+' in runinfo database ...')
     
@@ -85,10 +87,10 @@ def submit_to_qsub(
         job['std_dir'] = std_dir
         job['stdout_path'] = os.path.join(std_dir, job['base_name']+'.o')
         job['stderr_path'] = os.path.join(std_dir, job['base_name']+'.e')
-        job['job_dir'] = job_dir
-        job['job_path'] = os.path.join(job_dir, job['base_name']+'_job.json')
+        job['jobs_dir'] = jobs_dir
+        job['job_path'] = os.path.join(jobs_dir, job['base_name']+'_job.json')
         
-        job['worker_script_path'] = os.path.join(job_dir, job['base_name']+'_PhotonStram'+'.sh')
+        job['worker_script_path'] = os.path.join(scripts_dir, job['base_name']+'_PhotonStram'+'.sh')
         job['worker_tmp_dir_base_name'] = tmp_dir_base_name
         job['email'] = email
         job['queue'] = queue
@@ -101,13 +103,15 @@ def submit_to_qsub(
 
         write_worker_script(
             path=job['worker_script_path'],
+            java_path=job['java_path'],
+            fact_tools_jar_path=job['fact_tools_jar_path'],
+            fact_tools_xml_path=job['fact_tools_xml_path'],
             in_run_path=job['raw_path'],
             drs_path=job['drs_path'],
             aux_dir=job['aux_dir'],
             out_dir=job['out_dir'],
             out_base_name=job['base_name'],
-            java_path=job['java_path'],
-        )
+            tmp_dir_base_name=job['worker_tmp_dir_base_name'],)
 
         cmd = [ 'qsub ',
                 '-q', queue,
