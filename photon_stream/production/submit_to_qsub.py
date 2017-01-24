@@ -90,7 +90,7 @@ def submit_to_qsub(
         job['jobs_dir'] = jobs_dir
         job['job_path'] = os.path.join(jobs_dir, job['base_name']+'_job.json')
         
-        job['worker_script_path'] = os.path.join(scripts_dir, job['base_name']+'_PhotonStram'+'.sh')
+        job['worker_script_path'] = 'PhotonStream_'+os.path.join(scripts_dir, job['base_name']+'.sh')
         job['worker_tmp_dir_base_name'] = tmp_dir_base_name
         job['email'] = email
         job['queue'] = queue
