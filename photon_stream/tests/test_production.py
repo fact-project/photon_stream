@@ -40,5 +40,5 @@ def test_production_run_collection():
             print_only=True,
             runinfo=runinfo)
 
-        input('Take a look into '+tmp+' or press any key to continue')
+        # input('Take a look into '+tmp+' or press any key to continue')
 

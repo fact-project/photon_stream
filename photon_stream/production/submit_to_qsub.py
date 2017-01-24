@@ -1,18 +1,3 @@
-"""
-Facttools job submitter for ISDC
-
-Usage:
-  submit.py [options] 
-Options:
-  -h --help          Show this screen.
-  --version          Show version.
-  -i --infiles STR   what files should be analysed. [default: /fact/raw/2016/01/01/20160101_0[01]*.fits.fz]
-  -p --print         just print the commands, instead of submitting
-"""
-
-import sys
-from docopt import docopt
-import glob
 import os
 from tqdm import tqdm
 import subprocess as sp
@@ -130,7 +115,7 @@ def submit_to_qsub(
                 job['worker_script_path']]
    
         if print_only:
-            #print(cmd)
+            print(cmd)
             job['qsub_return_code'] = 0
         else:
             job['qsub_return_code'] = sp.check_output(cmd)

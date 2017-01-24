@@ -20,6 +20,7 @@ setup(
         'sklearn',
         'matplotlib',
         'pyfact',
+        'pytables',
     ],
     zip_safe=False,
 )
