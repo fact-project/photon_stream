@@ -1,4 +1,4 @@
 from . import tools
-from . import main
+from .submit_to_qsub import submit_to_qsub
 from . import runinfo
-from . import write_worker_script
+from .write_worker_script import write_worker_script

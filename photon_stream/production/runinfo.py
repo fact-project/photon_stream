@@ -1,9 +1,12 @@
 import os
 from fact import credentials
 import pandas as pd
+from . import tools
 
+drs_key = 2
+observation_key = 1
 
-def get_fresh_runinfo():
+def download_latest_runinfo(path='runinfo.h5'):
     factdb = credentials.create_factdb_engine()
     print("Reading fresh RunInfo table, takes about 1min.")
     runinfo = pd.read_sql_table("RunInfo", factdb)
@@ -12,12 +15,16 @@ def get_fresh_runinfo():
     return runinfo
 
 
+def read_runinfo_from_file(path='runinfo.h5'):
+    with pd.HDFStore(path) as store:
+        return store["runinfo"]
+
 def get_runinfo():
     if os.path.exists('runinfo.h5'):
         with pd.HDFStore('runinfo.h5') as store:
             return store["runinfo"]
     else:
-    	return get_fresh_runinfo()
+    	return download_latest_runinfo()
 
 
 def observation_runs_in_runinfo_in_night_range(
@@ -26,11 +33,10 @@ def observation_runs_in_runinfo_in_night_range(
     end_nigth=20171231):
     jobs = []
 
-    observation_key = 1
     for index, row in runinfo.iterrows():
-        night_id = runinfo['fNight']
-        run_id = runinfo['fRunID']
-        run_type_key = runinfo['fRunTypeKey']
+        night_id = runinfo['fNight'][index]
+        run_id = runinfo['fRunID'][index]
+        run_type_key = runinfo['fRunTypeKey'][index]
         if night_id >= start_nigth and night_id < end_nigth and run_type_key == observation_key:
             jobs.append({
                 'Night': night_id,
@@ -54,8 +60,36 @@ def add_drs_run_info_to_jobs(runinfo, jobs):
             job['drs_path'] = os.path.join(
                 job['fact_dir'], 
                 'raw', 
-                job['rel_path'], 
+                job['yyyymmnn_dir'], 
                 job['drs_file_name'])
         else:
             job["drs_Run"] = None
+            job['drs_path'] = os.path.join(
+                job['fact_dir'], 
+                'no_corresponding_drs_file_found_in_runinfo_data_base.sorry')
     return jobs
+
+
+def create_fake_fact_dir(path, runinfo):
+
+    for index, row in runinfo.iterrows():
+        night_id = runinfo['fNight'][index]
+        run_id = runinfo['fRunID'][index]
+        run_type_key = runinfo['fRunTypeKey'][index]
+
+        yyyy = '{yyyy:04d}'.format(yyyy=tools.night_id_2_yyyy(night_id))
+        mm = '{mm:02d}'.format(mm=tools.night_id_2_mm(night_id))
+        nn = '{nn:02d}'.format(nn=tools.night_id_2_nn(night_id))
+        os.makedirs(os.path.join(path, 'raw', yyyy, mm, nn), exist_ok=True)
+        
+        if run_type_key == drs_key:
+            rrr = '{rrr:03d}'.format(rrr=run_id)
+            fake_drs_path = os.path.join(path, 'raw', yyyy, mm, nn, yyyy+mm+nn+'_'+rrr+'.drs.fits.gz')
+            with open(fake_drs_path, 'w') as drs_file:
+                drs_file.write('I am a fake FACT drs file.')
+
+        if run_type_key == observation_key:
+            rrr = '{rrr:03d}'.format(rrr=run_id)
+            fake_run_path = os.path.join(path, 'raw', yyyy, mm, nn, yyyy+mm+nn+'_'+rrr+'.fits.fz')
+            with open(fake_run_path, 'w') as raw_file:
+                raw_file.write('I am a fake FACT raw observation file.')

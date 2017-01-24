@@ -1,30 +1,6 @@
 import os
-
-def add_runs_path_info(jobs, fact_dir='/fact/'):
-    for job in jobs:
-        job['yyyy'] = job['NightId'] // 10000
-        job['mm'] = (job['NightId'] // 100) % 100
-        job['dd'] = job['NightId'] % 100
-        job['fact_dir'] = fact_dir
-        job['yyyymmdd_dir'] = '/{y:04d}/{m:02d}/{d:02d}/'.format(
-            y=run_job['yyyy'],
-            m=run_job['mm'],
-            d=run_job['dd'])
-        job['base_name'] = '{bsn:08d}_{rrr:03d}'.format(
-            bsn=job['NightId'],
-            rrr=job['RunId'])
-        job['raw_file_name'] = job['base_name']+'.fits.fz'
-        job['raw_path'] = os.path.join(
-            job['fact_dir'], 
-            'raw', 
-            job['yyyymmdd_dir'], 
-            job['raw_file_name'])
-        job['aux_dir'] = os.path.join(
-            job['fact_dir'], 
-            'aux', 
-            job['yyyymmdd_dir'])
-    return jobs
-
+import numpy as np
+import json
 
 def jobs_where_path_exists(jobs, path='raw_path'):
     accesible_jobs = []
@@ -32,3 +8,34 @@ def jobs_where_path_exists(jobs, path='raw_path'):
         if os.path.exists(job[path]):
             accesible_jobs.append(job)
     return accesible_jobs
+
+
+def night_id_2_yyyy(night):
+    return night // 10000
+
+def night_id_2_mm(night):
+    return (night // 100) % 100
+
+def night_id_2_nn(night):
+    return night % 100
+
+def write_json(path, dic):
+    with open(path, 'w') as job_out:
+        job_out.write(json.dumps(un_numpyify_dictionary(dic), indent=4))
+
+def un_numpyify_dictionary(dic):
+    ret = {}
+    for k, v in list(dic.items()):
+        if isinstance(v, dict):
+            ret[k] = un_numpyify_dictionary(v)
+        elif isinstance(v, np.ndarray):
+            if v.dtype == np.float32:
+                v = v.astype(np.float64)
+            ret[k] = v.tolist()
+        elif isinstance(v, np.floating):
+            ret[k] = float(v)
+        elif isinstance(v, np.integer):
+            ret[k] = int(v)
+        else:
+            ret[k] = v
+    return ret

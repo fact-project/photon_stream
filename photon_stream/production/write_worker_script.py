@@ -1,4 +1,4 @@
-import os
+import os, stat
 
 def write_worker_script(
     path,
@@ -34,11 +34,11 @@ def write_worker_script(
 
     sh += 'START_TIME=`date -Is`\n'
     sh += 'echo "{'
-    sh +=         '\"JOB_ID\": \"$JOB_ID\", '
-    sh +=         '\"JOB_NAME\": \"$JOB_NAME\", '
-    sh +=         '\"START_TIME\": \"$START_TIME\", '
-    sh +=         '\"HOSTNAME\": \"$HOSTNAME\", '
-    sh +=         '\"USER\": \"$USER\"}"\n'
+    sh +=         '\\\"JOB_ID\\\": \\\"$JOB_ID\\\", '
+    sh +=         '\\\"JOB_NAME\\\": \\\"$JOB_NAME\\\", '
+    sh +=         '\\\"START_TIME\\\": \\\"$START_TIME\\\", '
+    sh +=         '\\\"HOSTNAME\\\": \\\"$HOSTNAME\\\", '
+    sh +=         '\\\"USER\\\": \\\"$USER\\\"}"\n'
     sh += '\n'
 
     sh += '# Create tmp_dir for this run\n'
@@ -76,11 +76,16 @@ def write_worker_script(
 
     sh += 'END_TIME=`date -Is`\n'
     sh += 'echo "{'
-    sh +=         '\"JOB_ID\": \"$JOB_ID\", '
-    sh +=         '\"JOB_NAME\": \"$JOB_NAME\", '
-    sh +=         '\"START_TIME\": \"$START_TIME\", '
-    sh +=         '\"END_TIME\": \"$END_TIME\", '
-    sh +=         '\"JAVA\": \"$'+java_path+'\"}"\n'
+    sh +=         '\\\"JOB_ID\\\": \\\"$JOB_ID\\\", '
+    sh +=         '\\\"JOB_NAME\\\": \\\"$JOB_NAME\\\", '
+    sh +=         '\\\"START_TIME\\\": \\\"$START_TIME\\\", '
+    sh +=         '\\\"END_TIME\\\": \\\"$END_TIME\\\", '
+    sh +=         '\\\"FACT_TOOLS_JAR\\\": \\\"'+fact_tools_jar_path+'\\\", '
+    sh +=         '\\\"FACT_TOOLS_XML\\\": \\\"'+fact_tools_xml_path+'\\\", '
+    sh +=         '\\\"OBSERVATION\\\": \\\"'+in_run_path+'\\\", '
+    sh +=         '\\\"DRS\\\": \\\"'+drs_path+'\\\", '
+    sh +=         '\\\"AUX\\\": \\\"'+aux_dir+'\\\", '
+    sh +=         '\\\"JAVA\\\": \\\"'+java_path+'\\\"}"\n'
     
     with open(path, 'w') as fout:
         fout.write(sh)

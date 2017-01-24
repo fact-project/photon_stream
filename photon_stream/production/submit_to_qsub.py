@@ -16,26 +16,32 @@ import glob
 import os
 from tqdm import tqdm
 import subprocess as sp
-import numpy as np
-import json
 
 from .runinfo import get_runinfo
-from .tools import jobs_where_path_exists
+from . import tools
 from .write_worker_script import write_worker_script
+from .runinfo import observation_runs_in_runinfo_in_night_range
+from .runinfo import add_drs_run_info_to_jobs
 
-
-def submit_single_pulse_conversion_to_qsub(
+def submit_to_qsub(
     out_dir, 
     start_nigth=20110101, 
     end_nigth=20501231,
     fact_dir='/fact/', 
     java_path='/usr/java/jdk1.8.0_77/bin',
-    fact_tools_jar_path='/fac_tools.jar',
-    fact_tools_xml_path='/observations_pass3.xml',
+    fact_tools_jar_path='fac_tools.jar',
+    fact_tools_xml_path='observations_pass3.xml',
     tmp_dir_base_name='fact_photon_stream_JOB_ID_',
     queue='fact_medium', 
     email='sebmuell@phys.ethz.ch',
-    print_only=True):
+    print_only=True,
+    runinfo=None):
+    
+    out_dir = os.path.abspath(out_dir)
+    fact_dir = os.path.abspath(fact_dir)
+
+    if runinfo is None:
+        runinfo = get_runinfo()
     
     std_dir = os.path.join(out_dir, 'std')
     job_dir = os.path.join(out_dir, 'job')
@@ -43,8 +49,6 @@ def submit_single_pulse_conversion_to_qsub(
     os.makedirs(out_dir, exist_ok=True)
     os.makedirs(std_dir, exist_ok=True)
     os.makedirs(job_dir, exist_ok=True)
-
-    runinfo = get_runinfo()
 
     print('Find runs in night range '+str(start_nigth)+' to '+str(end_nigth)+' in runinfo database ...')
     
@@ -54,16 +58,38 @@ def submit_single_pulse_conversion_to_qsub(
         end_nigth=end_nigth)
 
     print('Found '+str(len(jobs))+' runs in database.')
-    print('Find intersection with runs accessible in "'+raw_dir+'" ...')
+    print('Find intersection with runs accessible in "'+fact_dir+'" ...')
 
-    jobs = add_run_path_info(jobs=jobs, fact_dir=fact_dir)
-    jobs = jobs_where_path_exists(jobs, path='raw_path')
+    for job in jobs:
+        job['yyyy'] = tools.night_id_2_yyyy(job['Night'])
+        job['mm'] = tools.night_id_2_mm(job['Night'])
+        job['nn'] = tools.night_id_2_nn(job['Night'])
+        job['fact_dir'] = fact_dir
+        job['yyyymmnn_dir'] = '{y:04d}/{m:02d}/{n:02d}/'.format(
+            y=job['yyyy'],
+            m=job['mm'],
+            n=job['nn'])
+        job['base_name'] = '{bsn:08d}_{rrr:03d}'.format(
+            bsn=job['Night'],
+            rrr=job['Run'])
+        job['raw_file_name'] = job['base_name']+'.fits.fz'
+        job['raw_path'] = os.path.join(
+            job['fact_dir'], 
+            'raw', 
+            job['yyyymmnn_dir'], 
+            job['raw_file_name'])
+        job['aux_dir'] = os.path.join(
+            job['fact_dir'], 
+            'aux', 
+            job['yyyymmnn_dir'])
 
-    print('Found '+str(len(jobs))+' runs both in database and accesible in "'+raw_dir+'".')
+    jobs = tools.jobs_where_path_exists(jobs, path='raw_path')
+
+    print('Found '+str(len(jobs))+' runs both in database and accesible in "'+fact_dir+'".')
     print('Find matching drs calibration runs ...')
 
     jobs = add_drs_run_info_to_jobs(runinfo=runinfo, jobs=jobs)
-    jobs = runs_accesible(jobs=jobs, key='drs_path')
+    jobs = tools.jobs_where_path_exists(jobs=jobs, path='drs_path')
 
     print('Found '+str(len(jobs))+' with accesible drs files.')
 
@@ -80,10 +106,10 @@ def submit_single_pulse_conversion_to_qsub(
         job['queue'] = queue
 
         job['java_path'] = java_path
-        job['fact_tools_jar_path'] = fact_tools_jar_path,
-        job['fact_tools_xml_path'] = fact_tools_xml_path,
+        job['fact_tools_jar_path'] = fact_tools_jar_path
+        job['fact_tools_xml_path'] = fact_tools_xml_path
 
-        job['out_dir'] = os.path.join(out_dir, job['yyyymmdd_dir'])
+        job['out_dir'] = os.path.join(out_dir, job['yyyymmnn_dir'])
 
         write_worker_script(
             path=job['worker_script_path'],
@@ -96,7 +122,7 @@ def submit_single_pulse_conversion_to_qsub(
         )
 
         cmd = [ 'qsub ',
-                '-q', queu,
+                '-q', queue,
                 '-o', job['stdout_path'],
                 '-e', job['stderr_path'],
                 '-m', 'ae', # send email in case of (e)nd or (a)bort
@@ -104,10 +130,9 @@ def submit_single_pulse_conversion_to_qsub(
                 job['worker_script_path']]
    
         if print_only:
-            print(cmd)
+            #print(cmd)
             job['qsub_return_code'] = 0
         else:
             job['qsub_return_code'] = sp.check_output(cmd)
 
-        with open(job['job_path'], 'w') as job_out:
-            job_out.write(json.dumps(job, indent=4))
+        tools.write_json(job['job_path'], job)
