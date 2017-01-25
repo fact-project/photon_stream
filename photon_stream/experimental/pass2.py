@@ -1,4 +1,4 @@
-from photon_stream import JsonLinesGzipReader
+from .. import lowlevel
 import gzip
 import json
 
@@ -69,7 +69,7 @@ def finalize_jsonl2jsonl(
 
     output      path to the new and smaller output jsonl.gz file
     """
-    fin = JsonLinesGzipReader(inpath)
+    fin = lowlevel.JsonLinesGzipReader(inpath)
     with gzip.open(outpath, 'wt') as fout:
         for evt_in in fin:
 
