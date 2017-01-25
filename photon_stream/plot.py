@@ -5,6 +5,7 @@ from matplotlib.patches import Circle
 import os
 import tempfile
 import subprocess
+import fact
 
 def add_event_2_ax(event, ax, mask=None, color='b'):
     xyt = event.photon_stream.flatten()
@@ -21,7 +22,7 @@ def add_event_2_ax(event, ax, mask=None, color='b'):
         ', Run ' + str(event.run) +
         ', Event ' + str(event.id)
     )
-    fovR = event.geometry.fov_radius
+    fovR = fact.pixels.FOV_RADIUS
     p = Circle((0, 0), fovR, edgecolor='k', facecolor='none', lw=1.)
     ax.add_patch(p)
     art3d.pathpatch_2d_to_3d(p, z=min_time, zdir="z")
@@ -107,6 +108,6 @@ def save_video(event, path, mask=None, steps=12, fps=25, threads='auto'):
             '-crf', '23',  # high quality 0 (best) to 53 (worst)
             '-crf_max', '25',  # worst quality allowed
             '-threads', threads,
-            os.path.splitext(path)[0] + '.mp4'
+            path
         ]
         subprocess.call(avconv_command)
