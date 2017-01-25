@@ -8,7 +8,7 @@ from . import tools
 def status(photon_stream_dir, known_runs_database='known_runs.msg'):
     info_path = os.path.join(photon_stream_dir, known_runs_database)
     try:
-        info = runinfo.read_runinfo_from_file(info_path):
+        info = runinfo.read_runinfo_from_file(info_path)
     except:
         info = runinfo.download_latest_runinfo()
     number_of_runs = len(info['fRunID'])
