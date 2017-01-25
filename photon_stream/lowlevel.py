@@ -180,16 +180,18 @@ class Run(object):
         )
 
     def inspect(self):
-        return pd.DataFrame([{
-            'analog_amplitude_saturations': len(event.amplitude_saturated_pixels),
-            'trigger_types': event.trigger_type,
-            'total_photon_counts': event.photon_stream.photon_count.sum(),
-            'times': event.time,
-            'zenith_distances': event.zd,
-            'azimuths': event.az,
-            'ids': event.id,
+        inspection = pd.DataFrame([{
+            'analog_amplitude_saturation': len(event.amplitude_saturated_pixels),
+            'trigger_type': event.trigger_type,
+            'total_photon_count': event.photon_stream.photon_count.sum(),
+            'time': event.time,
+            'zenith_distance': event.zd,
+            'azimuth': event.az,
+            'id': event.id,
             }
             for event in self])
+        inspection.set_index('id', inplace=True)
+        return inspection
 
 
     def __repr__(self):
