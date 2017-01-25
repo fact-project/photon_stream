@@ -19,7 +19,7 @@ setup(
         'scipy',
         'sklearn',
         'matplotlib',
-        'pyfact',
+        'pyfact==0.8.4',
         'pandas',
         'tqdm'
     ],
