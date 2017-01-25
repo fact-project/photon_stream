@@ -1,43 +1,51 @@
 <container>
+    <properties url="classpath:/default/settings.properties" />
 
-  <properties url="classpath:/default/settings.properties" />
+    <property name="infile" value="file:src/main/resources/testDataFile.fits.gz" />
+    <property name="drsfile" value="file:src/main/resources/testDrsFile.drs.fits.gz" />
 
-  <property name="infile" value="file:src/main/resources/testDataFile.fits.gz" />
-  <property name="drsfile" value="file:src/main/resources/testDrsFile.drs.fits.gz" />
+    <property name="integralGainFile" value="classpath:/default/gain_sorted_20131127.csv" />
+    <property name="pixelDelayFile" value="classpath:/default/delays_lightpulser_20150217.csv" />
 
-  <property name="integralGainFile" value="classpath:/default/gain_sorted_20131127.csv" />
-  <property name="pixelDelayFile" value="classpath:/default/delays_lightpulser_20150217.csv" />
+    <property name="out_path_basename" value="output" />
 
-  <property name="output_basename" value="output" />
+    <property name="aux_dir" value="file:src/main/resources/aux/" />
+    <service id="auxService" class="fact.auxservice.AuxFileService" auxFolder="${aux_dir}" />
 
-  <property name="aux_dir" value="file:src/main/resources/aux/" />
-  <service id="auxService" class="fact.auxservice.AuxFileService" auxFolder="${aux_dir}" />
+    <service id="calibService" class="fact.calibrationservice.ConstantCalibService" />
 
-  <service id="calibService" class="fact.calibrationservice.ConstantCalibService" />
+    <stream id="fact" class="fact.io.zfits.ZFitsStream" url="${infile}"/>
 
-  <stream id="fact" class="fact.io.zfits.ZFitsStream"  url="${infile}"/>
+    <process id="2" input="fact">
 
-  <process id="2" input="fact">
         <fact.utils.PreviousEventInfo
             startCellKey="StartCellData"
             outputKey="prevEvents"
             limitEvents="${prevEvents_limitEvents}"
         />
-        <stream.flow.Skip condition="%{data.TriggerType} != 0 AND %{data.TriggerType} != 2 AND %{data.TriggerType} != 4 AND %{data.TriggerType} != 1024" /> <!-- 0=defect event building, 2=???, 4=physics, 1024= -->
+
+        <stream.flow.Skip 
+            condition="%{data.TriggerType} != 0 AND %{data.TriggerType} != 2 AND %{data.TriggerType} != 4 AND %{data.TriggerType} != 1024"
+        /> 
+        <!-- 0=defect event building, 2=???, 4=physics, 1024= -->
 
         <include url="classpath:/default/data/calibration.xml" />
         <include url="classpath:/default/data/extraction.xml" />
 
-        <fact.extraction.AboveThreshold dataKey="Data" threshold="1800" outputKey="SaturatedPixels"/>
+        <fact.extraction.AboveThreshold 
+            dataKey="Data" 
+            threshold="1800" 
+            outputKey="Saturation"
+        />
 
-        <stream.flow.If condition="%{data.SaturatedPixelsCount} &lt; 100">
+        <stream.flow.If condition="%{data.SaturationPixelCount} &lt; 100">
             <fact.extraction.SinglePulseExtraction
                 dataKey="DataCalibrated"
                 outputKey="PhotonArrivals"
                 maxIterations="500"
             />
         </stream.flow.If>
-        <stream.flow.If condition="%{data.SaturatedPixelsCount} &gt; 99">
+        <stream.flow.If condition="%{data.SaturationPixelCount} &gt; 99">
             <fact.extraction.SinglePulseExtraction
                 dataKey="DataCalibrated"
                 outputKey="PhotonArrivals"
@@ -61,20 +69,31 @@
             outputKey="CentiBaseLines"
         />       
 
-        <fact.io.JSONWriter keys="NIGHT,RUNID,EventNum,UnixTimeUTC,TriggerType,AzPointing,ZdPointing,PhotonArrivals,SaturatedPixels"
-                      url="file:${output_basename}.phs.jsonl.gz" 
-                      writeListOfItems="true"
-                      pixelSetsAsInt="true"
-                      gzip="true"
-                      jsonl="true"
+        <stream.data.RenameKey from="NIGHT" to="Night"/>
+        <stream.data.RenameKey from="RUNID" to="Run"/>
+        <stream.data.RenameKey from="EventNum" to="Event"/>
+        <stream.data.RenameKey from="UnixTimeUTC" to="UnixTime_s_us"/>
+        <stream.data.RenameKey from="TriggerType" to="Trigger"/>
+        <stream.data.RenameKey from="AzPointing" to="Az_deg"/>
+        <stream.data.RenameKey from="ZdPointing" to="Zd_deg"/>
+        <stream.data.RenameKey from="PhotonArrivals" to="PhotonArrivals_500ps"/>
+
+        <fact.io.JSONWriter 
+            keys="Night,Run,Event,UnixTime_s_us,Trigger,Az_deg,Zd_deg,PhotonArrivals_500ps,Saturation"
+            url="${out_path_basename}.phs.jsonl.gz" 
+            writeListOfItems="true"
+            pixelSetsAsInt="true"
+            gzip="true"
+            jsonl="true"
          />
 
-        <fact.io.JSONWriter keys="NIGHT,RUNID,EventNum,CentiBaseLines"
-                      url="file:${output_basename}.bsl.jsonl.gz" 
-                      writeListOfItems="true"
-                      pixelSetsAsInt="true"
-                      gzip="true"
-                      jsonl="true"
-         />
-  </process>
+        <fact.io.JSONWriter 
+            keys="Night,Run,Event,CentiBaseLines"
+            url="${out_path_basename}.bsl.jsonl.gz" 
+            writeListOfItems="true"
+            pixelSetsAsInt="true"
+            gzip="true"
+            jsonl="true"
+        />
+    </process>
 </container>

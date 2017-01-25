@@ -19,6 +19,9 @@ setup(
         'scipy',
         'sklearn',
         'matplotlib',
+        'pyfact',
+        'pandas',
+        'tqdm'
     ],
     zip_safe=False,
 )

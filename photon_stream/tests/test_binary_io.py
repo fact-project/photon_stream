@@ -39,7 +39,6 @@ def test_binary_io():
 
             assert phst0.slice_duration == phst1.slice_duration
             assert len(phst0.time_lines) == len(phst1.time_lines)
-            print(len(phst1.time_lines))
 
 
             for i in range(len(phst0.time_lines)):
