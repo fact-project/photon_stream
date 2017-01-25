@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import json
+import subprocess
 
 def jobs_where_path_exists(jobs, path='raw_path'):
     accesible_jobs = []
@@ -39,3 +40,9 @@ def un_numpyify_dictionary(dic):
         else:
             ret[k] = v
     return ret
+
+def number_of_events_in_run(run_path):
+    ps = subprocess.Popen(['zcat', run_path], stdout=subprocess.PIPE)
+    wc_out = subprocess.check_output(('wc', '-l'), stdin=ps.stdout)
+    ps.wait()
+    return int(wc_out)
