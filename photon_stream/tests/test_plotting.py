@@ -20,6 +20,7 @@ def test_event_can_plot_itself():
     event.plot()
 
 @pytest.mark.slow
+@pytest.mark.nottravis
 def test_event_can_be_converted_into_a_video():
 
     run_path = pkg_resources.resource_filename(
