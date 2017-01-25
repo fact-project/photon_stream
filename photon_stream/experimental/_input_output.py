@@ -1,5 +1,5 @@
 import numpy as np
-from photon_stream import PhotonStream
+from .. import lowlevel
 
 
 def append_photonstream_to_binary_file(photonstream, file_handle):
@@ -43,7 +43,7 @@ def append_photonstream_to_binary_file(photonstream, file_handle):
 
 
 def read_photonstream_from_binary_file(file_handle):
-    ps = PhotonStream()
+    ps = lowlevel.PhotonStream()
 
     # READ NUMBER OF TIMELINES
     number_of_time_lines = np.fromfile(file_handle, dtype=np.uint64, count=1)[0]
