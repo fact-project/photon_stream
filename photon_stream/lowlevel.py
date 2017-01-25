@@ -237,11 +237,12 @@ class Event(object):
         event.photon_stream = PhotonStream.from_event_dict(event_dict)
         return event
 
-    def plot(self, mask=None):
-        fig = plt.figure()
-        ax = fig.gca(projection='3d')
+    def plot(self, ax=None, mask=None):
+        if ax is None:
+            ax = plt.gca(projection='3d')
+
         add_event_2_ax(self, ax, mask=mask)
-        plt.show()
+        plt.tight_layout()
 
     def __repr__(self):
         out = 'FactEvent('
