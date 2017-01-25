@@ -7,13 +7,17 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from sklearn.cluster import DBSCAN
+
 
 from .plot import add_event_2_ax
-from photon_stream import Geometry
-
-geo = Geometry()
+import fact
 
 __all__ = ['JsonLinesGzipReader', 'PhotonStream', 'Run', 'Event']
+
+pixels = fact.pixels.get_pixel_dataframe()
+pixels.sort_values('CHID', inplace=True)
+
 
 class PhotonStream(object):
     def __init__(self, time_lines=None, slice_duration=0.):
@@ -22,6 +26,8 @@ class PhotonStream(object):
             self.time_lines = []
         else:
             self.time_lines = time_lines
+
+
 
     @classmethod
     def from_event_dict(cls, event_dict):
@@ -57,14 +63,45 @@ class PhotonStream(object):
         for px, pixel_photons in enumerate(self.time_lines):
             for photon_slice in pixel_photons:
                     xyt.append([
-                        geo.pixel_azimuth[px],
-                        geo.pixel_zenith[px],
+                        pixels.azimuth.iloc[px],
+                        pixels.zenith.iloc[px],
                         photon_slice * self.slice_duration
                         ])
         xyt = np.array(xyt)
         past_start = xyt[:, 2] >= start_time
         before_end = xyt[:, 2] <= end_time
         return xyt[past_start*before_end]
+
+    @property
+    def labels(self):
+        if not hasattr(self, '_labels'):
+            self._cluster()
+        return self._labels
+
+    @property
+    def number_of_clusters(self):
+        if not hasattr(self, '_number_of_clusters'):
+            self._cluster()
+        return self._number_of_clusters
+
+    def _cluster(self, eps=0.1, min_samples=20, deg_over_s=0.35e9):
+        xyt = self.flatten()
+
+        if xyt.shape[0] == 0:
+            self._labels = np.array([])
+            self._number_of_clusters = 0
+            return
+
+        xyt[:, 0:2] /= (fact.pixels.FOV_RADIUS * 2.0)
+        xyt[:, 2] /= (fact.pixels.FOV_RADIUS**2.0) / deg_over_s
+
+        dbscan = DBSCAN(eps=eps, min_samples=min_samples).fit(xyt)
+        self._labels = dbscan.labels_
+
+        # Number of clusters in labels, ignoring noise if present.
+        self._number_of_clusters = (
+            len(set(self.labels)) - (1 if -1 in self.labels else 0)
+        )
 
     def truncated_time_lines(self, start_time, end_time):
         ''' return new PhotonStream with truncated time_lines
