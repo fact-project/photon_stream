@@ -8,7 +8,7 @@ def test_binary_io():
 
     run_path = pkg_resources.resource_filename(
         'photon_stream', 
-        'tests/resources/20151001_011_pass3beta_100_events.jsonl.gz')
+        'tests/resources/20150307_016_100events_pass3.phs.jsonl.gz')
 
     run = ps.Run(run_path)
 
