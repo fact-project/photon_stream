@@ -16,13 +16,14 @@ def status(photon_stream_dir, known_runs_database='known_runs.msg'):
         info = runinfo.download_latest_runinfo()
     number_of_runs = len(info['fRunID'])
 
-    info['photon_stream_exists'] = pd.Series(
-        np.zeros(number_of_runs, dtype=np.bool), 
-        index=info.index)
-
-    info['photon_stream_NumTrigger'] = pd.Series(
-        np.zeros(number_of_runs, dtype=np.int), 
-        index=info.index)
+    if 'photon_stream_exists' not in info:
+        info['photon_stream_exists'] = pd.Series(
+            np.zeros(number_of_runs, dtype=np.bool), 
+            index=info.index)
+    if 'photon_stream_NumTrigger' not in info:
+        info['photon_stream_NumTrigger'] = pd.Series(
+            np.zeros(number_of_runs, dtype=np.int), 
+            index=info.index)
 
     for index, row in tqdm(info.iterrows()):
         night = info['fNight'][index]
