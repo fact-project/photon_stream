@@ -3,6 +3,6 @@ sklearn
 scipy
 tqdm
 docopt
-pyfact
+pyfact==0.8.4
 pandas
 tables

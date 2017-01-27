@@ -1,24 +1,28 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 import mpl_toolkits.mplot3d.art3d as art3d
 from matplotlib.patches import Circle
 import os
 import tempfile
 import subprocess
+import fact
 
 def add_event_2_ax(event, ax, mask=None, color='b'):
-    xyt = event.flatten_photon_stream()
+    xyt = event.photon_stream.flatten()
 
-    xyt[:,2] *= 1e9
-    min_time = xyt[:,2].min()
-    max_time = xyt[:,2].max()
+    xyt[:, 2] *= 1e9
+    min_time = xyt[:, 2].min()
+    max_time = xyt[:, 2].max()
 
     if mask is not None:
         xyt = xyt[mask]
 
-    ax.set_title('Night '+str(event.run.night)+', Run '+str(event.run.id)+', Event '+str(event.id))
-    fovR = event.geometry.fov_radius
+    ax.set_title(
+        'Night ' + str(event.night) +
+        ', Run ' + str(event.run) +
+        ', Event ' + str(event.id)
+    )
+    fovR = fact.pixels.FOV_RADIUS
     p = Circle((0, 0), fovR, edgecolor='k', facecolor='none', lw=1.)
     ax.add_patch(p)
     art3d.pathpatch_2d_to_3d(p, z=min_time, zdir="z")
@@ -29,22 +33,22 @@ def add_event_2_ax(event, ax, mask=None, color='b'):
     ax.set_ylabel('zenith/deg')
     ax.set_zlabel('t/ns')
     ax.scatter(
-        xyt[:,0],
-        xyt[:,1],
-        xyt[:,2],
+        xyt[:, 0],
+        xyt[:, 1],
+        xyt[:, 2],
         lw=0,
         alpha=0.075,
         s=55.,
         c=color)
 
 def save_image_sequence(
-    event, 
-    path,
-    steps=27, 
-    start_number=0, 
-    start_azimuth=0.0, 
-    end_azimuth=360.0,
-    mask=None):
+        event,
+        path,
+        steps=27,
+        start_number=0,
+        start_azimuth=0.0,
+        end_azimuth=360.0,
+        mask=None):
     plt.rcParams.update({'font.size': 12})
     plt.rc('text', usetex=True)
     plt.rc('font', family='serif')
@@ -60,16 +64,16 @@ def save_image_sequence(
         plt.subplots_adjust(left=0.01, right=0.99, top=0.99, bottom=0.01)
         plt.savefig(
             os.path.join(
-                path, 
-                '3D_'+str(step).zfill(6) + '.png'), 
+                path,
+                '3D_'+str(step).zfill(6) + '.png'),
             dpi=180)
         step += 1
 
     plt.close()
 
-def save_video(event, path, mask=None ,steps=12, fps=25, threads='auto'):
+def save_video(event, path, mask=None, steps=12, fps=25, threads='auto'):
     with tempfile.TemporaryDirectory() as work_dir:
-        
+
         azimuths = np.linspace(0, 360, 10, endpoint=False)
         for i, az in enumerate(azimuths):
 
@@ -81,7 +85,7 @@ def save_video(event, path, mask=None ,steps=12, fps=25, threads='auto'):
                 end_azimuth=az+18,
                 start_number=(i*steps*2),
                 mask=mask)
-            
+
             save_image_sequence(
                 event=event,
                 path=work_dir,
@@ -104,6 +108,6 @@ def save_video(event, path, mask=None ,steps=12, fps=25, threads='auto'):
             '-crf', '23',  # high quality 0 (best) to 53 (worst)
             '-crf_max', '25',  # worst quality allowed
             '-threads', threads,
-            os.path.splitext(path)[0] + '.mp4'
+            path
         ]
         subprocess.call(avconv_command)
