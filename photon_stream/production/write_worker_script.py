@@ -80,6 +80,8 @@ def write_worker_script(
     sh +=         '\\\"JOB_NAME\\\": \\\"$JOB_NAME\\\", '
     sh +=         '\\\"START_TIME\\\": \\\"$START_TIME\\\", '
     sh +=         '\\\"END_TIME\\\": \\\"$END_TIME\\\", '
+    sh +=         '\\\"HOSTNAME\\\": \\\"$HOSTNAME\\\", '
+    sh +=         '\\\"USER\\\": \\\"$USER\\\", '
     sh +=         '\\\"FACT_TOOLS_JAR\\\": \\\"'+fact_tools_jar_path+'\\\", '
     sh +=         '\\\"FACT_TOOLS_XML\\\": \\\"'+fact_tools_xml_path+'\\\", '
     sh +=         '\\\"OBSERVATION\\\": \\\"'+in_run_path+'\\\", '
