@@ -25,9 +25,21 @@
         />
 
         <stream.flow.Skip 
-            condition="%{data.TriggerType} != 0 AND %{data.TriggerType} != 2 AND %{data.TriggerType} != 4 AND %{data.TriggerType} != 1024"
+            condition="%{data.TriggerType}!=0 AND %{data.TriggerType}!=1 AND %{data.TriggerType}!=2 AND %{data.TriggerType}!=4 AND %{data.TriggerType}!=1024"
         /> 
-        <!-- 0=defect event building, 2=???, 4=physics, 1024=??? -->
+        <!--    FACT trigger types:
+                Design and commissioning of the trigger
+                electronics for a novel Geiger-mode avalanche
+                photodiode based camera for Imaging
+                Atmospheric Cherenkov Telescopes 
+
+                Dissertation Patrick Vogler, page 93
+
+                1: external 1 GPS (like pedestal)
+                2: external 2 GPS (like pedestal)
+                1024: pedestal
+                4: physics (self triggered)
+        -->
 
         <include url="classpath:/default/data/calibration.xml" />
         <include url="classpath:/default/data/extraction.xml" />
