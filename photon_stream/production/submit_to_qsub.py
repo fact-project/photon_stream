@@ -16,7 +16,7 @@ def submit_to_qsub(
     fact_dir='/fact/', 
     java_path='/home/guest/relleums/java8/jdk1.8.0_111',
     fact_tools_jar_path='/home/guest/relleums/fact_photon_stream/fact-tools/target/fact-tools-0.18.0.jar',
-    fact_tools_xml_path='/home/guest/relleums/fact_photon_stream/photon_stream/photon_stream/production/observations_pass3.xml',
+    fact_tools_xml_path='/home/guest/relleums/fact_photon_stream/photon_stream/photon_stream/production/observations_pass4.xml',
     tmp_dir_base_name='fact_photon_stream_JOB_ID_',
     queue='fact_medium', 
     email='sebmuell@phys.ethz.ch',
