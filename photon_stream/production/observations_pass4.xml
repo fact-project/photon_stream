@@ -46,7 +46,7 @@
 
         <fact.extraction.AboveThreshold 
             dataKey="Data" 
-            threshold="1800" 
+            threshold="2040" 
             outputKey="Saturation"
         />
 
