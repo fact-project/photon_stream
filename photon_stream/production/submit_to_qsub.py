@@ -23,7 +23,7 @@ def submit_to_qsub(
     use_dummy_qsub=False,
     runinfo=None):
     
-    print('Start single pulse conversion ...')
+    print('Start photon stream conversion ...')
 
     out_dir = os.path.abspath(out_dir)
     fact_dir = os.path.abspath(fact_dir)
@@ -48,7 +48,7 @@ def submit_to_qsub(
         end_nigth=end_nigth)
 
     print('Found '+str(len(jobs))+' runs in database.')
-    print('Find intersection with runs accessible in "'+fact_dir+'" ...')
+    print('Find overlap with runs accessible in "'+fact_dir+'" ...')
 
     for job in jobs:
         job['yyyy'] = tools.night_id_2_yyyy(job['Night'])
