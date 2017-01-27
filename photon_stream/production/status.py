@@ -29,7 +29,7 @@ def status(photon_stream_dir, known_runs_database='known_runs.msg'):
         run = info['fRunID'][index]
 
         if info['fRunTypeKey'][index] == runinfo.observation_key:
-            if info['photon_stream_NumTrigger'][index]==0 and not info['photon_stream_exists'][index]:
+            if info['photon_stream_NumTrigger'][index]==0:
                 file_name = '{yyyymmnn:08d}_{rrr:03d}.phs.jsonl.gz'.format(
                     yyyymmnn=night,
                     rrr=run)
