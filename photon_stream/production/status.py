@@ -55,7 +55,7 @@ def print_status_in_range(start_night, end_night, info):
     before_end = info['fNight'] < end_night
     is_observation_run = info['fRunTypeKey'] == runinfo.observation_key
 
-    in_range = past_start*before_end
+    in_range = past_start*before_end*is_observation_run
 
     night_ids = info['fNight'][in_range]
     run_ids = info['fRunID'][in_range]
@@ -64,9 +64,9 @@ def print_status_in_range(start_night, end_night, info):
     exisences = info['photon_stream_exists'][in_range]
     completation_ratios = actual_triggers/expected_triggers
 
-    print(' night  | run  | expec | actual | percent')
+    print(' night  run  expected_events actualevents complete_ratio')
     for i, run_id in enumerate(run_ids):
-        print('{night:08d} | {rrr:03d} | {expected_evts:>6d} | {actual_evts:>6d} | '.format(
+        print('{night:08d} {rrr:03d} {expected_evts:>6d} {actual_evts:>6d} '.format(
             night=night_ids.iloc[i],  
             rrr=run_ids.iloc[i],
             expected_evts=int(expected_triggers.iloc[i]),
