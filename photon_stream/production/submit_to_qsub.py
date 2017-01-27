@@ -127,4 +127,4 @@ def submit_to_qsub(
             sp.check_output(cmd)
 
         tools.write_json(job['job_path'], job)
-        print('Done.')
+    print('Done.')
