@@ -9,7 +9,7 @@ class PhotonStream(object):
     def from_event_dict(cls, event_dict):
         ps = cls()
         ps.slice_duration = 0.5e-9
-        ps.time_lines = event_dict['PhotonArrivals']
+        ps.time_lines = event_dict['PhotonArrivals_500ps']
         return ps
 
     def _number_photons(self):
