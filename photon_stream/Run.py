@@ -9,8 +9,8 @@ class Run(object):
         self.geometry = Geometry()
 
         preview_event = next(JsonLinesGzipReader(path))
-        self.id = preview_event['RUNID']
-        self.night = preview_event['NIGHT']
+        self.id = preview_event['Run']
+        self.night = preview_event['Night']
 
     def __iter__(self):
         return self

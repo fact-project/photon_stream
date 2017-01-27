@@ -22,13 +22,13 @@ class Event(object):
     def from_event_dict_and_run(cls, event_dict, run):
         event = cls()
 
-        event.trigger_type = event_dict['TriggerType']
-        event.zd = event_dict['ZdPointing']
-        event.az = event_dict['AzPointing']
-        event.id = event_dict['EventNum']
-        event._time_unix_s = event_dict['UnixTimeUTC'][0]
-        event._time_unix_us = event_dict['UnixTimeUTC'][1]
-        event.amplitude_saturated_pixels = event_dict['SaturatedPixels']
+        event.trigger_type = event_dict['Trigger']
+        event.zd = event_dict['Zd_deg']
+        event.az = event_dict['Az_deg']
+        event.id = event_dict['Event']
+        event._time_unix_s = event_dict['UnixTime_s_us'][0]
+        event._time_unix_us = event_dict['UnixTime_s_us'][1]
+        event.amplitude_saturated_pixels = event_dict['Saturation']
         event.time = dt.datetime.utcfromtimestamp(
             event._time_unix_s + event._time_unix_us / 1e6)
 
