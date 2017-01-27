@@ -7,6 +7,7 @@ from . import tools
 from .write_worker_script import write_worker_script
 from .runinfo import observation_runs_in_runinfo_in_night_range
 from .runinfo import add_drs_run_info_to_jobs
+from .dummy_qsub import dummy_qsub
 
 def submit_to_qsub(
     out_dir, 
@@ -19,7 +20,7 @@ def submit_to_qsub(
     tmp_dir_base_name='fact_photon_stream_JOB_ID_',
     queue='fact_medium', 
     email='sebmuell@phys.ethz.ch',
-    print_only=True,
+    use_dummy_qsub=False,
     runinfo=None):
     
     print('Start single pulse conversion ...')
@@ -32,10 +33,12 @@ def submit_to_qsub(
     
     std_dir = os.path.join(out_dir, 'std')
     job_dir = os.path.join(out_dir, 'job')
+    phs_dir = os.path.join(out_dir, 'phs')
 
     os.makedirs(out_dir, exist_ok=True)
     os.makedirs(std_dir, exist_ok=True)
     os.makedirs(job_dir, exist_ok=True)
+    os.makedirs(phs_dir, exist_ok=True)
 
     print('Find runs in night range '+str(start_nigth)+' to '+str(end_nigth)+' in runinfo database ...')
     
@@ -95,8 +98,7 @@ def submit_to_qsub(
         job['fact_tools_jar_path'] = fact_tools_jar_path
         job['fact_tools_xml_path'] = fact_tools_xml_path
 
-        job['out_dir'] = os.path.join(out_dir, job['yyyymmnn_dir'])
-
+        job['phs_dir'] = os.path.join(phs_dir, job['yyyymmnn_dir'])
         write_worker_script(
             path=job['job_path'],
             java_path=job['java_path'],
@@ -105,7 +107,7 @@ def submit_to_qsub(
             in_run_path=job['raw_path'],
             drs_path=job['drs_path'],
             aux_dir=job['aux_dir'],
-            out_dir=job['out_dir'],
+            out_dir=job['phs_dir'],
             out_base_name=job['base_name'],
             tmp_dir_base_name=job['worker_tmp_dir_base_name'],)
 
@@ -117,8 +119,8 @@ def submit_to_qsub(
                 '-M', email,
                 job['job_path']]
    
-        if print_only:
-            print(cmd)
+        if use_dummy_qsub:
+            dummy_qsub(cmd)
         else:
             sp.check_output(cmd)
     print('Done.')
