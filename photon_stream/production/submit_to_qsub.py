@@ -31,13 +31,11 @@ def submit_to_qsub(
         runinfo = get_runinfo()
     
     std_dir = os.path.join(out_dir, 'std')
-    jobs_dir = os.path.join(out_dir, 'jobs')
-    scripts_dir = os.path.join(out_dir, 'worker_scripts')
+    job_dir = os.path.join(out_dir, 'job')
 
     os.makedirs(out_dir, exist_ok=True)
     os.makedirs(std_dir, exist_ok=True)
-    os.makedirs(jobs_dir, exist_ok=True)
-    os.makedirs(scripts_dir, exist_ok=True)
+    os.makedirs(job_dir, exist_ok=True)
 
     print('Find runs in night range '+str(start_nigth)+' to '+str(end_nigth)+' in runinfo database ...')
     
@@ -87,10 +85,8 @@ def submit_to_qsub(
         job['std_dir'] = std_dir
         job['stdout_path'] = os.path.join(std_dir, job['base_name']+'.o')
         job['stderr_path'] = os.path.join(std_dir, job['base_name']+'.e')
-        job['jobs_dir'] = jobs_dir
-        job['job_path'] = os.path.join(jobs_dir, job['base_name']+'_job.json')
         
-        job['worker_script_path'] = os.path.join(scripts_dir, 'PhotonStream_'+job['base_name']+'.sh')
+        job['job_path'] = os.path.join(job_dir, 'PhotonStream_'+job['base_name']+'.sh')
         job['worker_tmp_dir_base_name'] = tmp_dir_base_name
         job['email'] = email
         job['queue'] = queue
@@ -102,7 +98,7 @@ def submit_to_qsub(
         job['out_dir'] = os.path.join(out_dir, job['yyyymmnn_dir'])
 
         write_worker_script(
-            path=job['worker_script_path'],
+            path=job['job_path'],
             java_path=job['java_path'],
             fact_tools_jar_path=job['fact_tools_jar_path'],
             fact_tools_xml_path=job['fact_tools_xml_path'],
@@ -119,12 +115,10 @@ def submit_to_qsub(
                 '-e', job['stderr_path'],
                 '-m', 'ae', # send email in case of (e)nd or (a)bort
                 '-M', email,
-                job['worker_script_path']]
+                job['job_path']]
    
         if print_only:
             print(cmd)
         else:
             sp.check_output(cmd)
-
-        tools.write_json(job['job_path'], job)
     print('Done.')
