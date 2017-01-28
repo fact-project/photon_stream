@@ -23,20 +23,25 @@ def get_runinfo():
     else:
     	return download_latest_runinfo()
 
+
 def observation_runs_in_runinfo_in_night_range(
     runinfo, 
-    start_nigth=20110101, 
-    end_nigth=20171231):
+    start_night=20110101, 
+    end_night=20171231):
+    past_start = runinfo['fNight'] >= start_night
+    before_end = runinfo['fNight'] < end_night
+    is_observation_run = runinfo['fRunTypeKey'] == observation_key
+    valid = past_start*before_end*is_observation_run
+    
+    night_ids = runinfo['fNight'][valid]
+    run_ids = runinfo['fRunID'][valid]
+
     jobs = []
 
-    for index, row in runinfo.iterrows():
-        night_id = runinfo['fNight'][index]
-        run_id = runinfo['fRunID'][index]
-        run_type_key = runinfo['fRunTypeKey'][index]
-        if night_id >= start_nigth and night_id < end_nigth and run_type_key == observation_key:
-            jobs.append({
-                'Night': night_id,
-                'Run': run_id})
+    for i, run_id in enumerate(run_ids):
+        jobs.append({
+            'Night': night_ids.iloc[i],
+            'Run': run_id})
     return jobs
 
 
@@ -67,7 +72,6 @@ def add_drs_run_info_to_jobs(runinfo, jobs):
 
 
 def create_fake_fact_dir(path, runinfo):
-
     for index, row in runinfo.iterrows():
         night_id = runinfo['fNight'][index]
         run_id = runinfo['fRunID'][index]

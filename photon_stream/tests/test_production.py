@@ -28,8 +28,8 @@ def test_production_run_collection():
         out_dir = os.path.join(tmp, 'production_output')
         ps.production.submit_to_qsub(
             out_dir=out_dir, 
-            start_nigth=20141215, 
-            end_nigth=20150103,
+            start_night=20141215, 
+            end_night=20150103,
             fact_dir=fact_dir, 
             java_path='/usr/java/jdk1.8.0_77/bin',
             fact_tools_jar_path='my_fact_tools.jar',

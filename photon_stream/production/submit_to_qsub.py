@@ -11,8 +11,8 @@ from .dummy_qsub import dummy_qsub
 
 def submit_to_qsub(
     out_dir, 
-    start_nigth=20110101, 
-    end_nigth=20501231,
+    start_night=20110101, 
+    end_night=20501231,
     fact_dir='/fact/', 
     java_path='/home/guest/relleums/java8/jdk1.8.0_111',
     fact_tools_jar_path='/home/guest/relleums/fact_photon_stream/fact-tools/target/fact-tools-0.18.0.jar',
@@ -40,12 +40,12 @@ def submit_to_qsub(
     os.makedirs(job_dir, exist_ok=True)
     os.makedirs(phs_dir, exist_ok=True)
 
-    print('Find runs in night range '+str(start_nigth)+' to '+str(end_nigth)+' in runinfo database ...')
+    print('Find runs in night range '+str(start_night)+' to '+str(end_night)+' in runinfo database ...')
     
     jobs = observation_runs_in_runinfo_in_night_range(
         runinfo=runinfo,
-        start_nigth=start_nigth, 
-        end_nigth=end_nigth)
+        start_night=start_night, 
+        end_night=end_night)
 
     print('Found '+str(len(jobs))+' runs in database.')
     print('Find overlap with runs accessible in "'+fact_dir+'" ...')
