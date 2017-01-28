@@ -2,6 +2,7 @@ import os
 from fact import credentials
 import pandas as pd
 from . import tools
+import numpy as np
 
 drs_key = 2
 observation_key = 1
@@ -27,14 +28,17 @@ def get_runinfo():
 def observation_runs_in_runinfo_in_night_range(
     runinfo, 
     start_night=20110101, 
-    end_night=20171231):
-    past_start = runinfo['fNight'] >= start_night
-    before_end = runinfo['fNight'] < end_night
-    is_observation_run = runinfo['fRunTypeKey'] == observation_key
+    end_night=20171231,
+    only_a_fraction=1.0):
+    past_start = (runinfo['fNight'] >= start_night).as_matrix()
+    before_end = (runinfo['fNight'] < end_night).as_matrix()
+    is_observation_run = (runinfo['fRunTypeKey'] == observation_key).as_matrix()
     valid = past_start*before_end*is_observation_run
+
+    fraction = np.random.uniform(size=len(valid)) < only_a_fraction
     
-    night_ids = runinfo['fNight'][valid]
-    run_ids = runinfo['fRunID'][valid]
+    night_ids = runinfo['fNight'][valid*fraction]
+    run_ids = runinfo['fRunID'][valid*fraction]
 
     jobs = []
 

@@ -30,6 +30,7 @@ def test_production_run_collection():
             out_dir=out_dir, 
             start_night=20141215, 
             end_night=20150103,
+            only_a_fraction=1.0,
             fact_dir=fact_dir, 
             java_path='/usr/java/jdk1.8.0_77/bin',
             fact_tools_jar_path='my_fact_tools.jar',

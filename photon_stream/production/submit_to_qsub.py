@@ -13,6 +13,7 @@ def submit_to_qsub(
     out_dir, 
     start_night=20110101, 
     end_night=20501231,
+    only_a_fraction=1.0,
     fact_dir='/fact/', 
     java_path='/home/guest/relleums/java8/jdk1.8.0_111',
     fact_tools_jar_path='/home/guest/relleums/fact_photon_stream/fact-tools/target/fact-tools-0.18.0.jar',
@@ -45,7 +46,8 @@ def submit_to_qsub(
     jobs = observation_runs_in_runinfo_in_night_range(
         runinfo=runinfo,
         start_night=start_night, 
-        end_night=end_night)
+        end_night=end_night,
+        only_a_fraction=only_a_fraction)
 
     print('Found '+str(len(jobs))+' runs in database.')
     print('Find overlap with runs accessible in "'+fact_dir+'" ...')
