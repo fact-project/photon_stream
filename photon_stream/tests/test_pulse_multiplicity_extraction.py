@@ -12,7 +12,7 @@ def test_pulse_multiplicity_extraction_api():
 
     run_path = pkg_resources.resource_filename(
         'photon_stream', 
-        'tests/resources/20150307_016_100events_pass3.phs.jsonl.gz')
+        'tests/resources/20170119_229_pass4_100events.phs.jsonl.gz')
 
     run = ps.Run(run_path)
 

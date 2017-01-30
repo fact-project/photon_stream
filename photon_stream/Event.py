@@ -28,7 +28,7 @@ class Event(object):
         event.id = event_dict['Event']
         event._time_unix_s = event_dict['UnixTime_s_us'][0]
         event._time_unix_us = event_dict['UnixTime_s_us'][1]
-        event.amplitude_saturated_pixels = event_dict['Saturation']
+        event.amplitude_saturated_pixels = event_dict['SaturatedPixels']
         event.time = dt.datetime.utcfromtimestamp(
             event._time_unix_s + event._time_unix_us / 1e6)
 
