@@ -7,14 +7,7 @@ from .plot import add_event_2_ax
 
 class Event(object):
     def __init__(self):
-        self.trigger_type = None
-        self.photon_stream = None
-        self.id = None
-        self.run = None
-        self._time_unix_s = None
-        self._time_unix_us = None
-        self.time = None
-        self.saturated_pixels = None
+        pass
 
     @classmethod
     def from_event_dict_and_run(cls, event_dict, run):
