@@ -1,88 +1,62 @@
 import numpy as np
 from ..PhotonStream import PhotonStream
 
+linebreak = np.array([np.iinfo(np.uint8).max], dtype=np.uint8)
 
-def append_photonstream_to_binary_file(photonstream, file_handle):
-    
-    # WRITE NUMBER OF TIMELINES
-    number_of_time_lines = np.uint64(len(photonstream.time_lines))
-    file_handle.write(number_of_time_lines.tobytes())
+def append_photonstream_to_file(phs, fout):
+    # WRITE NUMBER OF TIME LINES
+    number_of_time_lines = len(phs.time_lines)
+    fout.write(np.uint32(number_of_time_lines).tobytes())
 
     # WRITE NUMBER OF PHOTONS
-    number_of_photons = np.uint64(photonstream.number_photons)
-    file_handle.write(number_of_photons.tobytes())
+    number_of_photons = phs.number_photons
+    fout.write(np.uint32(number_of_photons).tobytes())
 
     # WRITE SLICE DURATION
-    slice_duration = np.float64(photonstream.slice_duration)
-    file_handle.write(slice_duration.tobytes())
+    fout.write(np.float32(phs.slice_duration).tobytes())
 
-    # DETERMINE SLICE WIDTH IN BYTE
-    max_slice = photonstream.max_arrival_slice
-    if max_slice < np.iinfo(np.uint8).max:
-        dtype = np.uint8
-    elif max_slice < np.iinfo(np.uint16).max:
-        dtype = np.uint16      
-    elif max_slice < np.iinfo(np.uint32).max:
-        dtype = np.uint32
-    elif max_slice < np.iinfo(np.uint64).max:
-        dtype = np.uint64
-    else:
-        raise
-
-    # WRITE SLICE WIDTH IN BYTE
-    slice_width = np.uint8(dtype().itemsize)
-    file_handle.write(slice_width.tobytes())
-
-    # WRITE PHOTON ARRIVAL SLICES 
-    linebreak = np.array([np.iinfo(dtype).max], dtype=dtype)
-    for pixel_arrivals in photonstream.time_lines:
-        arrivals = np.array(pixel_arrivals, dtype=dtype)
-        if arrivals.shape[0] > 0:
-            file_handle.write(arrivals.tobytes())
-        file_handle.write(linebreak.tobytes())
+    # WRITE PHOTON ARRIVAL SLICES
+    raw_time_lines = np.zeros(
+        number_of_photons+number_of_time_lines, 
+        dtype=np.uint8)
+    pos = 0
+    for time_line in phs.time_lines:
+        for photon_arrival in time_line:
+            raw_time_lines[pos] = photon_arrival
+            pos += 1
+        raw_time_lines[pos] = linebreak
+        pos += 1
+    fout.write(raw_time_lines.tobytes())
 
 
-def read_photonstream_from_binary_file(file_handle):
-    ps = PhotonStream()
+def read_photonstream_from_file(fin):
+    phs = PhotonStream()
 
-    # READ NUMBER OF TIMELINES
-    number_of_time_lines = np.fromfile(file_handle, dtype=np.uint64, count=1)[0]
+    # READ NUMBER OF TIME LINES
+    number_of_time_lines = np.fromfile(fin, dtype=np.uint32, count=1)[0]
 
     # READ NUMBER OF PHOTONS
-    number_of_photons = np.fromfile(file_handle, dtype=np.uint64, count=1)[0]
+    number_of_photons = np.fromfile(fin, dtype=np.uint32, count=1)[0]
 
     # READ SLICE DURATION
-    slice_duration = np.fromfile(file_handle, dtype=np.float64, count=1)[0]
-    ps.slice_duration = slice_duration
-
-    # READ SLICE WIDTH IN BYTE
-    slice_width = np.fromfile(file_handle, dtype=np.uint8, count=1)[0]
-
-    if slice_width == np.uint8().itemsize:
-        dtype = np.uint8()
-    elif slice_width == np.uint16().itemsize:
-        dtype = np.uint16()
-    elif slice_width == np.uint32().itemsize:
-        dtype = np.uint32()        
-    elif slice_width == np.uint64().itemsize:
-        dtype = np.uint64()
-    else:
-        raise
+    slice_duration = np.fromfile(fin, dtype=np.float32, count=1)[0]
+    phs.slice_duration = slice_duration
 
     # READ PHOTONSTREAM
-    photn_stream = np.fromfile(
-        file_handle, 
-        dtype=dtype, 
+    raw_time_lines = np.fromfile(
+        fin, 
+        dtype=np.uint8, 
         count=number_of_photons+number_of_time_lines)
 
-    linebreak = np.array([np.iinfo(dtype).max], dtype=dtype)
+    phs.time_lines = []
+    for pixel in range(number_of_time_lines):
+        empty_time_line = []
+        phs.time_lines.append(empty_time_line)
 
-    ps.time_lines = []
-    time_line = []
-    for arrival_slice in photn_stream:
-        if arrival_slice == linebreak:
-            ps.time_lines.append(time_line.copy())
-            time_line.clear()
+    pixel = 0
+    for symbol in raw_time_lines:
+        if symbol == linebreak:
+            pixel += 1
         else:
-            time_line.append(arrival_slice)
-    return ps
+            phs.time_lines[pixel].append(symbol)
+    return phs
