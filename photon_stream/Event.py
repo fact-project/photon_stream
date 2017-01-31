@@ -39,7 +39,6 @@ class Event(object):
         fig = plt.figure()
         ax = fig.gca(projection='3d')
         add_event_2_ax(self, ax, mask=mask)
-        plt.show()
 
     def __repr__(self):
         out = 'FactEvent('

@@ -5,6 +5,7 @@ import pkg_resources
 import tempfile
 import os
 
+
 def test_event_can_plot_itself():
     import matplotlib
     matplotlib.use('Agg')
@@ -16,6 +17,7 @@ def test_event_can_plot_itself():
 
     event = next(ps.Run(run_path))
     event.plot()
+
 
 @pytest.mark.slow
 @pytest.mark.nottravis
