@@ -8,6 +8,13 @@ import pkg_resources
 import glob
 
 
+def test_number_of_events_in_run():
+    run_path = pkg_resources.resource_filename(
+        'photon_stream', 
+        'tests/resources/20170119_229_pass4_100events.phs.jsonl.gz')    
+    assert ps.production.tools.number_of_events_in_run(run_path) == 100
+
+
 def test_production_write_worker_script():
     with tempfile.TemporaryDirectory(prefix='photon_stream_test_production') as tmp:
         worker_script_path = join(tmp, 'worker.sh')
