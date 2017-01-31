@@ -18,7 +18,7 @@ class PhotonStreamCluster(object):
         dbscan = DBSCAN(eps=eps, min_samples=min_samples).fit(xyt)
         self.labels = dbscan.labels_
 
-        # Number of clusters in labels, ignoring noise if present.
+        # Number of clusters in labels, ignoring background if present.
         self.number = len(set(self.labels)) - (1 if -1 in self.labels else 0)
 
     def __repr__(self):
@@ -43,7 +43,7 @@ class PhotonTimeLineCluster(object):
         dbfit = dbscan.fit(time_series_array_rs)
 
         self.labels = dbfit.labels_
-        # Number of clusters in labels, ignoring noise if present.
+        # Number of clusters in labels, ignoring background if present.
         self.number = len(set(self.labels)) - (1 if -1 in self.labels else 0)
 
     def __repr__(self):
