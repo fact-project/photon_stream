@@ -1,6 +1,10 @@
 import os
+from os.path import join
+from os.path import exists
 from tqdm import tqdm
 import subprocess as sp
+import shutil
+import datetime as dt
 
 from .runinfo import get_runinfo
 from . import tools
@@ -28,18 +32,26 @@ def submit_to_qsub(
 
     out_dir = os.path.abspath(out_dir)
     fact_dir = os.path.abspath(fact_dir)
-
-    if runinfo is None:
-        runinfo = get_runinfo()
     
-    std_dir = os.path.join(out_dir, 'std')
-    job_dir = os.path.join(out_dir, 'job')
-    phs_dir = os.path.join(out_dir, 'phs')
+    res_dir = join(out_dir, 'resources')
+    this_processing_resource_dir = join(res_dir, dt.datetime.utcnow().strftime('%Y%m%d_%Hh%Mm%Ss_%fus_UTC'))
+    std_dir = join(out_dir, 'std')
+    job_dir = join(out_dir, 'job')
+    phs_dir = join(out_dir, 'phs')
 
     os.makedirs(out_dir, exist_ok=True)
     os.makedirs(std_dir, exist_ok=True)
     os.makedirs(job_dir, exist_ok=True)
     os.makedirs(phs_dir, exist_ok=True)
+    os.makedirs(res_dir, exist_ok=True)
+    os.makedirs(this_processing_resource_dir, exist_ok=False)
+
+    print('Copy resources ...')
+    fact_tools_jar_path = os.path.abspath(shutil.copy(fact_tools_jar_path, this_processing_resource_dir))
+    fact_tools_xml_path = os.path.abspath(shutil.copy(fact_tools_xml_path, this_processing_resource_dir))
+
+    if runinfo is None:
+        runinfo = get_runinfo()
 
     print('Find runs in night range '+str(start_night)+' to '+str(end_night)+' in runinfo database ...')
     
@@ -65,12 +77,12 @@ def submit_to_qsub(
             bsn=job['Night'],
             rrr=job['Run'])
         job['raw_file_name'] = job['base_name']+'.fits.fz'
-        job['raw_path'] = os.path.join(
+        job['raw_path'] = join(
             job['fact_dir'], 
             'raw', 
             job['yyyymmnn_dir'], 
             job['raw_file_name'])
-        job['aux_dir'] = os.path.join(
+        job['aux_dir'] = join(
             job['fact_dir'], 
             'aux', 
             job['yyyymmnn_dir'])
@@ -88,10 +100,10 @@ def submit_to_qsub(
 
     for job in tqdm(jobs): 
         job['std_dir'] = std_dir
-        job['stdout_path'] = os.path.join(std_dir, job['base_name']+'.o')
-        job['stderr_path'] = os.path.join(std_dir, job['base_name']+'.e')
+        job['stdout_path'] = join(std_dir, job['base_name']+'.o')
+        job['stderr_path'] = join(std_dir, job['base_name']+'.e')
         
-        job['job_path'] = os.path.join(job_dir, 'PhotonStream_'+job['base_name']+'.sh')
+        job['job_path'] = join(job_dir, 'PhotonStream_'+job['base_name']+'.sh')
         job['worker_tmp_dir_base_name'] = tmp_dir_base_name
         job['email'] = email
         job['queue'] = queue
@@ -100,7 +112,7 @@ def submit_to_qsub(
         job['fact_tools_jar_path'] = fact_tools_jar_path
         job['fact_tools_xml_path'] = fact_tools_xml_path
 
-        job['phs_dir'] = os.path.join(phs_dir, job['yyyymmnn_dir'])
+        job['phs_dir'] = join(phs_dir, job['yyyymmnn_dir'])
         write_worker_script(
             path=job['job_path'],
             java_path=job['java_path'],
