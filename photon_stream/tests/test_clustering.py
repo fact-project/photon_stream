@@ -16,4 +16,4 @@ def test_cluster_api():
         counter += 1
         if counter > 10:
             break
-        clusters = ps.PhotonStreamCluster(event)
+        clusters = ps.PhotonStreamCluster(event.photon_stream)

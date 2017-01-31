@@ -9,7 +9,7 @@ def append_photonstream_to_binary_file(photonstream, file_handle):
     file_handle.write(number_of_time_lines.tobytes())
 
     # WRITE NUMBER OF PHOTONS
-    number_of_photons = np.uint64(photonstream._number_photons())
+    number_of_photons = np.uint64(photonstream.number_photons)
     file_handle.write(number_of_photons.tobytes())
 
     # WRITE SLICE DURATION
@@ -17,7 +17,7 @@ def append_photonstream_to_binary_file(photonstream, file_handle):
     file_handle.write(slice_duration.tobytes())
 
     # DETERMINE SLICE WIDTH IN BYTE
-    min_slice, max_slice = photonstream._min_max_arrival_slice()
+    max_slice = photonstream.max_arrival_slice
     if max_slice < np.iinfo(np.uint8).max:
         dtype = np.uint8
     elif max_slice < np.iinfo(np.uint16).max:

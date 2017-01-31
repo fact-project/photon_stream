@@ -8,7 +8,7 @@ import tempfile
 import subprocess
 
 def add_event_2_ax(event, ax, mask=None, color='b'):
-    xyt = event.flatten_photon_stream()
+    xyt = event.photon_stream.flatten()
 
     xyt[:,2] *= 1e9
     min_time = xyt[:,2].min()
@@ -18,7 +18,7 @@ def add_event_2_ax(event, ax, mask=None, color='b'):
         xyt = xyt[mask]
 
     ax.set_title('Night '+str(event.run.night)+', Run '+str(event.run.id)+', Event '+str(event.id))
-    fovR = event.geometry.fov_radius
+    fovR = event.photon_stream.geometry['fov_radius']
     p = Circle((0, 0), fovR, edgecolor='k', facecolor='none', lw=1.)
     ax.add_patch(p)
     art3d.pathpatch_2d_to_3d(p, z=min_time, zdir="z")

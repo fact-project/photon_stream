@@ -5,7 +5,7 @@ import pkg_resources
 def test_empty_time_series():
 
     pixel_time_series = []
-    clusters = ps.PhotonTimeSeriesCluster(pixel_time_series)
+    clusters = ps.PhotonTimeLineCluster(pixel_time_series)
 
 
 def test_pulse_multiplicity_extraction_api():
@@ -22,4 +22,4 @@ def test_pulse_multiplicity_extraction_api():
         if counter > 10:
             break
         for pixel_time_series in event.photon_stream.time_lines:
-            clusters = ps.PhotonTimeSeriesCluster(pixel_time_series)
+            clusters = ps.PhotonTimeLineCluster(pixel_time_series)

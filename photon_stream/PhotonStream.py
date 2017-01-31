@@ -1,9 +1,25 @@
+from math import nan
+from copy import deepcopy
+import fact
 import numpy as np
 
+pixels = fact.pixels.get_pixel_dataframe()
+pixels.sort_values('CHID', inplace=True)
+
+geometry = {
+    'pixel_azimuth': pixels.azimuth.as_matrix(),
+    'pixel_zenith': pixels.zenith.as_matrix(),
+    'fov_radius': fact.pixels.FOV_RADIUS,
+}
+
 class PhotonStream(object):
-    def __init__(self):
-        self.slice_duration = 0.0
-        self.time_lines = []
+    def __init__(self, time_lines=None, slice_duration=nan):
+        self.slice_duration = slice_duration
+        self.geometry = geometry
+        if time_lines is None:
+            self.time_lines = []
+        else:
+            self.time_lines = time_lines
 
     @classmethod
     def from_event_dict(cls, event_dict):
@@ -12,52 +28,71 @@ class PhotonStream(object):
         ps.time_lines = event_dict['PhotonArrivals_500ps']
         return ps
 
-    def _number_photons(self):
-        number_photons = 0
+    @property
+    def photon_count(self):
+        return np.array(
+            [len(tl) for tl in self.time_lines], 
+            dtype=np.int64)
+
+    @property
+    def number_photons(self):
+        return self.photon_count.sum()
+
+    @property
+    def min_arrival_slice(self):
+        if self.number_photons > 0:
+            return min(min(tl) for tl in self.time_lines if tl)
+        else:
+            return nan
+
+    @property
+    def max_arrival_slice(self):
+        if self.number_photons > 0:
+            return max(max(tl) for tl in self.time_lines if tl)
+        else:
+            return nan
+
+    def truncated_time_lines(self, start_time, end_time):
+        ''' return new PhotonStream with truncated time_lines
+        containing only arrival slices contained
+        in (start_time, end_time]
+        '''
+        tmp = PhotonStream(
+            time_lines=deepcopy(self.time_lines),
+            slice_duration=self.slice_duration
+        )
+        tmp._truncate_time_lines(start_time, end_time)
+        return tmp
+
+    def _truncate_time_lines(self, start_time, end_time):
+        ''' truncate self.time_lines
+        to contain only arrival slices within (start_time, end_time]
+        '''
         for time_line in self.time_lines:
-            number_photons += len(time_line)
-        return number_photons
+            for arrival_slice in time_line[:]:
+                arrival_time = arrival_slice * self.slice_duration
+                if arrival_time < start_time:
+                    time_line.remove(arrival_slice)
+                if arrival_time >= end_time:
+                    time_line.remove(arrival_slice)
 
-    def _min_max_arrival_slice(self):
-        max_slice = 0
-        min_slice = np.iinfo(np.uint64).max
-        for time_line in self.time_lines:
-            if len(time_line) > 0:
-                max_slice_on_current_time_line = max(time_line)
-                if max_slice_on_current_time_line > max_slice:
-                    max_slice = max_slice_on_current_time_line
-                min_slice_on_current_time_line = min(time_line)
-                if min_slice_on_current_time_line < min_slice:
-                    min_slice = min_slice_on_current_time_line
-
-        return min_slice, max_slice
-
-    def truncate_time_lines(self, start_time, end_time):
-        trunc_ps = PhotonStream()
-        trunc_ps.slice_duration = self.slice_duration
-        trunc_ps.time_lines = truncate_time_lines(
-            time_lines=self.time_lines,
-            slice_duration=self.slice_duration,
-            start_time=start_time,
-            end_time=end_time)
-        return trunc_ps
+    def flatten(self, start_time=15e-9, end_time=65e-9):
+        xyt = []
+        for px, pixel_photons in enumerate(self.time_lines):
+            for photon_slice in pixel_photons:
+                    xyt.append([
+                        geometry['pixel_azimuth'][px],
+                        geometry['pixel_zenith'][px],
+                        photon_slice * self.slice_duration
+                        ])
+        xyt = np.array(xyt)
+        past_start = xyt[:, 2] >= start_time
+        before_end = xyt[:, 2] <= end_time
+        return xyt[past_start*before_end]
 
     def __repr__(self):
         info = 'PhotonStream('
-        info+= str(len(self.time_lines))+' time lines, '
-        info+= str(self._number_photons())+' photons'
-        info+= ')'
+        info += str(len(self.time_lines)) + ' time lines, '
+        info += str(self.number_photons) + ' photons'
+        info += ')'
         return info
-
-
-def truncate_time_lines(time_lines, slice_duration, start_time, end_time):
-    trunc_time_lines = []
-    for time_line in time_lines:
-        trunc_time_line = []
-        for arrival_slice in time_line:
-            arrival_time = arrival_slice*slice_duration
-            if arrival_time >= start_time and arrival_time < end_time:
-                trunc_time_line.append(arrival_slice)
-        trunc_time_lines.append(trunc_time_line)
-
-    return trunc_time_lines
