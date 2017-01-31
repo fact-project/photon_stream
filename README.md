@@ -10,9 +10,13 @@ pip install git+https://github.com/fact-project/photon_stream
 ## Python API
 ```python
 import photon_stream as ps
+import matplotlib.pyplot as plt
+
 run = ps.Run('20151001_011.jsonl.gz')
-event = run.__next__()
+event = next(run)
 event.plot()
+
+plt.show()
 ```
 ![img](example/example_event_small.gif)
 
