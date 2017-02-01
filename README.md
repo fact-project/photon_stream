@@ -34,7 +34,7 @@ It turned out, that gzipped JSON-lines has only a size overhead of ```1.15``` co
 ```json
 {"Night":20170119,"Run":229,"Event":1,"UnixTime_s_us":[1484895178,532244],"Trigger":4,"Az_deg":-63.253664797474336,"Zd_deg":33.06900475126648,"PhotonArrivals_500ps":[[59,84],[102,93,103],[58],[65,79,97],[],[125,43,68],[102],[68,100,123],[52,52,79,113,61,78,112,87], ... ],"SaturatedPixels":[]}
 ```
-The run files will be named ```YYYYmmnn_RRR.phs.jsonl.gz```. There are no headers. Each line in a ```phs.jsonl.gz``` file corresponds to one event.
+The run files will be named ```YYYYmmnn_RRR.phs.jsonl.gz```. There is no run header. Each line in a ```phs.jsonl.gz``` file corresponds to one event. This way events can be concatenated and counted very easily.
 
 ### Keys
 
