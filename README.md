@@ -59,7 +59,25 @@ The run files will be named ```YYYYmmnn_RRR.phs.jsonl.gz```.
 It turned out, that gzipped JSON-lines has only a size overhead of ```1.15``` compared to the smallest possible binary format we could come up with. Since the possibility for new students is pretty much ```0.0``` to read our custom binary, but almost ```1.0``` to read JSON-Lines, we decided to go with JSON-Lines for now.
 
 ```json
-"Night"
+"Night":YYYYmmnn
 ```
+The FACT night integer. Here ```YYYY``` is the year A.D., ```mm``` is the month, and ```nn``` is the night of the observation. A night is different from a day. The night integer increases to the next night during ```12:00 UTC``` o'clock rather than ```00:00 UTC```. The night integer is always 8 digits, e.g. ```20170201``` which is first of February 2017.
 
-The FACT night integer. 
+```json
+"Run":RRR
+```
+The unique run identifier of a night. The observations of a night are split into runs of usually ```5 minutes```. Since not all runs are observation runs, but e.g. calibration runs, the run numbers in the high level photon stream format are not neccessary continues, since calibration runs are missing. The run integer in the file name is always 3 digits, e.g. ```20170201_021.phs.jsonl.gz``` is the twentyfirst run of the first night in February 2017.
+
+```json
+"Event":eee
+```
+The event identifier of a run. In a run, the individual events have unique identifiers. The event integer is not fixed in its length e.g. ```"Event":4``` is the fourth event in a run, and ```"Event":34845``` is the thirty-four-thousands-and-eight-hundreds-fourty-fifth event in a run.
+
+```json
+"UnixTime_s_us":[1484895178,532244]
+```
+The moment when the event was recorded in unix time (keep in mind that unix time has leap seconds!). The first entry in the the array are the unix time seconds ```s```, and the second entry are the additional micro seconds ```us```.
+
+```float64 trigger_time = 1484895178.0 + 1e-6*532244``` 
+
+The time stamp is out of the FACT event builder program and can be off the actual trigger time by about ```30ms```.
