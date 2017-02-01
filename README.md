@@ -70,9 +70,9 @@ The time stamp is out of the FACT event builder program and can be off the actua
 The trigger type of the FACT telescope. There are differnt trigger types for FACT, here in the high level format we only have left:
 
 - 4: The self triggered mode, also called "physics trigger". These events are expected to contain light flashes and air showers.
-- 1: External trigger input 1. Here the GPS module triggers the read out ```59``` times a minute. These events are expected to contain only night sky background.
+- 1: External trigger input 1. Here the GPS module triggers the read out ```59``` times a minute. These events are expected to contain only night-sky-background.
 - 2: External trigger input 2. The same as external trigger input 1, since the GPS modul was switched from 1 to 2 once.
-- 1024: A random trigger also called "pedestal trigger". These events are also expected to only contain night sky background.
+- 1024: A random trigger also called "pedestal trigger". These events are also expected to only contain night-sky-background.
 
 For a full overview of the FACT trigger types, see the [Phd of Patrick Vogler, table 4.3.b](http://e-collection.library.ethz.ch/eserv/eth:48381/eth-48381-02.pdf)
 
@@ -84,7 +84,7 @@ The pointing direction of the FACT telescope in the moment the event was recorde
 ```json
 "PhotonArrivals_500ps":[[],[],[]]
 ```
-The actual photon stream. A list of lists of arrival times of photons in units of ```500ps```.
+The actual photon-stream. A list of lists of arrival times of photons in units of ```500ps```.
 The outer list loops over all ```1440``` pixels of FACT and is ordered in ```Continuous  Hardware ID (CHID)```. The inner lists loop over the arrival times of the individual photons for the corresponding pixel. The maximum number of photons in a pixel before the extraction of photons is aborted is ```500```. If there are ```500``` photons in a pixel, this pixel is __saturated__ and meaningless.
 Since a single photon is now defined by only one sharp arrival time in contrast to a very long pulse, there is no need anymore to stick to a long region of interest in time and therefore the output of the photon-stream is truncated only to the region where the air-shower physics takes place, which is from ```15ns``` to ```65ns``` on FACT's common ROI. This is still rather long compared to e.g. the MAGIC telescope ROI of ```30ns```.
 
