@@ -48,7 +48,7 @@ The FACT night integer. Here ```YYYY``` is the year A.D., ```mm``` is the month,
 ```json
 "Run":RRR
 ```
-The unique run identifier of a night. The observations of a night are split into runs of usually ```5 minutes```. Since not all runs are observation runs, but e.g. calibration runs, the run numbers in the high level photon stream format are not neccessary continues, since calibration runs are missing. The run integer in the file name is always 3 digits, e.g. ```20170201_021.phs.jsonl.gz``` is the twentyfirst run of the first night in February 2017.
+The unique run identifier of a night. The observations of a night are split into runs of usually ```5 minutes```. Since not all runs are observation runs, but e.g. calibration runs, the run identifiers in the high level photon-stream format are not neccessary continous, since calibration runs are missing. The run integer in the file name is always 3 digits, e.g. ```20170201_021.phs.jsonl.gz``` is the twentyfirst run of the first night in February 2017.
 
 ```json
 "Event":eee
