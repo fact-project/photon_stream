@@ -1,6 +1,5 @@
-# The FACT Photon Stream [![Build Status](https://travis-ci.org/fact-project/photon_stream.svg?branch=master)](https://travis-ci.org/fact-project/photon_stream)
-The photon stream is based on the [single photon extractor](https://github.com/fact-project/single_photon_extractor). The events of the FACT Imaging Atmospheric Cherenkov Telecope (IACT) can be represented as photon stream using the single photon extractor.
-In a photon stream, the single photon arrival times are stored for each read out channel (image pixel).
+# The FACT Photon-Stream [![Build Status](https://travis-ci.org/fact-project/photon_stream.svg?branch=master)](https://travis-ci.org/fact-project/photon_stream)
+The photon-stream is based on the [single photon extractor](https://github.com/fact-project/single_photon_extractor). The events of the FACT Imaging Atmospheric Cherenkov Telecope (IACT) can be represented as a list of lists of arrival times of individual night-sky-background and air-shower photons. This list of lists we call the photon-stream.
 
 ## Install
 ```bash
@@ -19,10 +18,6 @@ event.plot()
 plt.show()
 ```
 ![img](example/example_event_small.gif)
-
-## Where to go from here
-- explore an intermediate file format based on the photon stream, only photons no noise
-- explore novel image cleaning by combining the temporal and directional information of all pixels before cutting (DBSCAN clustering)
 
 # The Photon Stream Format Rationale
 As a technology demonstrater, the FACT telescope records its observations in a data format which is as close to the read out hardware as possible. This was a great choice to explore the novel SIPM and DRS readout chain, but is rather tedious to do high level physics analysis as flux, spectra and light-curve investigations on the astronomical sources. These raw events are ```1440``` pixels x  ```300``` time slices x ```16```bit dynamic range = 864kB in size. They can not be analyzed independent of each other since readout artifacts can only be removed with knowledge on the previous event, and an additional calibration file for the DRS is needed, which is not straight forward to identify. Although effort was spent to compress the raw events with a dedicated format ```zfits```, the events shrunk only by a factor of about 3 down to about 290kB in size.
@@ -96,3 +91,8 @@ A list of pixels in ```CHID``` to indicate that the corresponding pixel had an s
 
 ## Integration into existing air shower reconstruction software
 When the idea of the photon-stream is inverted, the amplitude time lines of an individual pixel can be reconstructed from the photon-stream events which enables FACT to use ist usual air shower reconstruction programs right ahead without modifications.  
+
+
+## Where to go from here
+- explore an intermediate file format based on the photon stream, only photons no noise
+- explore novel image cleaning by combining the temporal and directional information of all pixels before cutting (DBSCAN clustering)
