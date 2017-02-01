@@ -30,7 +30,7 @@ The photon-stream format is intended and optimized to do __astronomy__. We beliv
 
 ## File Format
 After evaluation of several formats (FITS, massage pack, JSON, custom binary), JSON-lines with gzip was chosen.
-It turned out, that gzipped JSON-lines has only a size overhead of ```1.15``` compared to the smallest possible binary format we could come up with. Since the possibility for new students is pretty much ```0.0``` to read our custom binary, but almost ```1.0``` to read JSON-Lines, we decided to go with JSON-Lines for now.
+It turned out, that gzipped JSON-lines has only a size overhead of ```1.15``` compared to the smallest possible binary format we could come up with. Since the possibility for new students is pretty much ```0%``` to read our custom binary, but almost ```100%``` to read JSON-Lines, we decided to go with JSON-Lines for now.
 The run files will be named ```YYYYmmnn_RRR.phs.jsonl.gz```.
 The following shows an example event in the final format:
 ```json
