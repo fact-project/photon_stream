@@ -29,26 +29,6 @@ As a technology demonstrater, the FACT telescope records its observations in a d
 
 Now using the photon stream, we can compress events down to a size of 4.5kB for dark night events. Based on this, the idea was born to create a no compromise, only physics file format for the FACT telescope with the potential to fit all events from 2011 to 2017 will on a single hard disk drive of 10TB.
 
-## Content of a Photon Stream Event
-
-### Identification
-- Night ID
-- Run ID
-- Event ID
-
-### Timing
-- The Unix time provided by the FACT event builder
-
-### Telescope Pointing
-- Azimuth angle
-- Zenith distance angle
-
-### Photon Arrivals
-- A list (each pixel) of lists (each photon in a pixel) of arrival times of individual photons
-
-### Artifacts and Detector
-- A list of saturated pixels (usually empty)
-
 ## File Format
 After evaluation of several formats (FITS, massage pack, JSON, custom binary), JSON-lines with gzip was chosen.
 The following shows an example event in the final format:
@@ -103,3 +83,9 @@ The pointing direction of the FACT telescope in the moment the event was recorde
 "PhotonArrivals_500ps":[[],[],[]]
 ```
 The actual photon stream. A list of lists of arrival times of photons in units of ```500ps```.
+The outer list loops over all ```1440``` pixels of FACT and is ordered in ```Continuous  Hardware ID (CHID)```. The inner lists loop over the arrival times of the individual photons for the corresponding pixel. The maximum number of photons in a pixel before the extraction of photons is aborted is ```500```. If there are ```500``` photons in a pixel, this pixel is __saturated__ and meaningless.
+
+```json
+"SaturatedPixels":[123,456]
+```
+A list of pixels in ```CHID``` to indicate that the corresponding pixel had an saturated analog time line out of the raw DRS4 chip. The maximim number of saturated pixels is ```100```, as the event is skipped then anyhow. Usually this list is empty. Such saturations happen not only for ultra high energy air showers, but also when the DRS4 calibration was not possible or is broken elseway. 
