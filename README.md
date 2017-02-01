@@ -25,9 +25,10 @@ plt.show()
 - explore novel image cleaning by combining the temporal and directional information of all pixels before cutting (DBSCAN clustering)
 
 # The Photon Stream Format Rationale
-As a technology demonstrater, the FACT telescope records its observations in a data format which is as close to the read out hardware as possible. This was a great choice to explore the novel SIPM and DRS readout chain, but is rather tedious to do high level physics analysis as flux, spectra and light-curve investigations on the astronomical sources. These raw events are ```1440``` pixels x  ```300``` time slices x ```16```bit dynamic range = 864kB in size. They can not be analyzed independent of each other since readout artifacts can only be removed with knowledge on the previous event, and an additional calibration file for the DRS is needed, which is not straight forward to identify. Also huge effort was spent to compress the raw events with a dedicated format ```zfits```, the events shrunk only by a factor of about 3 down to about 290kB in size.
+As a technology demonstrater, the FACT telescope records its observations in a data format which is as close to the read out hardware as possible. This was a great choice to explore the novel SIPM and DRS readout chain, but is rather tedious to do high level physics analysis as flux, spectra and light-curve investigations on the astronomical sources. These raw events are ```1440``` pixels x  ```300``` time slices x ```16```bit dynamic range = 864kB in size. They can not be analyzed independent of each other since readout artifacts can only be removed with knowledge on the previous event, and an additional calibration file for the DRS is needed, which is not straight forward to identify. Although effort was spent to compress the raw events with a dedicated format ```zfits```, the events shrunk only by a factor of about 3 down to about 290kB in size.
 
-Now using the photon stream, we can compress events down to a size of 4.5kB for dark night events. Based on this, the idea was born to create a no compromise, only physics file format for the FACT telescope with the potential to fit all events from 2011 to 2017 will on a single hard disk drive of 10TB.
+Now using the photon stream, we can compress events down to a size of 4.5kB for dark nights. Based on this, the idea was born to create a no compromise, only physics file format for the FACT telescope with the potential to fit all events from 2011 to 2017 on a single hard disk drive of 10TB.
+The photon stream format is already fully calibrated and does not need additional files to be interpreted. Further all instrument artifacts have been removed and the events are now truely independent of each other.
 
 ## File Format
 After evaluation of several formats (FITS, massage pack, JSON, custom binary), JSON-lines with gzip was chosen.
@@ -84,8 +85,12 @@ The pointing direction of the FACT telescope in the moment the event was recorde
 ```
 The actual photon stream. A list of lists of arrival times of photons in units of ```500ps```.
 The outer list loops over all ```1440``` pixels of FACT and is ordered in ```Continuous  Hardware ID (CHID)```. The inner lists loop over the arrival times of the individual photons for the corresponding pixel. The maximum number of photons in a pixel before the extraction of photons is aborted is ```500```. If there are ```500``` photons in a pixel, this pixel is __saturated__ and meaningless.
+Since a single photon is now defined by only one sharp arrival time in contrast to a very long pulse, there is no need anymore to stick to a long region of interest in time and therefore the output of the photon-stream is truncated only to the region where the air-shower physics takes place, which is from ```15ns``` to ```65ns``` on FACT's common ROI. This is still rather long compared to e.g. the MAGIC telescope ROI of ```30ns```.
 
 ```json
 "SaturatedPixels":[123,456]
 ```
 A list of pixels in ```CHID``` to indicate that the corresponding pixel had an saturated analog time line out of the raw DRS4 chip. The maximim number of saturated pixels is ```100```, as the event is skipped then anyhow. Usually this list is empty. Such saturations happen not only for ultra high energy air showers, but also when the DRS4 calibration was not possible or is broken elseway. 
+
+## Integration into existing air shower reconstruction software
+When the idea of the photon-stream is inverted, the amplitude time lines of an individual pixel can be reconstructed from the photon-stream events which enables FACT to use ist usual air shower reconstruction programs right ahead without modifications.  
