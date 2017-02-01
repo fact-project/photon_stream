@@ -20,13 +20,14 @@ plt.show()
 ```
 ![img](example/example_event_small.gif)
 
-# The Photon Stream Format Rationale
-As a technology demonstrater, the FACT telescope records its observations in a data format which is as close to the read out hardware as possible. This was a great choice to explore the novel SIPM and DRS readout chain, but is rather tedious to do high level physics analysis as flux, spectra and light-curve investigations on the astronomical sources. These raw events are ```1440``` pixels x  ```300``` time slices x ```16```bit dynamic range = 864kB in size. They can not be analyzed independent of each other since readout artifacts can only be removed with knowledge on the previous event, and an additional calibration file for the DRS is needed, which is not straight forward to identify. Although effort was spent to compress the raw events with a dedicated format ```zfits```, the events shrunk only by a factor of about 3 down to about 290kB in size.
+# The Photon-Stream File Format Rationale
+As a technology demonstrater, the FACT telescope records its observations in a format which is as close to the read out hardware as possible. This was a great choice to explore the novel SIPM and DRS4 readout chain, but turns out to be rather tedious to do high level physics analysis as flux, spectra and light-curve investigations on astronomical sources. These raw events are ```1440``` pixels X  ```300``` 500ps time slices X ```16```bit dynamic range = 864kB in size. They can not be analyzed independent of each other since readout artifacts can only be removed with knowledge on the previous event, and an additional calibration file for the DRS4 is needed, which is not straight forward to identify. Although effort was spent to compress the raw events with a dedicated format called ```zfits```, the events from 2011 to 2017 still need 450TB of disk storage.
 
-Now using the photon stream, we can compress events down to a size of 4.5kB for dark nights. Based on this, the idea was born to create a no compromise, only physics file format for the FACT telescope with the potential to fit all events from 2011 to 2017 on a single hard disk drive of 10TB.
-The photon stream format is already fully calibrated and does not need additional files to be interpreted. Further all instrument artifacts have been removed and the events are now truely independent of each other.
+The photon-stream can compress events down to a size of 4.5kB for dark nights. Based on this, the idea was born to create a no compromise, physics only file format for the FACT telescope with the potential to fit all events from 2011 to 2017 on a single hard disk drive of 10TB.
+The photon-stream format is already fully calibrated and does not need additional files to be interpreted. Further all instrument artifacts have been removed and the events are now detectorwise independent of each other.
 
 The photon-stream format is not inteded to investigate anything of the FACT detector, but __only__ to do __astronomy__!
+So the goal is to drop any information that is not crucial for astronomy, but to keep as much of the air shower physics as possible.
 
 ## File Format
 After evaluation of several formats (FITS, massage pack, JSON, custom binary), JSON-lines with gzip was chosen.
