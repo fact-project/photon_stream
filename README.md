@@ -91,3 +91,15 @@ The trigger type of the FACT telescope. There are differnt trigger types for FAC
 - 1: External trigger input 1. Here the GPS module triggers the read out ```59``` times a minute. These events are expected to contain only night sky background.
 - 2: External trigger input 2. The same as external trigger input 1, since the GPS modul was switched from 1 to 2 once.
 - 1024: A random trigger also called "pedestal trigger". These events are also expected to only contain night sky background.
+
+For a full overview of the FACT trigger types, see the [Phd of Patrick Vogler, table 4.3.b](http://e-collection.library.ethz.ch/eserv/eth:48381/eth-48381-02.pdf)
+
+```json
+"Az_deg":-63.253664797474336,"Zd_deg":33.06900475126648
+```
+The pointing direction of the FACT telescope in the moment the event was recorded. This is reconstructed from the ```aux``` (auxilluarry) drive files based on the event time.  ```"Az_deg"``` is the azimuth pointing in degrees, and ```"Zd_deg"``` is the zenith distance pointing in degrees.
+
+```json
+"PhotonArrivals_500ps":[[],[],[]]
+```
+The actual photon stream. A list of lists of arrival times of photons in units of ```500ps```.
