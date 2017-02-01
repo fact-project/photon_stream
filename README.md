@@ -87,7 +87,7 @@ The time stamp is out of the FACT event builder program and can be off the actua
 ```
 The trigger type of the FACT telescope. There are differnt trigger types for FACT, here in the high level format we only have left:
 
-- 4: The self triggered mode, also called "physics trigger" These events are likely to contain light flashes and air showers.
+- 4: The self triggered mode, also called "physics trigger". These events are expected to contain light flashes and air showers.
 - 1: External trigger input 1. Here the GPS module triggers the read out ```59``` times a minute. These events are expected to contain only night sky background.
 - 2: External trigger input 2. The same as external trigger input 1, since the GPS modul was switched from 1 to 2 once.
 - 1024: A random trigger also called "pedestal trigger". These events are also expected to only contain night sky background.
