@@ -59,7 +59,11 @@ def print_status_in_range(start_night, end_night, info):
 
     night_ids = info['fNight'][in_range]
     run_ids = info['fRunID'][in_range]
-    expected_triggers = info['fNumExt1Trigger'][in_range] + info['fNumExt2Trigger'][in_range] + info['fNumPhysicsTrigger'][in_range] + info['fNumPedestalTrigger'][in_range]
+    expected_triggers = (
+        info['fNumExt1Trigger'][in_range] + 
+        info['fNumExt2Trigger'][in_range] + 
+        info['fNumPhysicsTrigger'][in_range] + 
+        info['fNumPedestalTrigger'][in_range])
     actual_triggers = info['photon_stream_NumTrigger'][in_range]
     exisences = info['photon_stream_exists'][in_range]
     completation_ratios = actual_triggers/expected_triggers
