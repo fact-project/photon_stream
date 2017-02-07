@@ -5,7 +5,17 @@ import subprocess
 import gzip
 
 def dummy_qsub(command):
+    """
+    Simulates a qsub service to enable unit testing of a qsub submitter.
+    photon_stream.production.submit_to_qsub.submit_to_qsub(). It simulates 
+    further simulates fact-tools and its output. Asserts that the qsub 
+    parameters are valid and creates a dummy output based on the input.
 
+    Parameters
+    ----------
+    command         A qsub command list as it would be given to 
+                    subprocess.call() in order to submitt to qsub.
+    """
     assert command[0] == 'qsub'
     assert command[1] == '-q'
     queue = command[2]
