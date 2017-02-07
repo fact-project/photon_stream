@@ -34,6 +34,6 @@ class Run(object):
     def __repr__(self):
         out = 'Run('
         out += 'Night '+str(self.night)+', '
-        out += 'Id '+str(self.id)
+        out += 'Run '+str(self.id)
         out += ')\n'
         return out
