@@ -34,7 +34,10 @@ class Event(object):
         add_event_2_ax(self, ax, mask=mask)
 
     def __repr__(self):
-        out = 'FactEvent('
-        out += 'Id '+str(self.id)
+        out = 'Event('
+        out += 'Night '+str(self.run.night)+', '
+        out += 'Run '+str(self.run.id)+', '
+        out += 'Event '+str(self.id)+', '
+        out += 'photons '+str(self.photon_stream.number_photons)
         out += ')\n'
         return out
