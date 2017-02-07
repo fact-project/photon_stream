@@ -27,6 +27,51 @@ def submit_to_qsub(
     email='sebmuell@phys.ethz.ch',
     use_dummy_qsub=False,
     runinfo=None):
+    """
+    Submitts jobs into qsub to process the FACT raw observations to the novel
+    photon-stream representation.
+
+    Parameters
+    ----------
+
+    out_dir             The path to the output directory where the photon-stream
+                        is collected. The out_dir is created if not existing.
+    
+    start_night         The start night integer 'YYYYmmnn', processes only runs 
+                        after this night. (default 20110101)
+
+    end_night           The end night integer 'YYYYmmnn', process only runs
+                        until this night. (default 20501231)
+
+    only_a_fraction     A ratio between 0.0 and 1.0 to only process a 
+                        random fraction of the runs. Usefull for debugging over 
+                        long periodes of observations. (default 1.0)
+
+    fact_dir            The path to the FACT files. At ISDC this is '/fact/'.
+
+    java_path           The path to the JAVA run time environment to be used for
+                        fact-tools.
+
+    fact_tools_jar_path The path to the fact-tools java-jar executable file.
+
+    fact_tools_xml_path The path to the fact-tools steering xml file.
+
+    tmp_dir_base_name   The base name of the temporary directory on the qsub 
+                        worker nodes. (default 'fact_photon_stream_JOB_ID_')
+
+    queue               The name of the queue to submitt to. 
+                        (default 'fact_medium')
+    
+    email               The email address of the poor guy who is running the 
+                        conversion. (default 'sebmuell@phys.ethz.ch')
+
+    use_dummy_qsub      Uses not the real qsub but just a dummy which creates 
+                        dummy output files. For unit testing. (default False)
+
+    runinfo             A pandas DataFrame() of the FACT run-info-database which
+                        is used as a reference for the runs to be processed.
+                        (default None, download the latest run-info on the fly)
+    """
     
     print('Start photon stream conversion ...')
 

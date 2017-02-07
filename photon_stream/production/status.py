@@ -8,6 +8,12 @@ from . import tools
 
 
 def status(photon_stream_dir, known_runs_database='known_runs.msg'):
+    """
+    Estimates the avaiability status of FACT events in a 'phs' directory using 
+    the FACT run-info-database as a reference.
+    Writes a FACT run-info-database to disk with additional columns for the
+    number of events found in each run in the 'phs' directory.
+    """
     info_path = os.path.abspath(
 	os.path.join(photon_stream_dir, known_runs_database))
     try:
@@ -51,6 +57,25 @@ def status(photon_stream_dir, known_runs_database='known_runs.msg'):
 
 
 def runs_in_range_str(info, start_night, end_night, max_trigger_rate=200):
+    """
+    Returns an overview string with a table of all runs in the range between the
+    start_night and the end_night.
+
+    Parameters
+    ----------
+    info                The extended FACT run-info-database of 'known runs'. 
+                        Created by photon_stream.production.status.status().
+
+    start_night         The start night to be shown in the table.
+
+    end_night           The end night in the table to be shown. One integer in 
+                        format YYYYmmnn. 1-10 decodes the night 'nn', 
+                        100-1000 decodes the month 'mm', and 1000-1000000 is the
+                        year 'yyyy'.
+
+    max_trigger_rate    Cuts all runs with less then 300*max_trigger_rate events
+                        in it.
+    """
     past_start = info['fNight'] >= start_night
     before_end = info['fNight'] < end_night
     is_observation_run = info['fRunTypeKey'] == runinfo.observation_key
@@ -101,6 +126,18 @@ def runs_in_range_str(info, start_night, end_night, max_trigger_rate=200):
 
 
 def overview_str(info, max_trigger_rate=120):
+    """
+    Returns a short overview string with a table of all events avaiable
+    according to the extended FACT run-info-database of 'info'.
+
+    Parameters
+    ----------
+    info                The extended FACT run-info-database of 'known runs'. 
+                        Created by photon_stream.production.status.status().
+
+    max_trigger_rate    Cuts all runs with less then 300*max_trigger_rate events
+                        in it.
+    """
     is_obs = info['fRunTypeKey'] == runinfo.observation_key
 
     rate_below_max_trigger_rate = (
