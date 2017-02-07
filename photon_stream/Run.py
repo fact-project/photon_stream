@@ -3,7 +3,19 @@ from .JsonLinesGzipReader import JsonLinesGzipReader
 import pandas as pd
 
 class Run(object):
+    """
+    A Run() contains Events().
+    The Events are not random access but sequentially loaded from a file as 
+    needed.
+    """
     def __init__(self, path):
+        """
+        Load a FACT observation run from a file.
+
+        Parameters
+        ----------
+        path        The path to the observation file.
+        """
         self.reader = JsonLinesGzipReader(path)
 
         preview_event = next(JsonLinesGzipReader(path))
@@ -19,6 +31,10 @@ class Run(object):
             run=self)
 
     def inspect(self):
+        """
+        Returns a pandas DataFrame() containing a summarized statistics of this 
+        run.
+        """
         inspection = pd.DataFrame([{
             'number_of_saturated_pixels': len(event.saturated_pixels),
             'trigger_type': event.trigger_type,
