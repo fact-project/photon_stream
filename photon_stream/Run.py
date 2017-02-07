@@ -5,8 +5,29 @@ import pandas as pd
 class Run(object):
     """
     A Run() contains Events().
-    The Events are not random access but sequentially loaded from a file as 
-    needed.
+    The Events are sequentially loaded from a file as needed.
+
+    Fields
+    ------
+    id          The unique run identifier in the night where this run was 
+                recorded
+
+    night       The unique night identifier indicating the night when this run
+                was recorded. Integer 'YYYYmmnn'.
+
+    Example usage
+    -------------
+
+    To access the events in a run just loop over it:
+
+    run = Run('YYYYmmnn_rrr.phs.jsonl.gz')
+    for event in run:
+        event.plot()
+        plt.show()
+
+    To just get the next event:
+
+    event = next(run)
     """
     def __init__(self, path):
         """

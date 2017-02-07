@@ -3,6 +3,10 @@ import json
 import os
 
 class JsonLinesGzipReader(object):
+    """
+    Sequentially reads a gzipped JSON-Lines file line by line and provides 
+    dictionaries for each line.
+    """
     def __init__(self, path):
         self.path = os.path.abspath(path)
         self.file = gzip.open(path, "rt")
