@@ -1,5 +1,6 @@
 import numpy as np
 from ..PhotonStream import PhotonStream
+from ..Event import Event
 
 linebreak = np.array([np.iinfo(np.uint8).max], dtype=np.uint8)
 
@@ -60,3 +61,58 @@ def read_photonstream_from_file(fin):
         else:
             phs.time_lines[pixel].append(symbol)
     return phs
+
+
+
+def append_saturated_pixels_to_file(saturated_pixels, fout):
+    # WRITE NUMBER OF PIXELS
+    number_of_pixels = len(saturated_pixels)
+    fout.write(np.uint16(number_of_pixels).tobytes())
+
+    saturated_pixels_raw = np.array(saturated_pixels, dtype=np.uint16)
+    fout.write(saturated_pixels_raw.tobytes())
+
+
+def read_saturated_pixels_from_file(fin):
+    # READ NUMBER OF PIXELS
+    number_of_pixels = np.fromfile(fin, dtype=np.uint16, count=1)[0]
+
+    # READ PHOTONSTREAM
+    saturated_pixels_raw = np.fromfile(
+        fin, 
+        dtype=np.uint16, 
+        count=number_of_pixels)
+    return saturated_pixels_raw.tolist()
+
+
+def append_event_to_file(event, fout):
+    fout.write(np.uint32(event.run.night).tobytes())
+    fout.write(np.uint32(event.run.id).tobytes())
+    fout.write(np.uint32(event.id).tobytes())
+    # 12
+    fout.write(np.uint32(event._time_unix_s).tobytes())
+    fout.write(np.uint32(event._time_unix_us).tobytes())
+    fout.write(np.uint32(event.trigger_type).tobytes())
+    # 24
+    fout.write(np.float32(event.zd).tobytes())
+    fout.write(np.float32(event.az).tobytes())
+    # 32
+    append_photonstream_to_file(event.photon_stream, fout)
+    append_saturated_pixels_to_file(event.saturated_pixels, fout)
+
+
+def read_event_from_file(fin):
+    event = Event()
+    header = np.fromfile(fin, dtype=np.uint32, count=6)
+    event.night = header[0]
+    event.run_id = header[1]
+    event.id = header[2]
+    event._time_unix_s = header[3]
+    event._time_unix_us = header[4]
+    event.trigger_type = header[5]
+    pointing = np.fromfile(fin, dtype=np.float32, count=2)
+    event.zd = pointing[0]
+    event.az = pointing[1]
+    event.photon_stream = read_photonstream_from_file(fin)
+    event.saturated_pixels = read_saturated_pixels_from_file(fin)
+    return event
