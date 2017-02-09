@@ -1,74 +1,64 @@
 # Binary Photon-Stream Format for FACT -- Pass4
 
 
-### Event Header
+### Event Header (32 Byte)
     
-    Night Id
     uint32
     +--------+--------+--------+--------+
-    |ZZZZZZZZ|ZZZZZZZZ|ZZZZZZZZ|ZZZZZZZZ|
+    |              Night Id             |
     +--------+--------+--------+--------+
 
-    Run Id
     uint32
     +--------+--------+--------+--------+
-    |ZZZZZZZZ|ZZZZZZZZ|ZZZZZZZZ|ZZZZZZZZ|
+    |               Run Id              |
     +--------+--------+--------+--------+
     
-    Event Id
     uint32
     +--------+--------+--------+--------+
-    |ZZZZZZZZ|ZZZZZZZZ|ZZZZZZZZ|ZZZZZZZZ|
+    |             Event Id              |
     +--------+--------+--------+--------+
     
-    UNIX time seconds
     uint32
     +--------+--------+--------+--------+
-    |ZZZZZZZZ|ZZZZZZZZ|ZZZZZZZZ|ZZZZZZZZ|
+    |          UNIX time [s]            |
     +--------+--------+--------+--------+
 
-    UNIX time micro seconds
     uint32
     +--------+--------+--------+--------+
-    |ZZZZZZZZ|ZZZZZZZZ|ZZZZZZZZ|ZZZZZZZZ|
+    |      UNIX time [us] mod. [s]      |
     +--------+--------+--------+--------+
     
-    Trigger type
     uint32
     +--------+--------+--------+--------+
-    |ZZZZZZZZ|ZZZZZZZZ|ZZZZZZZZ|ZZZZZZZZ|
+    |            Trigger type           |
     +--------+--------+--------+--------+
     
-    Pointing Zenith Distance
     float32
     +--------+--------+--------+--------+
-    |FFFFFFFF|FFFFFFFF|FFFFFFFF|FFFFFFFF|
+    |   Pointing Zenith Distance [Deg]  |
     +--------+--------+--------+--------+
     
-    Pointing Azimuth
     float32
     +--------+--------+--------+--------+
-    |FFFFFFFF|FFFFFFFF|FFFFFFFF|FFFFFFFF|
+    |          Pointing Azimuth  [Deg]  |
     +--------+--------+--------+--------+
     
     
-### Photon-Stream Header
-
-    Slice time duration
+### Photon-Stream Header (8 Byte)
+    
     float32
     +--------+--------+--------+--------+
-    |FFFFFFFF|FFFFFFFF|FFFFFFFF|FFFFFFFF|
+    |         Slice time duration [s]   |
     +--------+--------+--------+--------+
 
-    Number of pixels plus number of photons 
-    (the size of the photon-stream in bytes)
     uint32
     +--------+--------+--------+--------+
-    |ZZZZZZZZ|ZZZZZZZZ|ZZZZZZZZ|ZZZZZZZZ|
+    |   Number of pixels and photons    |
     +--------+--------+--------+--------+
+    The size of the photon-stream in bytes.
 
 
-### Photon-Stream
+### Photon-Stream (num. photons + num. pixel Byte)
 
          Photon arrival times in slices
          uint8 
@@ -102,16 +92,20 @@
     Pixel
     CHID
 
-### Saturated Pixels
+    A list of lists of photon arrival time slices.
+    The line break from one pixel to the next one is marked by the linebreab 
+    symbol 2^8 = 256. This leaves 255 slices to encode arrival times.
 
-    Number of saturated pixels
+### Saturated Pixels (2 + 2 * num. saturated pixel Byte)
+   
     uint16
     +--------+--------+
     |        N        |
     +--------+--------+
+    Number of saturated pixels
 
-    CHIDS of saturated pixels
     uint16
     +--------+--------+--------+--------+     +--------+--------+
     |      CHID 0     |      CHID 1     | ... |      CHID N-1   |
     +--------+--------+--------+--------+     +--------+--------+
+    A list of CHIDS of saturated pixels
