@@ -122,7 +122,6 @@ def read_event_from_file(fin):
         event.az = pointing[1]
         event.photon_stream = read_photonstream_from_file(fin)
         event.saturated_pixels = read_saturated_pixels_from_file(fin)
-        print(event)
         return event
     except:
         raise StopIteration
