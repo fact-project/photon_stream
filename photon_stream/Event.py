@@ -79,8 +79,8 @@ class Event(object):
 
     def __repr__(self):
         out = 'Event('
-        out += 'Night '+str(self.run.night)+', '
-        out += 'Run '+str(self.run.id)+', '
+        out += 'Night '+str(self.night)+', '
+        out += 'Run '+str(self.run_id)+', '
         out += 'Event '+str(self.id)+', '
         out += 'photons '+str(self.photon_stream.number_photons)
         out += ')\n'
