@@ -172,9 +172,8 @@ def overview_str(info, max_trigger_rate=120):
     out += 'cuts\n'
     out += '----\n'
     out += '- only observation runs (fRunTypeKey == 1)\n'
-    out += '- only expected trigger types: [physics, pedestal, ext1, ext2]\n'
+    out += '- only expected trigger types: [4:physics, 1024:pedestal, 1:ext1, 2:ext2]\n'
     out += '- expected trigger intensity < 300s * '+str(max_trigger_rate)+'Hz\n'
-    out += '- only runs with at least 1 expected trigger\n'
     out += '\n'
     out += '    from '+str(info['fNight'].min())+' to '+str(info['fNight'].max())+'\n'
 
