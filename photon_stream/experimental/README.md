@@ -63,38 +63,38 @@
          Photon arrival times in slices (EXAMPLE, shape and structure depent on the individual event)
          uint8 
          +--------+--------+--------+--------+
-       0 |   XXX  |   XXX  |   XXX  |   256  |
+       0 |   XXX  |   XXX  |   XXX  |   255  |
          +--------+--------+--------+--------+   
-       1 |   XXX  |   XXX  |   256  |
+       1 |   XXX  |   XXX  |   255  |
          +--------+--------+--------+ 
-       2 |   XXX  |   256  |
+       2 |   XXX  |   255  |
          +--------+--------+--------+--------+--------+
-       3 |   XXX  |   XXX  |   XXX  |   XXX  |   256  |
+       3 |   XXX  |   XXX  |   XXX  |   XXX  |   255  |
          +--------+--------+--------+--------+--------+--------+--------+ 
-       4 |   XXX  |   XXX  |   XXX  |   XXX  |   XXX  |   XXX  |   256  |
+       4 |   XXX  |   XXX  |   XXX  |   XXX  |   XXX  |   XXX  |   255  |
          +--------+--------+--------+--------+--------+--------+--------+   
-       5 |   XXX  |   256  |
+       5 |   XXX  |   255  |
          +--------+--------+
-       6 |   256  |
+       6 |   255  |
          +--------+--------+--------+
-       7 |   XXX  |   XXX  |   256  |
+       7 |   XXX  |   XXX  |   255  |
          +--------+--------+--------+
        .
        .
        .
          +--------+--------+
-    1437 |   XXX  |   256  |
+    1437 |   XXX  |   255  |
          +--------+--------+--------+--------+--------+
-    1438 |   XXX  |   XXX  |   XXX  |   XXX  |   256  |
+    1438 |   XXX  |   XXX  |   XXX  |   XXX  |   255  |
          +--------+--------+--------+--------+--------+
-    1439 |   XXX  |   XXX  |   256  |
+    1439 |   XXX  |   XXX  |   255  |
          +--------+--------+--------+
     Pixel
     CHID
 
     A list of lists of photon arrival time slices.
     The line break from one pixel to the next one is marked by the linebreab 
-    symbol 2^8 = 256. This leaves 255 slices to encode arrival times.
+    symbol 2^8-1 = 255. This leaves 255 (0-254) slices to encode arrival times.
 
 ### Saturated Pixels (2 + 2 * num. saturated pixel Byte)
    
