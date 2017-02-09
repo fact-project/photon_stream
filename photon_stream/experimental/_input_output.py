@@ -31,17 +31,21 @@ def read_photonstream_from_file(fin):
     phs = PhotonStream()
 
     # read slice duration
-    slice_duration = np.fromfile(fin, dtype=np.float32, count=1)[0]
-    phs.slice_duration = slice_duration
+    phs.slice_duration = np.fromstring(
+        fin.read(4),
+        dtype=np.float32,
+        count=1)[0]
 
     # read number of pixels and time lines
-    number_of_pixels_and_photons = np.fromfile(fin, dtype=np.uint32, count=1)[0]
+    number_of_pixels_and_photons = np.fromstring(
+        fin.read(4),
+        dtype=np.uint32,
+        count=1)[0]
 
     # read photon-stream
-    raw_time_lines = np.fromfile(
-        fin, 
-        dtype=np.uint8, 
-        count=number_of_pixels_and_photons)
+    raw_time_lines = np.fromstring(
+        fin.read(number_of_pixels_and_photons),
+        dtype=np.uint8)
 
     phs.time_lines = []
     if len(raw_time_lines) > 0:
@@ -69,14 +73,16 @@ def append_saturated_pixels_to_file(saturated_pixels, fout):
 
 def read_saturated_pixels_from_file(fin):
     # READ NUMBER OF PIXELS
-    number_of_pixels = np.fromfile(fin, dtype=np.uint16, count=1)[0]
+    number_of_pixels = np.fromstring(
+        fin.read(2),
+        dtype=np.uint16,
+        count=1)[0]
 
     # READ saturated pixel CHIDs
-    saturated_pixels_raw = np.fromfile(
-        fin, 
-        dtype=np.uint16, 
-        count=number_of_pixels)
-    return saturated_pixels_raw.tolist()
+    saturated_pixels_raw = np.fromstring(
+        fin.read(number_of_pixels*2),
+        dtype=np.uint16)
+    return saturated_pixels_raw
 
 
 def append_event_to_file(event, fout):
@@ -96,19 +102,27 @@ def append_event_to_file(event, fout):
 
 
 def read_event_from_file(fin):
-    event = Event()
-    header = np.fromfile(fin, dtype=np.uint32, count=6)
-    if len(header) < 6:
+    try:
+        event = Event()
+        header = np.fromstring(
+            fin.read(24),
+            dtype=np.uint32,
+            count=6)
+        event.night = header[0]
+        event.run_id = header[1]
+        event.id = header[2]
+        event._time_unix_s = header[3]
+        event._time_unix_us = header[4]
+        event.trigger_type = header[5]
+        pointing = np.fromstring(
+            fin.read(8),
+            dtype=np.float32,
+            count=2)
+        event.zd = pointing[0]
+        event.az = pointing[1]
+        event.photon_stream = read_photonstream_from_file(fin)
+        event.saturated_pixels = read_saturated_pixels_from_file(fin)
+        print(event)
+        return event
+    except:
         raise StopIteration
-    event.night = header[0]
-    event.run_id = header[1]
-    event.id = header[2]
-    event._time_unix_s = header[3]
-    event._time_unix_us = header[4]
-    event.trigger_type = header[5]
-    pointing = np.fromfile(fin, dtype=np.float32, count=2)
-    event.zd = pointing[0]
-    event.az = pointing[1]
-    event.photon_stream = read_photonstream_from_file(fin)
-    event.saturated_pixels = read_saturated_pixels_from_file(fin)
-    return event

@@ -3,6 +3,7 @@ import photon_stream as ps
 import tempfile
 import os
 import pkg_resources
+import gzip
 
 def test_binary_io():
 
@@ -28,7 +29,7 @@ def test_binary_io():
                 try:
                     phs = ps.experimental.io.read_photonstream_from_file(bf)
                     run_ps_back.append(phs)
-                except IndexError:
+                except:
                     break
         
         assert len(run_ps_back) == len(run_ps)
@@ -64,11 +65,11 @@ def test_jsonl2binary():
 
         binary_path = os.path.join(tmp, '20170119_229.phs.bin')
 
-        with open(binary_path, 'wb') as fout:
+        with gzip.open(binary_path, 'wb') as fout:
             for event in run_in:
                 ps.experimental.io.append_event_to_file(event, fout)
 
-        with open(binary_path, 'rb') as fin:
+        with gzip.open(binary_path, 'rb') as fin:
             while True:
                 try:
                     run_back.append(ps.experimental.io.read_event_from_file(fin))
