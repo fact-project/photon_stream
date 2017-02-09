@@ -60,7 +60,7 @@
 
 ### Photon-Stream (num. photons + num. pixel Byte)
 
-         Photon arrival times in slices
+         Photon arrival times in slices (EXAMPLE, shape and structure depent on the individual event)
          uint8 
          +--------+--------+--------+--------+
        0 |   XXX  |   XXX  |   XXX  |   256  |
