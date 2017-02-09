@@ -5,20 +5,17 @@ from ..Event import Event
 linebreak = np.array([np.iinfo(np.uint8).max], dtype=np.uint8)
 
 def append_photonstream_to_file(phs, fout):
-    # WRITE NUMBER OF TIME LINES
-    number_of_time_lines = len(phs.time_lines)
-    fout.write(np.uint32(number_of_time_lines).tobytes())
-
-    # WRITE NUMBER OF PHOTONS
-    number_of_photons = phs.number_photons
-    fout.write(np.uint32(number_of_photons).tobytes())
 
     # WRITE SLICE DURATION
     fout.write(np.float32(phs.slice_duration).tobytes())
 
+    # Write number of pixels plus number of photons
+    number_of_pixels_and_photons = len(phs.time_lines) + phs.number_photons
+    fout.write(np.uint32(number_of_pixels_and_photons).tobytes())
+
     # WRITE PHOTON ARRIVAL SLICES
     raw_time_lines = np.zeros(
-        number_of_photons+number_of_time_lines, 
+        number_of_pixels_and_photons, 
         dtype=np.uint8)
     pos = 0
     for time_line in phs.time_lines:
@@ -33,35 +30,32 @@ def append_photonstream_to_file(phs, fout):
 def read_photonstream_from_file(fin):
     phs = PhotonStream()
 
-    # READ NUMBER OF TIME LINES
-    number_of_time_lines = np.fromfile(fin, dtype=np.uint32, count=1)[0]
-
-    # READ NUMBER OF PHOTONS
-    number_of_photons = np.fromfile(fin, dtype=np.uint32, count=1)[0]
-
-    # READ SLICE DURATION
+    # read slice duration
     slice_duration = np.fromfile(fin, dtype=np.float32, count=1)[0]
     phs.slice_duration = slice_duration
 
-    # READ PHOTONSTREAM
+    # read number of pixels and time lines
+    number_of_pixels_and_photons = np.fromfile(fin, dtype=np.uint32, count=1)[0]
+
+    # read photon-stream
     raw_time_lines = np.fromfile(
         fin, 
         dtype=np.uint8, 
-        count=number_of_photons+number_of_time_lines)
+        count=number_of_pixels_and_photons)
 
     phs.time_lines = []
-    for pixel in range(number_of_time_lines):
-        empty_time_line = []
-        phs.time_lines.append(empty_time_line)
+    if len(raw_time_lines) > 0:
+        phs.time_lines.append([])
 
     pixel = 0
-    for symbol in raw_time_lines:
+    for i, symbol in enumerate(raw_time_lines):
         if symbol == linebreak:
             pixel += 1
+            if i+1 < len(raw_time_lines):
+                phs.time_lines.append([])
         else:
             phs.time_lines[pixel].append(symbol)
     return phs
-
 
 
 def append_saturated_pixels_to_file(saturated_pixels, fout):
@@ -77,7 +71,7 @@ def read_saturated_pixels_from_file(fin):
     # READ NUMBER OF PIXELS
     number_of_pixels = np.fromfile(fin, dtype=np.uint16, count=1)[0]
 
-    # READ PHOTONSTREAM
+    # READ saturated pixel CHIDs
     saturated_pixels_raw = np.fromfile(
         fin, 
         dtype=np.uint16, 
@@ -86,8 +80,8 @@ def read_saturated_pixels_from_file(fin):
 
 
 def append_event_to_file(event, fout):
-    fout.write(np.uint32(event.run.night).tobytes())
-    fout.write(np.uint32(event.run.id).tobytes())
+    fout.write(np.uint32(event.night).tobytes())
+    fout.write(np.uint32(event.run_id).tobytes())
     fout.write(np.uint32(event.id).tobytes())
     # 12
     fout.write(np.uint32(event._time_unix_s).tobytes())
@@ -104,6 +98,8 @@ def append_event_to_file(event, fout):
 def read_event_from_file(fin):
     event = Event()
     header = np.fromfile(fin, dtype=np.uint32, count=6)
+    if len(header) < 6:
+        raise StopIteration
     event.night = header[0]
     event.run_id = header[1]
     event.id = header[2]
