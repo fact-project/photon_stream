@@ -32,7 +32,11 @@ class Event(object):
     time                The UNIX datetime when the event was recorded by the
                         event builder. (uncertainty is 30ms)
 
-    run                 The run where this events belongs to.
+    run_id              The unique run identifier of the run of a night where 
+                        this events belongs to.
+
+    night               The unique night identifier indicating the night when 
+                        this event was recorded. Integer 'YYYYmmnn'.
 
     photon_stream       The photon-stream of all photons detected by all pixels
                         in this event.
@@ -41,7 +45,7 @@ class Event(object):
         pass
 
     @classmethod
-    def from_event_dict_and_run(cls, event_dict, run):
+    def from_event_dict_and_run(cls, event_dict):
         """
         Usually called by the Run() to produce Event() using the raw dictionary 
         out of the 'YYYYmmnn_rrr.phs.jsonl.gz' files.
@@ -58,7 +62,8 @@ class Event(object):
         event.time = dt.datetime.utcfromtimestamp(
             event._time_unix_s + event._time_unix_us / 1e6)
 
-        event.run = run
+        event.run_id = event_dict['Run']
+        event.night = event_dict['Night']
 
         event.photon_stream = PhotonStream.from_event_dict(event_dict)
         return event

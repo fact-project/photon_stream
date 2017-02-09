@@ -47,9 +47,7 @@ class Run(object):
         return self
 
     def __next__(self):
-        return Event.from_event_dict_and_run(
-            event_dict=next(self.reader),
-            run=self)
+        return Event.from_event_dict_and_run(next(self.reader))
 
     def inspect(self):
         """

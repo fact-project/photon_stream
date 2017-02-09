@@ -17,7 +17,7 @@ def add_event_2_ax(event, ax, mask=None, color='b'):
     if mask is not None:
         xyt = xyt[mask]
 
-    ax.set_title('Night '+str(event.run.night)+', Run '+str(event.run.id)+', Event '+str(event.id))
+    ax.set_title('Night '+str(event.night)+', Run '+str(event.run_id)+', Event '+str(event.id))
     fovR = event.photon_stream.geometry['fov_radius']
     p = Circle((0, 0), fovR, edgecolor='k', facecolor='none', lw=1.)
     ax.add_patch(p)
@@ -44,7 +44,8 @@ def save_image_sequence(
     start_number=0, 
     start_azimuth=0.0, 
     end_azimuth=360.0,
-    mask=None):
+    mask=None,
+    image_format='png'):
     plt.rcParams.update({'font.size': 12})
     plt.rc('text', usetex=True)
     plt.rc('font', family='serif')
@@ -56,12 +57,12 @@ def save_image_sequence(
     azimuths = np.linspace(start_azimuth, end_azimuth, steps, endpoint=False)
     step = start_number
     for azimuth in azimuths:
-        ax.view_init(elev=15., azim=azimuth)
+        ax.view_init(elev=25., azim=azimuth)
         plt.subplots_adjust(left=0.01, right=0.99, top=0.99, bottom=0.01)
         plt.savefig(
             os.path.join(
                 path, 
-                '3D_'+str(step).zfill(6) + '.png'), 
+                '3D_'+str(step).zfill(6) + '.' + image_format), 
             dpi=180)
         step += 1
 

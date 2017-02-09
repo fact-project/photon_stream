@@ -42,5 +42,5 @@ def test_event_knows_runid_and_nightint():
         'tests/resources/20170119_229_pass4_100events.phs.jsonl.gz')
 
     event = next(ps.Run(run_path))
-    assert event.run.night == 20170119
-    assert event.run.id == 229
+    assert event.night == 20170119
+    assert event.run_id == 229
