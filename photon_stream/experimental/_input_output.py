@@ -1,6 +1,10 @@
 import numpy as np
 from ..PhotonStream import PhotonStream
 from ..Event import Event
+from array import array
+import datetime as dt
+import os
+import gzip
 
 linebreak = np.array([np.iinfo(np.uint8).max], dtype=np.uint8)
 
@@ -49,14 +53,14 @@ def read_photonstream_from_file(fin):
 
     phs.time_lines = []
     if len(raw_time_lines) > 0:
-        phs.time_lines.append([])
+        phs.time_lines.append(array('B'))
 
     pixel = 0
     for i, symbol in enumerate(raw_time_lines):
         if symbol == linebreak:
             pixel += 1
             if i+1 < len(raw_time_lines):
-                phs.time_lines.append([])
+                phs.time_lines.append(array('B'))
         else:
             phs.time_lines[pixel].append(symbol)
     return phs
@@ -122,6 +126,32 @@ def read_event_from_file(fin):
         event.az = pointing[1]
         event.photon_stream = read_photonstream_from_file(fin)
         event.saturated_pixels = read_saturated_pixels_from_file(fin)
+
+        event.time = dt.datetime.utcfromtimestamp(
+            event._time_unix_s + event._time_unix_us / 1e6)
         return event
     except:
         raise StopIteration
+
+
+class Run(object):
+    """
+    Sequentially reads a gzipped binary run and provides events.
+    """
+    def __init__(self, path):
+        self.path = os.path.abspath(path)
+        self.file = gzip.open(path, "rb")
+
+    def __exit__(self):
+        self.file.close()
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        return read_event_from_file(self.file)
+
+    def __repr__(self):
+        out = 'BinaryRun('
+        out += self.path+')\n'
+        return out

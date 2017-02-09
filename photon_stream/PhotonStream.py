@@ -2,6 +2,7 @@ from math import nan
 from copy import deepcopy
 import fact
 import numpy as np
+from array import array
 
 pixels = fact.pixels.get_pixel_dataframe()
 pixels.sort_values('CHID', inplace=True)
@@ -24,8 +25,10 @@ class PhotonStream(object):
     @classmethod
     def from_event_dict(cls, event_dict):
         ps = cls()
-        ps.slice_duration = 0.5e-9
-        ps.time_lines = event_dict['PhotonArrivals_500ps']
+        ps.slice_duration = np.float32(0.5e-9)
+        ps.time_lines = []
+        for time_line in event_dict['PhotonArrivals_500ps']:
+            ps.time_lines.append(array('B', time_line))
         return ps
 
     @property
@@ -76,7 +79,7 @@ class PhotonStream(object):
                 if arrival_time >= end_time:
                     time_line.remove(arrival_slice)
 
-    def flatten(self, start_time=15e-9, end_time=65e-9):
+    def flatten(self):
         xyt = []
         for px, pixel_photons in enumerate(self.time_lines):
             for photon_slice in pixel_photons:
@@ -85,10 +88,7 @@ class PhotonStream(object):
                         geometry['pixel_zenith'][px],
                         photon_slice * self.slice_duration
                         ])
-        xyt = np.array(xyt)
-        past_start = xyt[:, 2] >= start_time
-        before_end = xyt[:, 2] <= end_time
-        return xyt[past_start*before_end]
+        return np.array(xyt)
 
     def __repr__(self):
         info = 'PhotonStream('

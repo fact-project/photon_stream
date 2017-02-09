@@ -51,19 +51,20 @@ class Event(object):
         out of the 'YYYYmmnn_rrr.phs.jsonl.gz' files.
         """
         event = cls()
+        event.run_id = np.uint32(event_dict['Run'])
+        event.night = np.uint32(event_dict['Night'])
+        event.id = np.uint32(event_dict['Event'])
 
-        event.trigger_type = event_dict['Trigger']
-        event.zd = event_dict['Zd_deg']
-        event.az = event_dict['Az_deg']
-        event.id = event_dict['Event']
-        event._time_unix_s = event_dict['UnixTime_s_us'][0]
-        event._time_unix_us = event_dict['UnixTime_s_us'][1]
-        event.saturated_pixels = event_dict['SaturatedPixels']
+        event._time_unix_s = np.uint32(event_dict['UnixTime_s_us'][0])
+        event._time_unix_us = np.uint32(event_dict['UnixTime_s_us'][1])
+        event.trigger_type = np.uint32(event_dict['Trigger'])
+
+        event.zd = np.float32(event_dict['Zd_deg'])
+        event.az = np.float32(event_dict['Az_deg'])
+
+        event.saturated_pixels = np.array(event_dict['SaturatedPixels'], dtype=np.uint16)
         event.time = dt.datetime.utcfromtimestamp(
             event._time_unix_s + event._time_unix_us / 1e6)
-
-        event.run_id = event_dict['Run']
-        event.night = event_dict['Night']
 
         event.photon_stream = PhotonStream.from_event_dict(event_dict)
         return event
