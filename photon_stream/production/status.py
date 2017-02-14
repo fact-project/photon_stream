@@ -169,12 +169,6 @@ def overview_str(info, max_trigger_rate=120):
     out += 'Photon-Stream for FACT\n'
     out += '----------------------\n'
     out += '\n'
-    out += 'cuts\n'
-    out += '----\n'
-    out += '- only observation runs (fRunTypeKey == 1)\n'
-    out += '- only expected trigger types: [4:physics, 1024:pedestal, 1:ext1, 2:ext2]\n'
-    out += '- expected trigger intensity < 300s * '+str(max_trigger_rate)+'Hz\n'
-    out += '\n'
     out += '    from '+str(info['fNight'].min())+' to '+str(info['fNight'].max())+'\n'
 
     out += '    '+table_header_str()
@@ -206,6 +200,13 @@ def overview_str(info, max_trigger_rate=120):
         out += '  '+table_row_str(
             expected_events=expected_triggers_in_year, 
             actual_events=actual_triggers_in_year)
+    
+    out += '\n'
+    out += 'cuts\n'
+    out += '----\n'
+    out += '- only observation runs (fRunTypeKey == 1)\n'
+    out += '- only expected trigger types: [4:physics, 1024:pedestal, 1:ext1, 2:ext2]\n'
+    out += '- expected trigger intensity < 300s * '+str(max_trigger_rate)+'Hz\n'
     out += '\n'
     return out
 
