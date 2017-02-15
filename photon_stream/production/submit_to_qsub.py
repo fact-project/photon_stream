@@ -181,5 +181,8 @@ def submit_to_qsub(
         if use_dummy_qsub:
             dummy_qsub(cmd)
         else:
-            sp.check_output(cmd)
+            qsub_return_code = sp.call(cmd)
+            if qsub_return_code > 0:
+                print('qsub return code: ', qsub_return_code)
+
     print('Done.')
