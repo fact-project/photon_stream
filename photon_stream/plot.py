@@ -68,43 +68,91 @@ def save_image_sequence(
 
     plt.close()
 
-def save_video(event, path, mask=None ,steps=12, fps=25, threads='auto'):
-    with tempfile.TemporaryDirectory() as work_dir:
+def save_video(
+    event, 
+    outpath, 
+    mask=None, 
+    steps=12, 
+    fps=25, 
+    threads='auto', 
+    work_dir=None):
+    """
+    Saves a H264 1080p video of a 3D rendering of a photon-stream event to the 
+    outputpath. In the 3D rendering the event is rotated 360 degrees around the 
+    optical axis of the telescope.
+
+    Parameters
+    ----------
+
+    event       The photon-stream event.
+
+    outpath     The output path of the video file. 
+
+    mask        A photon-stream mask. If the mask is not None, the rendering 
+                will alternatingly in 10 degree intervalls show the full 
+                photon-stream and only the masked part of the photon-stream.
+                (Default is None) 
+
+    steps       The number of images used within an 10 degree intervall.
+                (Default is 12, which results in 12*36=432 images for the video)
+
+    threads     Tells the avconv video converter to use multiple threads or not.
+                (Default is avconv's 'auto' option)
+
+    work_dir    The intermediate working directory to host the raw images of the 
+                video sequence. If work_dir is None, a temporary directory is 
+                created automatically, otherwise the work_dir remains after the
+                video processing to access the raw images.
+                (Default is None)
+    """         
+    
+    if work_dir is None:
+        work_dir_instance = tempfile.TemporaryDirectory(
+            prefix='photon_stream_video')
+        work_dir = work_dir_instance.name
+        work_dir_has_to_be_removed_again = True
+    else:
+        os.mkdir(work_dir)
+        work_dir_has_to_be_removed_again = False
+
         
-        azimuths = np.linspace(0, 360, 10, endpoint=False)
-        for i, az in enumerate(azimuths):
+    azimuths = np.linspace(0, 360, 10, endpoint=False)
+    for i, az in enumerate(azimuths):
 
-            save_image_sequence(
-                event=event,
-                path=work_dir,
-                steps=steps,
-                start_azimuth=az,
-                end_azimuth=az+18,
-                start_number=(i*steps*2),
-                mask=mask)
-            
-            save_image_sequence(
-                event=event,
-                path=work_dir,
-                steps=steps,
-                start_azimuth=az+18,
-                end_azimuth=az+36,
-                start_number=(i*steps*2)+steps)
+        save_image_sequence(
+            event=event,
+            path=work_dir,
+            steps=steps,
+            start_azimuth=az,
+            end_azimuth=az+18,
+            start_number=(i*steps*2),
+            mask=mask)
+        
+        save_image_sequence(
+            event=event,
+            path=work_dir,
+            steps=steps,
+            start_azimuth=az+18,
+            end_azimuth=az+36,
+            start_number=(i*steps*2)+steps)
 
-        if threads != 'auto':
-            threads = str(threads)
+    if threads != 'auto':
+        threads = str(threads)
 
-        avconv_command = [
-            'avconv',
-            '-y',  # force overwriting of existing output file
-            '-framerate', str(int(fps)),  # Frames per second
-            '-f', 'image2',
-            '-i', os.path.join(work_dir, '3D_%06d.png'),
-            '-c:v', 'h264',
-            '-s', '1920x1080',  # sample images to FullHD 1080p
-            '-crf', '23',  # high quality 0 (best) to 53 (worst)
-            '-crf_max', '25',  # worst quality allowed
-            '-threads', threads,
-            os.path.splitext(path)[0] + '.mp4'
-        ]
-        subprocess.call(avconv_command)
+    avconv_command = [
+        'avconv',
+        '-y',  # force overwriting of existing output file
+        '-framerate', str(int(fps)),  # Frames per second
+        '-f', 'image2',
+        '-i', os.path.join(work_dir, '3D_%06d.png'),
+        '-c:v', 'h264',
+        '-s', '1920x1080',  # sample images to FullHD 1080p
+        '-crf', '23',  # high quality 0 (best) to 53 (worst)
+        '-crf_max', '25',  # worst quality allowed
+        '-threads', threads,
+        os.path.splitext(outpath)[0] + '.mp4'
+    ]
+    subprocess.call(avconv_command)
+
+    if work_dir_has_to_be_removed_again:
+        work_dir_instance.cleanup()
