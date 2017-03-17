@@ -19,6 +19,7 @@ setup(
         'docopt',
         'scipy',
         'sklearn',
+        'skimage',
         'matplotlib',
         'pyfact',
         'pandas',
