@@ -19,9 +19,7 @@ def add_event_2_ax(event, ax, mask=None, color='b'):
 
     ax.set_title('Night '+str(event.night)+', Run '+str(event.run_id)+', Event '+str(event.id))
     fovR = event.photon_stream.geometry['fov_radius']
-    p = Circle((0, 0), fovR, edgecolor='k', facecolor='none', lw=1.)
-    ax.add_patch(p)
-    art3d.pathpatch_2d_to_3d(p, z=min_time, zdir="z")
+    add_ring_2_ax(x=0.0, y=0.0, z=min_time, r=fovR, ax=ax)
     ax.set_xlim(-fovR, fovR)
     ax.set_ylim(-fovR, fovR)
     ax.set_zlim(min_time, max_time)
@@ -36,6 +34,13 @@ def add_event_2_ax(event, ax, mask=None, color='b'):
         alpha=0.075,
         s=55.,
         c=color)
+
+
+def add_ring_2_ax(x,y,z,r, ax, color='k', line_width=1.0):
+    p = Circle((x, y), r, edgecolor=color, facecolor='none', lw=line_width)
+    ax.add_patch(p)
+    art3d.pathpatch_2d_to_3d(p, z=z, zdir="z")
+
 
 def save_image_sequence(
     event, 
