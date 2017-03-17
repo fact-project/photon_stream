@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='photon_stream',
-    version='0.0.0',
+    version='0.0.1',
     description='Read, write, manipulate and plot a Photon Stream',
     url='https://github.com/fact-project/',
     author='Sebastian Achim Mueller',
@@ -11,13 +11,15 @@ setup(
     packages=[
         'photon_stream',
         'photon_stream.production',
-        'photon_stream.experimental'
+        'photon_stream.experimental',
+        'photon_stream.muons',
     ],
     package_data={'photon_stream': ['tests/resources/*']},
     install_requires=[
         'docopt',
         'scipy',
         'sklearn',
+        'scikit-image',
         'matplotlib',
         'pyfact',
         'pandas',

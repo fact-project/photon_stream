@@ -1,5 +1,6 @@
 matplotlib
 sklearn
+scikit-image
 scipy
 tqdm
 docopt
