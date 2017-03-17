@@ -11,7 +11,8 @@ setup(
     packages=[
         'photon_stream',
         'photon_stream.production',
-        'photon_stream.experimental'
+        'photon_stream.experimental',
+        'photon_stream.muons',
     ],
     package_data={'photon_stream': ['tests/resources/*']},
     install_requires=[
