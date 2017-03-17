@@ -29,9 +29,9 @@ def detection(
     Parameter
     ---------
 
-    event       A FACT event.
+    event       FACT event.
 
-    clusters    A photons-stream cluster for the event.
+    clusters    Photons-stream cluster of the event.
     """
 
     ret = {}
