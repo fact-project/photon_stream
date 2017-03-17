@@ -152,11 +152,7 @@ def detection(
         min_ring_fraction = 0.33
 
     number_of_fraction_bins = int(np.round(min_ring_fraction*number_bins))
-    min_fraction_mask = np.ones(number_of_fraction_bins, dtype=np.int)
-    population_mask = (ring_population_hist > 0.33*mean_photons).astype(np.int)
 
-    fraction_response = convolve(population_mask, min_fraction_mask, mode='wrap')
-    
     is_populated_evenly = False
     is_populated_at_all = False
     most_even_population_std = 1e99
