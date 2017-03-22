@@ -31,6 +31,15 @@ class PhotonStream(object):
             ps.time_lines.append(array('B', time_line))
         return ps
 
+    def add_to_dict(self, event_dict):
+
+        time_lines = []
+        for time_line in self.time_lines:
+            time_lines.append(time_line.tolist())
+
+        event_dict['PhotonArrivals_500ps'] = time_lines
+        return event_dict
+
     @property
     def photon_count(self):
         return np.array(

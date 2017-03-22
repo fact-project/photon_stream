@@ -78,6 +78,23 @@ class Event(object):
         ax = fig.gca(projection='3d')
         add_event_2_ax(self, ax, mask=mask)
 
+    def to_dict(self):
+        evt = {}
+        evt['Run'] = int(self.run_id)
+        evt['Night'] = int(self.night)
+        evt['Event'] = int(self.id)
+
+        evt['UnixTime_s_us'] = int(self._time_unix_s)
+        evt['UnixTime_s_us'] = int(self._time_unix_us)
+        evt['Trigger'] = int(self.trigger_type)
+
+        evt['Zd_deg'] = float(self.zd)
+        evt['Az_deg'] = float(self.az)
+
+        evt['SaturatedPixels'] = self.saturated_pixels.tolist()
+        evt = self.photon_stream.add_to_dict(evt)
+        return evt
+
     def __repr__(self):
         out = 'Event('
         out += 'Night '+str(self.night)+', '
