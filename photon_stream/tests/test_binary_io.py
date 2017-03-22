@@ -79,35 +79,4 @@ def test_jsonl2binary():
     for i in range(len(run_in)):
         evt_in = run_in[i]
         evt_ba = run_back[i]
-
-        # Event Header
-        assert evt_in.night == evt_ba.night
-        assert evt_in.run_id == evt_ba.run_id
-        assert evt_in.id == evt_ba.id
-
-        assert evt_in._time_unix_s == evt_ba._time_unix_s
-        assert evt_in._time_unix_us == evt_ba._time_unix_us
-
-        assert evt_in.trigger_type == evt_ba.trigger_type
-
-        assert np.abs(evt_in.zd - evt_ba.zd) < 1e-5
-        assert np.abs(evt_in.az - evt_ba.az) < 1e-5
-
-        # Saturated Pixels
-        assert len(evt_in.saturated_pixels) == len(evt_ba.saturated_pixels)
-        for i, saturated_pixel_in in enumerate(evt_in.saturated_pixels):
-            assert saturated_pixel_in == evt_ba.saturated_pixels[i]
-
-        # Photon Stream Header
-        assert (evt_in.photon_stream.slice_duration - evt_ba.photon_stream.slice_duration) < 1e-9
-        assert evt_in.photon_stream.number_photons == evt_ba.photon_stream.number_photons
-        assert len(evt_in.photon_stream.time_lines) == len(evt_ba.photon_stream.time_lines)
-
-        for pixel in range(len(evt_in.photon_stream.time_lines)):
-            number_of_photons_in_pixel_in = len(evt_in.photon_stream.time_lines[pixel])
-            number_of_photons_in_pixel_ba = len(evt_ba.photon_stream.time_lines[pixel])
-
-            assert number_of_photons_in_pixel_in == number_of_photons_in_pixel_ba
-
-            for photon in range(number_of_photons_in_pixel_in):
-                assert evt_in.photon_stream.time_lines[pixel][photon] == evt_ba.photon_stream.time_lines[pixel][photon]
+        evt_in.assert_equal(evt_ba)
