@@ -12,6 +12,7 @@ import glob
 import photon_stream as ps
 from os.path import join
 from os.path import split
+from os.path import exists
 
 def extract_single_run(cfg):
 
@@ -20,16 +21,17 @@ def extract_single_run(cfg):
         cfg['output_dir'], cfg['output_base']+'_muons.phs.jsonl.gz')
     output_run_header_path = join(
         cfg['output_dir'], cfg['output_base']+'_muons.info')
+    
 
-    """
+    if exists(output_run_path) and exists(output_run_header_path):
+        print('Already done', cfg['input_run_path'])
+        return 0
+
     ps.muons.extraction.extract_muons_from_run(
         input_run_path=cfg['input_run_path'],
         output_run_path=output_run_path,
         output_run_header_path=output_run_header_path)
-    """
-    print('input_run_path', cfg['input_run_path'])
-    print('output_run_path', output_run_path)
-    print('output_run_header_path', output_run_header_path)
+    print('Done', cfg['input_run_path'])
     return 0
 
 if __name__ == '__main__':
@@ -38,7 +40,7 @@ if __name__ == '__main__':
 
         phs_dir = arguments['--input_phs_dir']
         out_dir = arguments['--out_dir']
-        run_paths = glob.glob(join(phs_dir,'2014/01/01/*.phs.jsonl.gz'))
+        run_paths = glob.glob(join(phs_dir,'2014/01/**/*.phs.jsonl.gz'))
 
         instructions = []
         for run_path in run_paths:
@@ -50,9 +52,10 @@ if __name__ == '__main__':
 
             cfg = {
                 'input_run_path': run_path,
-                'output_dir': join(out_dir, year, month, night)
+                'output_dir': join(out_dir, year, month, night),
                 'output_base': base,
             }
+            instructions.append(cfg)
 
         return_codes = list(scoop.futures.map(
             extract_single_run, 
