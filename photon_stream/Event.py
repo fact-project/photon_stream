@@ -84,8 +84,7 @@ class Event(object):
         evt['Night'] = int(self.night)
         evt['Event'] = int(self.id)
 
-        evt['UnixTime_s_us'] = int(self._time_unix_s)
-        evt['UnixTime_s_us'] = int(self._time_unix_us)
+        evt['UnixTime_s_us'] = [int(self._time_unix_s), int(self._time_unix_us)]
         evt['Trigger'] = int(self.trigger_type)
 
         evt['Zd_deg'] = float(self.zd)
@@ -103,3 +102,51 @@ class Event(object):
         out += 'photons '+str(self.photon_stream.number_photons)
         out += ')\n'
         return out
+
+    def assert_equal(
+        self, 
+        other, 
+        max_residual_pointing=1e-5, 
+        max_residual_slice_duration=1e-9):
+        # Event Header
+        assert self.night == other.night
+        assert self.run_id == other.run_id
+        assert self.id == other.id
+
+        assert self._time_unix_s == other._time_unix_s
+        assert self._time_unix_us == other._time_unix_us
+
+        assert self.trigger_type == other.trigger_type
+
+        assert np.abs(self.zd - other.zd) < max_residual_pointing
+        assert np.abs(self.az - other.az) < max_residual_pointing
+
+        # Saturated Pixels
+        assert len(self.saturated_pixels) == len(other.saturated_pixels)
+        for i, saturated_pixel_in in enumerate(self.saturated_pixels):
+            assert saturated_pixel_in == other.saturated_pixels[i]
+
+        # Photon Stream Header
+        assert (
+            (   self.photon_stream.slice_duration - 
+                other.photon_stream.slice_duration) < 
+            max_residual_slice_duration)
+        assert (
+            self.photon_stream.number_photons == 
+            other.photon_stream.number_photons)
+        assert (
+            len(self.photon_stream.time_lines) == 
+            len(other.photon_stream.time_lines))
+
+        for pixel in range(len(self.photon_stream.time_lines)):
+            number_of_photons_in_pixel_in = len(
+                self.photon_stream.time_lines[pixel])
+            number_of_photons_in_pixel_ba = len(
+                other.photon_stream.time_lines[pixel])
+
+            assert number_of_photons_in_pixel_in == number_of_photons_in_pixel_ba
+
+            for photon in range(number_of_photons_in_pixel_in):
+                assert (
+                    self.photon_stream.time_lines[pixel][photon] == 
+                    other.photon_stream.time_lines[pixel][photon])
