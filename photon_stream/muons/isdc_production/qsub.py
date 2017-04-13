@@ -2,6 +2,7 @@ import os
 from os.path import join
 from os.path import split
 from os.path import exists
+import glob
 from tqdm import tqdm
 import subprocess as sp
 from .write_worker_node_script import write_worker_node_script
@@ -21,7 +22,7 @@ def qsub(
     print('Start extracting muons...')
 
 
-    run_paths = glob.glob(join(input_phs_dir,'2014/01/01/*.phs.jsonl.gz'))
+    run_paths = glob.glob(join(input_phs_dir,'*/*/*/*.phs.jsonl.gz'))
     
 
     print('Found', len(run_paths), 'potential runs.')
@@ -29,15 +30,13 @@ def qsub(
 
 
     potential_jobs = []
-    for run_path in tqdm.tqdm(run_paths):
+    for run_path in tqdm(run_paths):
 
         run_path = os.path.abspath(run_path)
         year = split(split(split(split(run_path)[0])[0])[0])[1]
         month = split(split(split(run_path)[0])[0])[1]
         night = split(split(run_path)[0])[1]
         base = split(run_path)[1].split('.')[0]
-
-        output_dir = join()
         job = {
             'input_run_path': run_path,
             'year': year,
@@ -48,13 +47,13 @@ def qsub(
         potential_jobs.append(job)
 
 
-    print('Set up paths for', len(job), 'potential runs.')
+    print('Set up paths for', len(potential_jobs), 'potential runs.')
     print('Sort out all potential runs which were already processed...')
 
     jobs = []
     # check if output already exists
-    for job in tqdm.tqdm(potential_jobs):
-        if exists(job['output_run_path']) and exists(job['output_run_header_path']):
+    for job in tqdm(potential_jobs):
+        if exists(job['output_muon_path']+'*'):
             pass
         else:
             jobs.append(job)
@@ -63,7 +62,7 @@ def qsub(
     print('There are', len(jobs), 'runs left to be processed.')
     print('Submitt into qsub...')
 
-    for job in tqdm.tqdm(jobs):
+    for job in tqdm(jobs):
 
         job['job_path'] = join(
             out_muon_dir, 
@@ -71,7 +70,7 @@ def qsub(
             job['year'], 
             job['month'], 
             job['night'], 
-            job['base']+'.sh')
+            'fact_phs_muon_'+job['base']+'.sh')
 
         job['stdout_path'] = join(
             out_muon_dir, 
@@ -111,4 +110,4 @@ def qsub(
                 '-M', email,
                 job['job_path']]
    
-        #qsub_return_code = sp.call(cmd)
+        qsub_return_code = sp.call(cmd)
