@@ -1,4 +1,5 @@
 import os
+import numpy as np
 from os.path import join
 from os.path import split
 from os.path import exists
@@ -7,10 +8,11 @@ from tqdm import tqdm
 import subprocess as sp
 from .write_worker_node_script import write_worker_node_script
 
+fact_queues = ['fact_long', 'fact_medium', 'fact_short']
+
 def qsub(
     input_phs_dir,
-    out_muon_dir,
-    queue='fact_medium', 
+    out_muon_dir, 
     email='sebmuell@phys.ethz.ch'):
     """
     Run the Muon extraction on all photon-stream runs in the 'phs' directory.
@@ -103,7 +105,7 @@ def qsub(
             output_muon_path=job['output_muon_path'])
 
         cmd = [ 'qsub',
-                '-q', queue,
+                '-q', fact_queues[np.random.randint(3)],
                 '-o', job['stdout_path'],
                 '-e', job['stderr_path'],
                 '-m', 'ae', # send email in case of (e)nd or (a)bort
