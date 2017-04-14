@@ -21,6 +21,7 @@ header_dtype = np.dtype([
     ('ring_overlap_with_fov', np.float32),
     ('number_muon_photons', np.float32)])
 
+FACT_PHYSICS_SELF_TRIGGER = 4
 
 def extract_muons_from_run(input_run_path, output_run_path, output_run_header_path):
     """
@@ -58,42 +59,42 @@ def extract_muons_from_run(input_run_path, output_run_path, output_run_header_pa
     """
     run = Run(input_run_path)
     with gzip.open(output_run_path, 'wt') as f_muon_run, open(output_run_header_path, 'wb') as f_muon_run_header:
+        
         for event in run:
+            
+            if event.trigger_type == FACT_PHYSICS_SELF_TRIGGER:
+                
+                photon_clusters = PhotonStreamCluster(event.photon_stream)
+                muon_features = detection(event, photon_clusters)
 
-            photon_clusters = PhotonStreamCluster(event.photon_stream)
-            muon_features = detection(event, photon_clusters)
+                if muon_features['is_muon']:
 
-            if muon_features['is_muon']:
+                    # EXPORT EVENT in JSON
+                    event_dict = event.to_dict()
+                    json.dump(event_dict, f_muon_run)
+                    f_muon_run.write('\n')
 
-                # EXPORT EVENT in JSON
-                event_dict = event.to_dict()
-                json.dump(event_dict, f_muon_run)
-                f_muon_run.write('\n')
+                    # EXPORT EVENT header
+                    all_photons_in_event = event.photon_stream.flatten()
+                    muon_cluster = all_photons_in_event[photon_clusters.labels>=0]
+                    mean_arrival_time_muon_cluster = muon_cluster[:,2].mean()
 
-                # EXPORT EVENT header
-                all_photons_in_event = event.photon_stream.flatten()
-                muon_cluster = all_photons_in_event[photon_clusters.labels>=0]
-                mean_arrival_time_muon_cluster = muon_cluster[:,2].mean()
+                    head1 = np.zeros(5, dtype=np.uint32)
+                    head1[0] = event.night
+                    head1[1] = event.run_id
+                    head1[2] = event.id
+                    head1[3] = event._time_unix_s
+                    head1[4] = event._time_unix_us
 
-                head1 = np.zeros(5, dtype=np.uint32)
-                head1[0] = event.night
-                head1[1] = event.run_id
-                head1[2] = event.id
-                head1[3] = event._time_unix_s
-                head1[4] = event._time_unix_us
+                    head2 = np.zeros(8, dtype=np.float32)
+                    head2[0] = event.zd
+                    head2[1] = event.az
+                    head2[2] = muon_features['muon_ring_cx']
+                    head2[3] = muon_features['muon_ring_cy']
+                    head2[4] = muon_features['muon_ring_r']
+                    head2[5] = mean_arrival_time_muon_cluster
+                    head2[6] = muon_features['muon_ring_overlapp_with_field_of_view']
+                    head2[7] = muon_features['number_of_photons']
 
-                head2 = np.zeros(8, dtype=np.float32)
-                head2[0] = event.zd
-                head2[1] = event.az
-                head2[2] = muon_features['muon_ring_cx']
-                head2[3] = muon_features['muon_ring_cy']
-                head2[4] = muon_features['muon_ring_r']
-                head2[5] = mean_arrival_time_muon_cluster
-                head2[6] = muon_features['muon_ring_overlapp_with_field_of_view']
-                head2[7] = muon_features['number_of_photons']
-
-                f_muon_run_header.write(head1.tobytes())
-                f_muon_run_header.write(head2.tobytes())
-            else:
-                continue
-
+                    f_muon_run_header.write(head1.tobytes())
+                    f_muon_run_header.write(head2.tobytes())
