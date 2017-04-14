@@ -13,6 +13,7 @@ setup(
         'photon_stream.production',
         'photon_stream.experimental',
         'photon_stream.muons',
+        'photon_stream.muons.isdc_production',
     ],
     package_data={'photon_stream': ['tests/resources/*']},
     install_requires=[
