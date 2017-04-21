@@ -247,7 +247,17 @@ def progress(ratio, length=20):
         prog = 0
         percent = 0
     out = '|'
+
+    ratio_above_one = False
+    if prog > length:
+        prog = length
+        ratio_above_one = True
+
     for p in range(prog):
         out += '|'
+
+    if ratio_above_one:
+        out += '...'
+
     out += ' '+str(int(percent))+'%'
     return out
