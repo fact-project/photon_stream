@@ -4,13 +4,13 @@ import fact
 import numpy as np
 from array import array
 
-pixels = fact.pixels.get_pixel_dataframe()
+pixels = fact.instrument.get_pixel_dataframe()
 pixels.sort_values('CHID', inplace=True)
 
 geometry = {
-    'pixel_azimuth': pixels.azimuth.as_matrix(),
-    'pixel_zenith': pixels.zenith.as_matrix(),
-    'fov_radius': fact.pixels.FOV_RADIUS,
+    'x_angle': pixels.x_angle.as_matrix(),
+    'y_angle': pixels.y_angle.as_matrix(),
+    'fov_radius': fact.instrument.camera.FOV_RADIUS,
 }
 
 class PhotonStream(object):
@@ -93,8 +93,8 @@ class PhotonStream(object):
         for px, pixel_photons in enumerate(self.time_lines):
             for photon_slice in pixel_photons:
                     xyt.append([
-                        geometry['pixel_azimuth'][px],
-                        geometry['pixel_zenith'][px],
+                        geometry['x_angle'][px],
+                        geometry['y_angle'][px],
                         photon_slice * self.slice_duration
                         ])
         return np.array(xyt)
