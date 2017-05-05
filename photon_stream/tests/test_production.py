@@ -98,3 +98,20 @@ def test_production_run_collection():
         assert exists(join(tmp, 'passX/resources/', current_res_dir,'my_2nd_fact_tools.jar'))
 
         #input('Take a look into '+tmp+' or press any key to continue')
+
+def test_status_bar_string():
+
+    progress_bar_str = ps.production.status.progress(ratio=0.0, length=50)
+    assert len(progress_bar_str) < 50
+
+    progress_bar_str = ps.production.status.progress(ratio=1.0, length=50)
+    assert len(progress_bar_str) > 50    
+    assert len(progress_bar_str) < 60    
+
+    progress_bar_str = ps.production.status.progress(ratio=10.0, length=50)
+    assert len(progress_bar_str) > 50    
+    assert len(progress_bar_str) < 61  
+
+    progress_bar_str = ps.production.status.progress(ratio=100.0, length=50)
+    assert len(progress_bar_str) > 50    
+    assert len(progress_bar_str) < 62 

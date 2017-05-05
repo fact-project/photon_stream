@@ -13,6 +13,7 @@ setup(
         'photon_stream.production',
         'photon_stream.experimental',
         'photon_stream.muons',
+        'photon_stream.muons.isdc_production',
     ],
     package_data={'photon_stream': ['tests/resources/*']},
     install_requires=[
@@ -25,5 +26,8 @@ setup(
         'pandas',
         'tqdm'
     ],
+    entry_points={'console_scripts': [
+        'phs_extract_muons = photon_stream.muons.isdc_production.worker_node_main:main',
+    ]},
     zip_safe=False,
 )
