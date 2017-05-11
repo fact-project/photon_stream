@@ -89,6 +89,14 @@ class PhotonStream(object):
                     time_line.remove(arrival_slice)
 
     def flatten(self):
+        ''' Returns a Nx3 matrix for N photons in the stream. Each row
+        represents a photon in the three dimensinal space of x-direction [deg],
+        y-direction [deg], and arrival time [s].
+
+        This is an alternative, but equally complete representation of the raw
+        photon-stream. It is useful for e.g. directly plotting the photon stream
+        into its 3 dimensional space, or for density clustering in the stream.
+        '''
         xyt = []
         for px, pixel_photons in enumerate(self.time_lines):
             for photon_slice in pixel_photons:
