@@ -14,10 +14,9 @@ before_install:
   - sudo ln -s /run/shm /dev/shm
 
 install:
-  - conda install --yes python=$TRAVIS_PYTHON_VERSION atlas numpy scipy matplotlib pip pymongo flake8 pandas astropy pygments pytables sphinx pytest
+  - conda install --yes python=$TRAVIS_PYTHON_VERSION atlas numpy scipy matplotlib pip pymongo flake8 pandas astropy pygments pytables sphinx
   - pip install .
 
 script:
-  - python -c "import photon_stream; import sys; print(sys.path)"
   - which py.test
   - py.test -k-nottravis
