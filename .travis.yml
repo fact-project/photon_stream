@@ -18,4 +18,5 @@ install:
   - pip install .
 
 script:
+  - python -c "import photon_stream; import sys; print(sys.path)"
   - py.test -k-nottravis
