@@ -97,3 +97,4 @@ When the idea of the photon-stream is inverted, the amplitude time lines of an i
 ## Where to go from here
 - explore an intermediate file format based on the photon stream, only photons no noise
 - explore novel image cleaning by combining the temporal and directional information of all pixels before cutting (DBSCAN clustering)
+- ...
