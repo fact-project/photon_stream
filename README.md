@@ -12,8 +12,8 @@ pip install git+https://github.com/fact-project/photon_stream
 import photon_stream as ps
 import matplotlib.pyplot as plt
 
-run = ps.Run('20151001_011.phs.jsonl.gz')
-event = next(run)
+reader = ps.ObservationReader('20151001_011.phs.jsonl.gz')
+event = next(reader)
 event.plot()
 
 plt.show()
@@ -88,7 +88,7 @@ Since a single photon is now defined by only one sharp arrival time in contrast 
 ```json
 "SaturatedPixels":[123,456]
 ```
-A list of pixels in ```CHID``` to indicate that the corresponding pixel had an saturated analog time line out of the raw DRS4 chip. The maximim number of saturated pixels is ```100```, as the event is skipped then anyhow. Usually this list is empty. Such saturations happen not only for ultra high energy air showers, but also when the DRS4 calibration was not possible or is broken elseway. 
+A list of pixels in ```CHID``` to indicate that the corresponding pixel had an saturated analog time line out of the raw DRS4 chip. The maximim number of saturated pixels is ```100```, as the event is skipped then anyhow. Usually this list is empty. Such saturations happen not only for ultra high energy air showers, but also when the DRS4 calibration was not possible or is broken elseway.
 
 ## Integration into existing air shower reconstruction software
 When the idea of the photon-stream is inverted, the amplitude time lines of an individual pixel can be reconstructed from the photon-stream events which enables FACT to use ist usual air shower reconstruction programs right ahead without modifications.  

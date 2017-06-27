@@ -8,15 +8,15 @@ import gzip
 def test_binary_io():
 
     run_path = pkg_resources.resource_filename(
-        'photon_stream', 
+        'photon_stream',
         'tests/resources/20170119_229_pass4_100events.phs.jsonl.gz')
 
-    run = ps.Run(run_path)
+    run = ps.ObservationReader(run_path)
 
     with tempfile.TemporaryDirectory(prefix='photon_stream_test_binary') as tmp:
 
         bin_run_path = os.path.join(tmp, '20151001_011.phs')
-        
+
         run_ps = []
         with open(bin_run_path, 'wb') as bf:
             for evt in run:
@@ -31,7 +31,7 @@ def test_binary_io():
                     run_ps_back.append(phs)
                 except:
                     break
-        
+
         assert len(run_ps_back) == len(run_ps)
 
         for run_index in range(len(run_ps_back)):
@@ -52,10 +52,10 @@ def test_binary_io():
 def test_jsonl2binary():
 
     run_path = pkg_resources.resource_filename(
-        'photon_stream', 
+        'photon_stream',
         'tests/resources/20170119_229_pass4_100events.phs.jsonl.gz')
 
-    run = ps.Run(run_path)
+    run = ps.ObservationReader(run_path)
     run_in = []
     run_back = []
     for event in run:

@@ -45,7 +45,7 @@ def test_muon_detection():
         'photon_stream', 
         'tests/resources/20140101_104_muon_sample.phs.jsonl.gz')
 
-    run = ps.Run(muon_sample_path)
+    run = ps.ObservationReader(muon_sample_path)
 
 
 

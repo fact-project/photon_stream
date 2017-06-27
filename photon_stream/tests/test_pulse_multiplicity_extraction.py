@@ -14,7 +14,7 @@ def test_pulse_multiplicity_extraction_api():
         'photon_stream', 
         'tests/resources/20170119_229_pass4_100events.phs.jsonl.gz')
 
-    run = ps.Run(run_path)
+    run = ps.ObservationReader(run_path)
 
     counter = 0
     for event in run:

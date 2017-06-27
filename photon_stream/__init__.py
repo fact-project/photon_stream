@@ -1,7 +1,7 @@
 from .PhotonStream import PhotonStream
 
 from .Event import Event
-from .Run import Run
+from .ObservationReader import ObservationReader
 from .PhotonCluster import PhotonStreamCluster
 from .PhotonCluster import PhotonTimeLineCluster
 from .JsonLinesGzipReader import JsonLinesGzipReader
