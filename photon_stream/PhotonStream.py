@@ -132,9 +132,14 @@ class PhotonStream(object):
             return NotImplemented
 
 
+    def _info(self):
+        info  = str(len(self.time_lines)) + ' time lines, '
+        info += str(self.number_photons) + ' photons'
+        return info
+
+
     def __repr__(self):
         info = 'PhotonStream('
-        info += str(len(self.time_lines)) + ' time lines, '
-        info += str(self.number_photons) + ' photons'
+        info + self._info()
         info += ')'
         return info
