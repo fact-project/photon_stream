@@ -64,10 +64,16 @@ class SimulationTruth(object):
         else:
             return NotImplemented
 
+
+    def _info(self):
+        out  = 'run '+str(self.run)+', '
+        out += 'event '+str(self.event)+', '
+        out += 'reuse '+str(self.reuse)
+        return out
+
+
     def __repr__(self):
         out = 'SimulationTruth('
-        out += 'Run '+str(self.run)+', '
-        out += 'Event '+str(self.event)+', '
-        out += 'Reuse '+str(self.reuse)
+        out += self._info()
         out += ')\n'
         return out

@@ -72,10 +72,15 @@ class ObservationInformation(object):
             return NotImplemented
 
 
+    def _info(self):
+        out  = 'night '+str(self.night)+', '
+        out += 'run '+str(self.run)+', '
+        out += 'event '+str(self.event)
+        return out
+
+
     def __repr__(self):
         out = 'ObservationInformation('
-        out += 'Run '+str(self.run)+', '
-        out += 'Night '+str(self.night)+', '
-        out += 'Event '+str(self.event)
+        out += self._info()
         out += ')\n'
         return out
