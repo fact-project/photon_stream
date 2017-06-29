@@ -55,6 +55,19 @@ class ObservationInformation(object):
         return obs    
 
 
+    def add_to_dict(self, event_dict):
+        ed = event_dict
+        ed['Night'] = int(self.night)
+        ed['Run'] = int(self.run)
+        ed['Event'] = int(self.event)
+        ed['UnixTime_s_us'] = [
+            int(self._time_unix_s),
+            int(self._time_unix_us),
+        ]
+        ed['Trigger'] = int(self.trigger_type)
+        return ed
+
+
     def __eq__(self, other):
         
         if isinstance(other, self.__class__):

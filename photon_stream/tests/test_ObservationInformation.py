@@ -44,3 +44,21 @@ def test_equal():
 def test_repr():
     sim_truth = ps.ObservationInformation.from_event_dict(event_dict_A)
     print(sim_truth.__repr__())
+
+
+def test_to_dict():
+    obs_A = ps.ObservationInformation.from_event_dict(event_dict_A)
+
+    dict_back = {'Test': True}
+    dict_back = obs_A.add_to_dict(dict_back)
+
+    for key in event_dict_A:
+        assert key in dict_back
+        if (isinstance(event_dict_A[key], int) or isinstance(event_dict_A[key], float)):
+            assert np.abs(dict_back[key] - event_dict_A[key]) < 1e-3
+
+        elif isinstance(event_dict_A[key], list):
+            for i in range(len(event_dict_A[key])):
+                assert np.abs(dict_back[key][i] - event_dict_A[key][i]) < 1e-3
+        else:
+            assert False
