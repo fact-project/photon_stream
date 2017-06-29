@@ -2,6 +2,40 @@ import numpy as np
 import datetime as dt
 
 class ObservationInformation(object):
+    """
+    A FACT observation
+
+    Fields
+    ------
+
+    event               The unique event identifier in an observation run.
+
+    run                 The unique run identifier in an observation night.
+
+    night               The unique observation night identifier, 
+                        Integer 'YYYYmmnn'.
+
+    time                The UNIX datetime when the event was recorded by the 
+                        FACT event builder. (uncertainty is 30ms)
+
+    trigger_type        The FACT trigger type of the event.
+                            4: Physics trigger (self triggered)
+                            1: External trigger 1 (gps pedestals) 
+                            2: External trigger 2 (gps pedestals) 
+                         1024: Pedestal trigger.
+                        For a full overview of the FACT trigger types, see the 
+                        [Phd of Patrick Vogler, table 4.3.b]
+                        (http://e-collection.library.ethz.ch/eserv/eth:48381/eth-48381-02.pdf)
+
+    _time_unix_s        The raw unix time in full seconds from the raw 
+                        observation event header.
+
+    _time_unix_us       The additional raw milli seconds from the raw 
+                        observation event header.
+                        observation time in seconds = (
+                            _time_unix_s + _time_unix_us*1e6)
+    """
+
 
     @classmethod
     def from_event_dict(cls, event_dict):

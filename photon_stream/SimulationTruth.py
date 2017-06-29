@@ -2,6 +2,22 @@ import numpy as np
 from .tests.tools import near
 
 class SimulationTruth(object):
+    """
+    A FACT simulation truth
+
+    Fields
+    ------
+
+    reuse               The unique reuse identifier in a reused CORSIKA event.
+
+    event               The unique event identifier in a CORSIKA run.
+
+    run                 The unique CORSIKA run identifier in FACT simulations.
+
+    For more fields see the KIT CORSKIA documentation:
+    https://web.ikp.kit.edu/corsika/usersguide/usersguide.pdf
+    """
+
 
     @classmethod
     def from_event_dict(cls, event_dict):
