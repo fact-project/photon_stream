@@ -13,6 +13,8 @@ geometry = {
     'fov_radius': fact.instrument.camera.FOV_RADIUS,
 }
 
+MAX_RESIDUAL_SLICE_DURATION_NS = 1e-9
+
 class PhotonStream(object):
     def __init__(self, time_lines=None, slice_duration=nan):
         self.slice_duration = slice_duration
@@ -106,6 +108,29 @@ class PhotonStream(object):
                         photon_slice * self.slice_duration
                         ])
         return np.array(xyt)
+
+
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            if not np.abs(self.slice_duration - other.slice_duration) < MAX_RESIDUAL_SLICE_DURATION_NS: return False
+            if not self.number_photons == other.number_photons: return False
+            if not len(self.time_lines) == len(other.time_lines): return False
+
+            for pixel in range(len(self.time_lines)):
+                number_of_photons_in_pixel_in = len(self.time_lines[pixel])
+                number_of_photons_in_pixel_ba = len(other.time_lines[pixel])
+
+                if not number_of_photons_in_pixel_in == number_of_photons_in_pixel_ba:
+                    return False
+
+                for photon in range(number_of_photons_in_pixel_in):
+                    if not self.time_lines[pixel][photon] == other.time_lines[pixel][photon]:
+                        return False
+
+            return True
+        else:
+            return NotImplemented
+
 
     def __repr__(self):
         info = 'PhotonStream('

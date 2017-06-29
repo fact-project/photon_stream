@@ -127,26 +127,4 @@ class Event(object):
             assert saturated_pixel_in == other.saturated_pixels[i]
 
         # Photon Stream Header
-        assert (
-            (   self.photon_stream.slice_duration - 
-                other.photon_stream.slice_duration) < 
-            max_residual_slice_duration)
-        assert (
-            self.photon_stream.number_photons == 
-            other.photon_stream.number_photons)
-        assert (
-            len(self.photon_stream.time_lines) == 
-            len(other.photon_stream.time_lines))
-
-        for pixel in range(len(self.photon_stream.time_lines)):
-            number_of_photons_in_pixel_in = len(
-                self.photon_stream.time_lines[pixel])
-            number_of_photons_in_pixel_ba = len(
-                other.photon_stream.time_lines[pixel])
-
-            assert number_of_photons_in_pixel_in == number_of_photons_in_pixel_ba
-
-            for photon in range(number_of_photons_in_pixel_in):
-                assert (
-                    self.photon_stream.time_lines[pixel][photon] == 
-                    other.photon_stream.time_lines[pixel][photon])
+        assert self.photon_stream == other.photon_stream
