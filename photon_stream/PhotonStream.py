@@ -31,15 +31,18 @@ class PhotonStream(object):
         ps.time_lines = []
         for time_line in event_dict['PhotonArrivals_500ps']:
             ps.time_lines.append(array('B', time_line))
+        ps.saturated_pixels = np.array(
+            event_dict['SaturatedPixels'],
+            dtype=np.uint16
+        )
         return ps
 
     def add_to_dict(self, event_dict):
-
         time_lines = []
         for time_line in self.time_lines:
             time_lines.append(time_line.tolist())
-
         event_dict['PhotonArrivals_500ps'] = time_lines
+        event_dict['SaturatedPixels'] = self.saturated_pixels.tolist()
         return event_dict
 
     @property
@@ -116,6 +119,12 @@ class PhotonStream(object):
             if not self.number_photons == other.number_photons: return False
             if not len(self.time_lines) == len(other.time_lines): return False
 
+            # Saturated Pixels
+            if not len(self.saturated_pixels) == len(other.saturated_pixels): return False            
+            for i, saturated_pixel_in in enumerate(self.saturated_pixels):
+                if not saturated_pixel_in == other.saturated_pixels[i]: return False
+
+            # Raw Photon-Stream
             for pixel in range(len(self.time_lines)):
                 number_of_photons_in_pixel_in = len(self.time_lines[pixel])
                 number_of_photons_in_pixel_ba = len(other.time_lines[pixel])
@@ -140,6 +149,6 @@ class PhotonStream(object):
 
     def __repr__(self):
         info = 'PhotonStream('
-        info + self._info()
+        info += self._info()
         info += ')'
         return info
