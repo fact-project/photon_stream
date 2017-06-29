@@ -1,5 +1,5 @@
 import numpy as np
-from ..ObservationReader import ObservationReader
+from ..EventListReader import EventListReader
 from .detection import detection
 from ..PhotonCluster import PhotonStreamCluster
 import gzip
@@ -57,7 +57,7 @@ def extract_muons_from_run(input_run_path, output_run_path, output_run_header_pa
    12)      float32     muon ring overlapp with field of view (0.0 to 1.0) [1]
    13)      float32     number of photons muon cluster [1]
     """
-    run = ObservationReader(input_run_path)
+    run = EventListReader(input_run_path)
     with gzip.open(output_run_path, 'wt') as f_muon_run, open(output_run_header_path, 'wb') as f_muon_run_header:
 
         for event in run:

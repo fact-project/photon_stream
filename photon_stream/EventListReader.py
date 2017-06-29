@@ -2,9 +2,9 @@ from .Event import Event
 from .JsonLinesGzipReader import JsonLinesGzipReader
 import pandas as pd
 
-class ObservationReader(object):
+class EventListReader(object):
     """
-    A ObservationReader() reads Events() from a file.
+    A EventListReader() reads Events() from a file.
     The Events are sequentially loaded from a file as needed.
 
 
@@ -13,7 +13,7 @@ class ObservationReader(object):
 
     To access the events in a run just loop over it:
 
-    reader = ObservationReader('YYYYmmnn_rrr.phs.jsonl.gz')
+    reader = EventListReader('YYYYmmnn_rrr.phs.jsonl.gz')
     for event in reader:
         event.plot()
         plt.show()
@@ -44,7 +44,7 @@ class ObservationReader(object):
         Returns a pandas DataFrame() containing a summarized statistics of this
         run.
         """
-        reader = ObservationReader(path)
+        reader = EventListReader(path)
         inspection = pd.DataFrame([{
             'number_of_saturated_pixels': len(event.photon_stream.saturated_pixels),
             'total_number_of_photons': event.photon_stream.number_photons,

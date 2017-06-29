@@ -48,7 +48,7 @@ def test_types_from_json():
     run_path = pkg_resources.resource_filename(
         'photon_stream', 
         'tests/resources/20170119_229_pass4_100events.phs.jsonl.gz')
-    run = ps.ObservationReader(run_path)
+    run = ps.EventListReader(run_path)
     event = next(run)
     type_check(event)
     

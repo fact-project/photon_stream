@@ -11,7 +11,7 @@ def test_binary_io():
         'photon_stream',
         'tests/resources/20170119_229_pass4_100events.phs.jsonl.gz')
 
-    run = ps.ObservationReader(run_path)
+    run = ps.EventListReader(run_path)
 
     with tempfile.TemporaryDirectory(prefix='photon_stream_test_binary') as tmp:
 
@@ -55,7 +55,7 @@ def test_jsonl2binary():
         'photon_stream',
         'tests/resources/20170119_229_pass4_100events.phs.jsonl.gz')
 
-    run = ps.ObservationReader(run_path)
+    run = ps.EventListReader(run_path)
     run_in = []
     run_back = []
     for event in run:

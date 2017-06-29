@@ -7,7 +7,7 @@ def test_photon_stream():
         'photon_stream',
         'tests/resources/20170119_229_pass4_100events.phs.jsonl.gz')
 
-    reader = ps.ObservationReader(run_path)
+    reader = ps.EventListReader(run_path)
     print(reader.__repr__())
     event = reader.__next__()
     print(event.__repr__())

@@ -12,7 +12,7 @@ pip install git+https://github.com/fact-project/photon_stream
 import photon_stream as ps
 import matplotlib.pyplot as plt
 
-reader = ps.ObservationReader('20151001_011.phs.jsonl.gz')
+reader = ps.EventListReader('20151001_011.phs.jsonl.gz')
 event = next(reader)
 event.plot()
 
