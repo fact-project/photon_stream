@@ -55,3 +55,13 @@ def test_equal():
 def test_repr():
     sim_truth = ps.SimulationTruth.from_event_dict(event_dict_A)
     print(sim_truth.__repr__())
+
+def test_to_dict():
+    sim_truth_A = ps.SimulationTruth.from_event_dict(event_dict_A)
+
+    dict_back = {'Test': True}
+    dict_back = sim_truth_A.add_to_dict(dict_back)
+
+    for key in event_dict_A:
+        assert key in dict_back
+        assert np.abs(dict_back[key] - event_dict_A[key]) < 1e-3

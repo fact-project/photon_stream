@@ -40,6 +40,22 @@ class SimulationTruth(object):
         return truth    
 
 
+    def add_to_dict(self, event_dict):
+        ed = event_dict
+        ed['Run'] = int(self.run)
+        ed['Event'] = int(self.event)
+        ed['Reuse'] = int(self.reuse)
+
+        ed['Particle'] = int(self.particle)
+        ed['Energy_GeV'] = float(self.energy)
+        ed['Phi_deg'] = float(self.phi)
+        ed['Theta_deg'] = float(self.theta)
+        ed['ImpactX_m'] = float(self.impact_x)
+        ed['ImpactY_m'] = float(self.impact_y)
+        ed['FirstInteractionAltitude_m'] = float(self.first_interaction_altitude)
+        return ed
+
+
     def __eq__(self, other):
         
         if isinstance(other, self.__class__):
