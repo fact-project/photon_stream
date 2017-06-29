@@ -18,13 +18,13 @@ def type_check(event):
 
     assert isinstance(event.time, dt.datetime)
 
-    assert isinstance(event.saturated_pixels, np.ndarray)
-    assert event.saturated_pixels.dtype == np.uint16
-
     assert isinstance(event.photon_stream, ps.PhotonStream)
     assert isinstance(event.photon_stream.slice_duration, np.float32)
     assert isinstance(event.photon_stream.time_lines, list)
     
+    assert isinstance(event.photon_stream.saturated_pixels, np.ndarray)
+    assert event.photon_stream.saturated_pixels.dtype == np.uint16
+
     for time_line in event.photon_stream.time_lines:
         assert isinstance(time_line, array)
         assert time_line.typecode == 'B'

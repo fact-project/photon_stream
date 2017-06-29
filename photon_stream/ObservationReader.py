@@ -46,7 +46,7 @@ class ObservationReader(object):
         """
         reader = ObservationReader(path)
         inspection = pd.DataFrame([{
-            'number_of_saturated_pixels': len(event.saturated_pixels),
+            'number_of_saturated_pixels': len(event.photon_stream.saturated_pixels),
             'trigger_type': event.trigger_type,
             'total_number_of_photons': event.photon_stream.number_photons,
             'time': event.time,

@@ -66,7 +66,6 @@ class Event(object):
         event.zd = np.float32(event_dict['Zd_deg'])
         event.az = np.float32(event_dict['Az_deg'])
 
-        event.saturated_pixels = np.array(event_dict['SaturatedPixels'], dtype=np.uint16)
         event.time = dt.datetime.utcfromtimestamp(
             event._time_unix_s + event._time_unix_us / 1e6)
 
@@ -94,7 +93,6 @@ class Event(object):
         evt['Zd_deg'] = float(self.zd)
         evt['Az_deg'] = float(self.az)
 
-        evt['SaturatedPixels'] = self.saturated_pixels.tolist()
         evt = self.photon_stream.add_to_dict(evt)
         return evt
 
@@ -122,11 +120,6 @@ class Event(object):
 
             if not np.abs(self.zd - other.zd) < MAX_RESIDUAL_POINTING_DEG: return False
             if not np.abs(self.az - other.az) < MAX_RESIDUAL_POINTING_DEG: return False
-
-            # Saturated Pixels
-            if not len(self.saturated_pixels) == len(other.saturated_pixels): return False            
-            for i, saturated_pixel_in in enumerate(self.saturated_pixels):
-                if not saturated_pixel_in == other.saturated_pixels[i]: return False
 
             # Photon Stream Header
             if not self.photon_stream == other.photon_stream: return False

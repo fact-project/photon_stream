@@ -102,7 +102,7 @@ def append_event_to_file(event, fout):
     fout.write(np.float32(event.az).tobytes())
     # 32
     append_photonstream_to_file(event.photon_stream, fout)
-    append_saturated_pixels_to_file(event.saturated_pixels, fout)
+    append_saturated_pixels_to_file(event.photon_stream.saturated_pixels, fout)
 
 
 def read_event_from_file(fin):
@@ -124,8 +124,8 @@ def read_event_from_file(fin):
             count=2)
         event.zd = pointing[0]
         event.az = pointing[1]
-        event.photon_stream = read_photonstream_from_file(fin)
-        event.saturated_pixels = read_saturated_pixels_from_file(fin)
+        event.photon_stream = read_photonstream_from_file(fin)  
+        event.photon_stream.saturated_pixels = read_saturated_pixels_from_file(fin)
 
         event.time = dt.datetime.utcfromtimestamp(
             event._time_unix_s + event._time_unix_us / 1e6)
