@@ -99,7 +99,7 @@ class Event(object):
         out += 'Night '+str(self.night)+', '
         out += 'Run '+str(self.run_id)+', '
         out += 'Event '+str(self.id)+', '
-        out += 'photons '+str(self.photon_stream.number_photons)
+        out += 'photon-stream ' + self.photon_stream._info()
         out += ')\n'
         return out
 
