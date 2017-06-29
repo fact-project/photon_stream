@@ -79,4 +79,4 @@ def test_jsonl2binary():
     for i in range(len(run_in)):
         evt_in = run_in[i]
         evt_ba = run_back[i]
-        evt_in.assert_equal(evt_ba)
+        assert evt_in == evt_ba

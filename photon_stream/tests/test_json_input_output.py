@@ -24,4 +24,4 @@ def test_run_inspection():
 
         for in_event in in_run:
             back_event = in_run_back.__next__()
-            in_event.assert_equal(back_event)
+            assert in_event == back_event

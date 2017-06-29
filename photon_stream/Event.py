@@ -5,6 +5,10 @@ from mpl_toolkits.mplot3d import Axes3D
 from .PhotonStream import PhotonStream
 from .plot import add_event_2_ax
 
+
+MAX_RESIDUAL_POINTING_DEG = 1e-5
+
+
 class Event(object):
     """
     A FACT event in photon-stream representation.
@@ -103,28 +107,29 @@ class Event(object):
         out += ')\n'
         return out
 
-    def assert_equal(
-        self, 
-        other, 
-        max_residual_pointing=1e-5, 
-        max_residual_slice_duration=1e-9):
-        # Event Header
-        assert self.night == other.night
-        assert self.run_id == other.run_id
-        assert self.id == other.id
 
-        assert self._time_unix_s == other._time_unix_s
-        assert self._time_unix_us == other._time_unix_us
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            # identification
+            if not self.night == other.night: return False
+            if not self.run_id == other.run_id: return False
+            if not self.id == other.id: return False
 
-        assert self.trigger_type == other.trigger_type
+            if not self._time_unix_s == other._time_unix_s: return False
+            if not self._time_unix_us == other._time_unix_us: return False
 
-        assert np.abs(self.zd - other.zd) < max_residual_pointing
-        assert np.abs(self.az - other.az) < max_residual_pointing
+            if not self.trigger_type == other.trigger_type: return False
 
-        # Saturated Pixels
-        assert len(self.saturated_pixels) == len(other.saturated_pixels)
-        for i, saturated_pixel_in in enumerate(self.saturated_pixels):
-            assert saturated_pixel_in == other.saturated_pixels[i]
+            if not np.abs(self.zd - other.zd) < MAX_RESIDUAL_POINTING_DEG: return False
+            if not np.abs(self.az - other.az) < MAX_RESIDUAL_POINTING_DEG: return False
 
-        # Photon Stream Header
-        assert self.photon_stream == other.photon_stream
+            # Saturated Pixels
+            if not len(self.saturated_pixels) == len(other.saturated_pixels): return False            
+            for i, saturated_pixel_in in enumerate(self.saturated_pixels):
+                if not saturated_pixel_in == other.saturated_pixels[i]: return False
+
+            # Photon Stream Header
+            if not self.photon_stream == other.photon_stream: return False
+            return True
+        else:
+            return NotImplemented
