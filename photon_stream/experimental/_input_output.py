@@ -1,6 +1,7 @@
 import numpy as np
 from ..PhotonStream import PhotonStream
 from ..Event import Event
+from ..ObservationInformation import ObservationInformation
 from array import array
 import datetime as dt
 import os
@@ -90,13 +91,13 @@ def read_saturated_pixels_from_file(fin):
 
 
 def append_event_to_file(event, fout):
-    fout.write(np.uint32(event.night).tobytes())
-    fout.write(np.uint32(event.run_id).tobytes())
-    fout.write(np.uint32(event.id).tobytes())
+    fout.write(np.uint32(event.observation_info.night).tobytes())
+    fout.write(np.uint32(event.observation_info.run).tobytes())
+    fout.write(np.uint32(event.observation_info.event).tobytes())
     # 12
-    fout.write(np.uint32(event._time_unix_s).tobytes())
-    fout.write(np.uint32(event._time_unix_us).tobytes())
-    fout.write(np.uint32(event.trigger_type).tobytes())
+    fout.write(np.uint32(event.observation_info._time_unix_s).tobytes())
+    fout.write(np.uint32(event.observation_info._time_unix_us).tobytes())
+    fout.write(np.uint32(event.observation_info.trigger_type).tobytes())
     # 24
     fout.write(np.float32(event.zd).tobytes())
     fout.write(np.float32(event.az).tobytes())
@@ -107,28 +108,34 @@ def append_event_to_file(event, fout):
 
 def read_event_from_file(fin):
     try:
-        event = Event()
         header = np.fromstring(
             fin.read(24),
             dtype=np.uint32,
-            count=6)
-        event.night = header[0]
-        event.run_id = header[1]
-        event.id = header[2]
-        event._time_unix_s = header[3]
-        event._time_unix_us = header[4]
-        event.trigger_type = header[5]
+            count=6
+        )
+
+        obs = ObservationInformation()
+        obs.night = header[0]
+        obs.run = header[1]
+        obs.event = header[2]
+        obs._time_unix_s = header[3]
+        obs._time_unix_us = header[4]
+        obs.time = dt.datetime.utcfromtimestamp(
+            obs._time_unix_s + obs._time_unix_us / 1e6)
+        obs.trigger_type = header[5]
+
         pointing = np.fromstring(
             fin.read(8),
             dtype=np.float32,
             count=2)
+
+        event = Event()
+        event.observation_info = obs
         event.zd = pointing[0]
         event.az = pointing[1]
         event.photon_stream = read_photonstream_from_file(fin)  
         event.photon_stream.saturated_pixels = read_saturated_pixels_from_file(fin)
 
-        event.time = dt.datetime.utcfromtimestamp(
-            event._time_unix_s + event._time_unix_us / 1e6)
         return event
     except:
         raise StopIteration
