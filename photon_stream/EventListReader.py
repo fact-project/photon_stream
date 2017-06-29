@@ -4,9 +4,8 @@ import pandas as pd
 
 class EventListReader(object):
     """
-    A EventListReader() reads Events() from a file.
-    The Events are sequentially loaded from a file as needed.
-
+    An EventListReader() reads Events() from a file.
+    The Events are sequentially loaded from the file as needed.
 
     Example usage
     -------------
@@ -37,6 +36,12 @@ class EventListReader(object):
 
     def __next__(self):
         return Event.from_event_dict_and_run(next(self.reader))
+
+    def __repr__(self):
+        out = 'EventListReader('
+        out += "path '" + self.reader.path + "'"
+        out += ')\n'
+        return out        
 
     @staticmethod
     def inspect(path):
