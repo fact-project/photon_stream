@@ -36,7 +36,7 @@
                 outputKey="Saturation"
         />
 
-        <PrintData/>
+        <!--PrintData/-->
 
         <stream.flow.If condition="%{data.SaturationPixelCount} &lt; 100">
             <fact.photonstream.SinglePulseExtraction
@@ -72,18 +72,38 @@
                 outputKey="CentiBaseLines"
         />
 
-        <stream.data.RenameKey from="NIGHT" to="Night"/>
-        <stream.data.RenameKey from="RUNID" to="Run"/>
-        <stream.data.RenameKey from="EventNum" to="Event"/>
-        <stream.data.RenameKey from="UnixTimeUTC" to="UnixTime_s_us"/>
-        <stream.data.RenameKey from="TriggerType" to="Trigger"/>
-        <stream.data.RenameKey from="AzPointing" to="Az_deg"/>
-        <stream.data.RenameKey from="ZdPointing" to="Zd_deg"/>
+
         <stream.data.RenameKey from="PhotonArrivals" to="PhotonArrivals_500ps"/>
         <stream.data.RenameKey from="Saturation" to="SaturatedPixels"/>
+        <stream.data.RenameKey from="AzPointing" to="Az_deg"/>
+        <stream.data.RenameKey from="ZdPointing" to="Zd_deg"/>
 
+        <stream.data.RenameKey from="MCorsikaRunHeader.fRunNumber" to="Run"/>
+        <stream.data.RenameKey from="MCorsikaEvtHeader.fEvtNumber" to="Event"/>
+        <stream.data.RenameKey from="MMcEvt.fEventReuse" to="Reuse"/>
+ 
         <fact.io.JSONWriter
-                keys="Night,Run,Event,UnixTime_s_us,Trigger,Az_deg,Zd_deg,PhotonArrivals_500ps,SaturatedPixels,${mc_truth},McCherPhotWeight,McCherPhotNumber,McMuonCherPhotWeight,McMuonCherPhotNumber,McNoisePhotWeight,McCherArrTimeMean,McCherArrTimeVar,McCherArrTimeMin,McCherArrTimeMax,MSimSourcePos.fZd,MSimSourcePos.fAz"
+                keys="
+                    Run,
+                    Event,
+                    Reuse,
+                    Az_deg,
+                    Zd_deg,
+                    PhotonArrivals_500ps,
+                    SaturatedPixels,
+                    ${mc_truth},
+                    McCherPhotWeight,
+                    McCherPhotNumber,
+                    McMuonCherPhotWeight,
+                    McMuonCherPhotNumber,
+                    McNoisePhotWeight,
+                    McCherArrTimeMean,
+                    McCherArrTimeVar,
+                    McCherArrTimeMin,
+                    McCherArrTimeMax,
+                    MSimSourcePos.fZd,
+                    MSimSourcePos.fAz
+                "
                 url="${out_path_basename}.phs.jsonl.gz"
                 writeListOfItems="true"
                 pixelSetsAsInt="true"
@@ -92,7 +112,12 @@
         />
 
         <fact.io.JSONWriter
-                keys="Night,Run,Event,CentiBaseLines"
+                keys="
+                    Night,
+                    Run,
+                    Event,
+                    CentiBaseLines
+                "
                 url="${out_path_basename}.bsl.jsonl.gz"
                 writeListOfItems="true"
                 pixelSetsAsInt="true"
