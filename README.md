@@ -18,6 +18,25 @@ event.plot()
 
 plt.show()
 ```
+Read in the full CORSIKA simulation truth and estimate instrument response functions:
+```python
+import photon_stream as ps
+
+sim_reader = ps.SimulationReader(
+    photon_stream_path='tests/resources/cer011014.phs.jsonl.gz', 
+    mmcs_corsika_path='tests/resources/cer011014'
+)
+
+for event in sim_reader:
+    # process event ...
+    # extract Hiilas and other features ....
+    # do deep learning ...
+    pass
+
+sim_reader.event_passed_trigger
+```
+
+
 ![img](example/example_event_small.gif)
 
 # The Photon-Stream File Format Rationale
