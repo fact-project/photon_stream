@@ -1,5 +1,6 @@
 import numpy as np
-from .tests.tools import near
+from math import isclose
+
 
 class SimulationTruth(object):
     """
@@ -65,15 +66,15 @@ class SimulationTruth(object):
             if self.reuse != other.reuse: return False
 
             if self.particle != other.particle: return False
-            if not near(self.energy, other.energy): return False
+            if not isclose(self.energy, other.energy, abs_tol=0.1): return False
 
-            if not near(self.phi, other.phi): return False
-            if not near(self.theta, other.theta): return False
+            if not isclose(self.phi, other.phi, abs_tol=1e-3): return False
+            if not isclose(self.theta, other.theta, abs_tol=1e-3): return False
 
-            if not near(self.impact_x, other.impact_x): return False
-            if not near(self.impact_y, other.impact_y): return False
+            if not isclose(self.impact_x, other.impact_x, abs_tol=1e-2): return False
+            if not isclose(self.impact_y, other.impact_y, abs_tol=1e-2): return False
 
-            if not near(self.first_interaction_altitude, other.first_interaction_altitude): 
+            if not isclose(self.first_interaction_altitude, other.first_interaction_altitude, abs_tol=1.0): 
                 return False
 
             return True

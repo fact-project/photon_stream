@@ -6,9 +6,10 @@ from .PhotonStream import PhotonStream
 from .ObservationInformation import ObservationInformation
 from .SimulationTruth import SimulationTruth
 from .plot import add_event_2_ax
+from math import isclose
 
 
-MAX_RESIDUAL_POINTING_DEG = 1e-5
+MAX_RESIDUAL_POINTING_DEG = 1e-3
 
 
 class Event(object):
@@ -92,8 +93,8 @@ class Event(object):
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
-            if not np.abs(self.zd - other.zd) < MAX_RESIDUAL_POINTING_DEG: return False
-            if not np.abs(self.az - other.az) < MAX_RESIDUAL_POINTING_DEG: return False
+            if not isclose(self.zd, other.zd, abs_tol=MAX_RESIDUAL_POINTING_DEG): return False
+            if not isclose(self.az, other.az, abs_tol=MAX_RESIDUAL_POINTING_DEG): return False
             if not self.photon_stream == other.photon_stream: return False
             if hasattr(self, 'simulation_truth'):
                 if not self.simulation_truth == other.simulation_truth: return False
