@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from .PhotonStream import PhotonStream
 from .ObservationInformation import ObservationInformation
-from .SimulationTruth import SimulationTruth
+from .simulation_truth.SimulationTruth import SimulationTruth
 from .plot import add_event_2_ax
 from math import isclose
 

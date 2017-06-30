@@ -1,7 +1,7 @@
 from .PhotonStream import PhotonStream
 
 from .Event import Event
-from .SimulationTruth import SimulationTruth
+from . import simulation_truth
 from .ObservationInformation import ObservationInformation
 from .EventListReader import EventListReader
 from .PhotonCluster import PhotonStreamCluster

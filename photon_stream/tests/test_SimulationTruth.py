@@ -29,7 +29,7 @@ event_dict_B = {
 
 def test_constructor():
     a = np.abs
-    sim_truth_A = ps.SimulationTruth.from_event_dict(event_dict_A)
+    sim_truth_A = ps.simulation_truth.SimulationTruth.from_event_dict(event_dict_A)
     assert sim_truth_A.run == 1337
     assert sim_truth_A.event == 42
     assert sim_truth_A.reuse == 13
@@ -42,22 +42,22 @@ def test_constructor():
 
 
 def test_equal():
-    sim_truth_1A = ps.SimulationTruth.from_event_dict(event_dict_A)
-    sim_truth_1B = ps.SimulationTruth.from_event_dict(event_dict_B)
+    sim_truth_1A = ps.simulation_truth.SimulationTruth.from_event_dict(event_dict_A)
+    sim_truth_1B = ps.simulation_truth.SimulationTruth.from_event_dict(event_dict_B)
     
-    sim_truth_2A = ps.SimulationTruth.from_event_dict(event_dict_A)
-    sim_truth_2B = ps.SimulationTruth.from_event_dict(event_dict_B)
+    sim_truth_2A = ps.simulation_truth.SimulationTruth.from_event_dict(event_dict_A)
+    sim_truth_2B = ps.simulation_truth.SimulationTruth.from_event_dict(event_dict_B)
 
     assert sim_truth_1A == sim_truth_1A
     assert sim_truth_1A != sim_truth_1B
     assert sim_truth_1A == sim_truth_2A
 
 def test_repr():
-    sim_truth = ps.SimulationTruth.from_event_dict(event_dict_A)
+    sim_truth = ps.simulation_truth.SimulationTruth.from_event_dict(event_dict_A)
     print(sim_truth.__repr__())
 
 def test_to_dict():
-    sim_truth_A = ps.SimulationTruth.from_event_dict(event_dict_A)
+    sim_truth_A = ps.simulation_truth.SimulationTruth.from_event_dict(event_dict_A)
 
     dict_back = {'Test': True}
     dict_back = sim_truth_A.add_to_dict(dict_back)
