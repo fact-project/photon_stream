@@ -30,10 +30,6 @@ class SimulationTruth(object):
         truth.run = np.uint32(event_dict['Run'])
         truth.event = np.uint32(event_dict['Event'])
         truth.reuse = np.uint32(event_dict['Reuse'])
-        if 'AirShowerTruth' in event_dict:
-            truth.air_shower = AirShowerTruth.from_event_dict(
-                event_dict['AirShowerTruth']
-            )
         if 'DetectorTruth' in event_dict:
             truth.detector = DetectorTruth.from_event_dict(
                 event_dict['DetectorTruth']
@@ -46,8 +42,6 @@ class SimulationTruth(object):
         ed['Run'] = int(self.run)
         ed['Event'] = int(self.event)
         ed['Reuse'] = int(self.reuse)
-        if hasattr(self, 'air_shower'):
-            ed['AirShowerTruth'] = self.air_shower.add_to_dict({})
         if hasattr(self, 'detector'):
             ed['DetectorTruth'] = self.detector.add_to_dict({})
         return ed

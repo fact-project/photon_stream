@@ -5,6 +5,7 @@ from .simulation_truth.corsika_headers import IDX_RUNH_RUN_NUMBER
 from .simulation_truth.corsika_headers import IDX_EVTH_EVENT_NUMBER
 from .simulation_truth.corsika_headers import IDX_EVTH_REUSE_NUMBER
 from .simulation_truth.corsika_headers import IDX_EVTH_RUN_NUMBER
+from .simulation_truth.AirShowerTruth import AirShowerTruth
 import numpy as np
 
 
@@ -33,13 +34,19 @@ class SimulationReader(object):
     def __next__(self):
         event = Event.from_event_dict(next(self.reader))
         assert event.simulation_truth.run == self.run_header[IDX_RUNH_RUN_NUMBER]
-        event.simulation_truth.corsika_run_header = self.run_header
+    
         idx = self.id_to_index[(event.simulation_truth.event, event.simulation_truth.reuse)]
-        event.simulation_truth.corsika_event_header = self.event_headers[idx]
-        assert event.simulation_truth.run == event.simulation_truth.corsika_event_header[IDX_EVTH_RUN_NUMBER]
-        assert event.simulation_truth.event == event.simulation_truth.corsika_event_header[IDX_EVTH_EVENT_NUMBER]
-        assert event.simulation_truth.reuse == event.simulation_truth.corsika_event_header[IDX_EVTH_REUSE_NUMBER]
+
+        assert event.simulation_truth.run == self.event_headers[idx][IDX_EVTH_RUN_NUMBER]
+        assert event.simulation_truth.event == self.event_headers[idx][IDX_EVTH_EVENT_NUMBER]
+        assert event.simulation_truth.reuse == self.event_headers[idx][IDX_EVTH_REUSE_NUMBER]
         self.event_passed_trigger[idx] = True
+
+        event.simulation_truth.air_shower =  AirShowerTruth(
+            raw_corsika_run_header=self.run_header, 
+            raw_corsika_event_header=self.event_headers[idx]
+        )
+
         return event
 
     def __repr__(self):

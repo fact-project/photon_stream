@@ -59,25 +59,15 @@ def test_hirachy():
         'Run': 1337,
         'Event': 42,
         'Reuse': 13,
-        'AirShowerTruth': {
-            'Energy_GeV': 1337.42, 
-            'Particle': 1,
-            'Phi_deg': 87.9,
-            'Theta_deg': 23.6,
-            'ImpactX_m': 12.9,
-            'ImpactY_m': 42.6,
-            'FirstInteractionAltitude_m': 23456.4,
-        },
         'DetectorTruth': {'ShowerPhotonEq': [1.0, 0.0, 3.4, 4.2]}
     }
 
     simC = ps.simulation_truth.SimulationTruth.from_event_dict(in_C)
-    assert hasattr(simC, 'air_shower')
+    assert not hasattr(simC, 'air_shower')
     assert hasattr(simC, 'detector')
 
     simC2 = ps.simulation_truth.SimulationTruth.from_event_dict(in_C)   
     assert simC == simC2
-    assert simC.air_shower == simC2.air_shower
     assert simC.detector == simC2.detector
 
     back_C = {}
@@ -87,14 +77,6 @@ def test_hirachy():
     assert in_C['Event'] == back_C['Event']
     assert in_C['Reuse'] == back_C['Reuse']
 
-    assert isclose(in_C['AirShowerTruth']['Energy_GeV'], back_C['AirShowerTruth']['Energy_GeV'], abs_tol=1e-3)
-    assert isclose(in_C['AirShowerTruth']['Particle'], back_C['AirShowerTruth']['Particle'], abs_tol=1e-3)
-    assert isclose(in_C['AirShowerTruth']['Phi_deg'], back_C['AirShowerTruth']['Phi_deg'], abs_tol=1e-3)
-    assert isclose(in_C['AirShowerTruth']['Theta_deg'], back_C['AirShowerTruth']['Theta_deg'], abs_tol=1e-3)
-    assert isclose(in_C['AirShowerTruth']['ImpactX_m'], back_C['AirShowerTruth']['ImpactX_m'], abs_tol=1e-3)
-    assert isclose(in_C['AirShowerTruth']['ImpactY_m'], back_C['AirShowerTruth']['ImpactY_m'], abs_tol=1e-3)
-    assert isclose(in_C['AirShowerTruth']['FirstInteractionAltitude_m'], back_C['AirShowerTruth']['FirstInteractionAltitude_m'], abs_tol=1e-3)
-    
     for i in range(len(in_C['DetectorTruth']['ShowerPhotonEq'])):
         assert isclose(
             in_C['DetectorTruth']['ShowerPhotonEq'][i], 
