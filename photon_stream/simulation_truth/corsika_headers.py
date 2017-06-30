@@ -28,10 +28,11 @@ def read_corsika_headers(path):
     for block_index in range(number_of_blocks-1):
         start = (block_index+1)*273
         end = start + 273
-        block = c[start:end]
+        event_header = c[start:end]
+        assert event_header[44-1] == run_header[2-1] # same run number
 
-        if block[0] == CORSIKA_EVENT_MARKER:
-            event_headers.append(block)
+        if event_header[0] == CORSIKA_EVENT_MARKER:
+            event_headers.append(event_header)
 
     event_headers = np.array(event_headers)
     return {'run_header': run_header, 'event_headers': event_headers}
