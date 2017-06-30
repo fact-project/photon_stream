@@ -35,7 +35,7 @@ class EventListReader(object):
         return self
 
     def __next__(self):
-        return Event.from_event_dict_and_run(next(self.reader))
+        return Event.from_event_dict(next(self.reader))
 
     def __repr__(self):
         out = 'EventListReader('

@@ -35,7 +35,7 @@ class Event(object):
         pass
 
     @classmethod
-    def from_event_dict_and_run(cls, event_dict):
+    def from_event_dict(cls, event_dict):
         event = cls()
         event.zd = np.float32(event_dict['Zd_deg'])
         event.az = np.float32(event_dict['Az_deg'])
