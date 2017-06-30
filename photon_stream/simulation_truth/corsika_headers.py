@@ -11,6 +11,12 @@ def fourChars2float32(four_byte_string):
 CORSIKA_RUN_MARKER = np.float32(fourChars2float32('RUNH'))
 CORSIKA_EVENT_MARKER = np.float32(fourChars2float32('EVTH'))
 
+IDX_RUNH_RUN_NUMBER = 2-1
+
+IDX_EVTH_EVENT_NUMBER = 2-1
+IDX_EVTH_RUN_NUMBER = 44-1
+IDX_EVTH_REUSE_NUMBER = 98-1
+
 def read_corsika_headers(path):
     '''
     Read in a MMCS CORSIKA run and return the raw run header and the 
@@ -28,9 +34,7 @@ def read_corsika_headers(path):
     for block_index in range(number_of_blocks-1):
         start = (block_index+1)*273
         end = start + 273
-        event_header = c[start:end]
-        assert event_header[44-1] == run_header[2-1] # same run number
-
+        event_header = c[start:end].copy()
         if event_header[0] == CORSIKA_EVENT_MARKER:
             event_headers.append(event_header)
 
