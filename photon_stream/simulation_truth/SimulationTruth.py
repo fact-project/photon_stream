@@ -15,29 +15,19 @@ class SimulationTruth(object):
 
     run                 The unique CORSIKA run identifier in FACT simulations.
 
-    For more fields see the KIT CORSKIA documentation:
-    https://web.ikp.kit.edu/corsika/usersguide/usersguide.pdf
+    air_shower          [optional]
+
+    detector            [optional]
     """
 
 
     @classmethod
     def from_event_dict(cls, event_dict):
-        '''
-        See https://web.ikp.kit.edu/corsika/usersguide/usersguide.pdf
-        '''
         truth = cls()
         # identification
         truth.run = np.uint32(event_dict['Run'])
         truth.event = np.uint32(event_dict['Event'])
         truth.reuse = np.uint32(event_dict['Reuse'])
-
-        truth.particle = np.uint32(event_dict['Particle'])
-        truth.energy = np.float32(event_dict['Energy_GeV'])
-        truth.phi = np.float32(event_dict['Phi_deg'])
-        truth.theta = np.float32(event_dict['Theta_deg'])
-        truth.impact_x = np.float32(event_dict['ImpactX_m'])
-        truth.impact_y = np.float32(event_dict['ImpactY_m'])
-        truth.first_interaction_altitude = np.float32(event_dict['FirstInteractionAltitude_m'])
         return truth    
 
 
@@ -46,37 +36,15 @@ class SimulationTruth(object):
         ed['Run'] = int(self.run)
         ed['Event'] = int(self.event)
         ed['Reuse'] = int(self.reuse)
-
-        ed['Particle'] = int(self.particle)
-        ed['Energy_GeV'] = float(self.energy)
-        ed['Phi_deg'] = float(self.phi)
-        ed['Theta_deg'] = float(self.theta)
-        ed['ImpactX_m'] = float(self.impact_x)
-        ed['ImpactY_m'] = float(self.impact_y)
-        ed['FirstInteractionAltitude_m'] = float(self.first_interaction_altitude)
         return ed
 
 
     def __eq__(self, other):
-        
         if isinstance(other, self.__class__):
             # identification
             if self.run != other.run: return False
             if self.event != other.event: return False
             if self.reuse != other.reuse: return False
-
-            if self.particle != other.particle: return False
-            if not isclose(self.energy, other.energy, abs_tol=0.1): return False
-
-            if not isclose(self.phi, other.phi, abs_tol=1e-3): return False
-            if not isclose(self.theta, other.theta, abs_tol=1e-3): return False
-
-            if not isclose(self.impact_x, other.impact_x, abs_tol=1e-2): return False
-            if not isclose(self.impact_y, other.impact_y, abs_tol=1e-2): return False
-
-            if not isclose(self.first_interaction_altitude, other.first_interaction_altitude, abs_tol=1.0): 
-                return False
-
             return True
         else:
             return NotImplemented
