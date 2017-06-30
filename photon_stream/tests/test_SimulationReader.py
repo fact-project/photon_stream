@@ -12,12 +12,12 @@ def test_read_in_full_CORSIKA_simulation_truth():
         'tests/resources/cer011014.phs.jsonl.gz')
 
     simread = ps.SimulationReader(
-    	photon_stream_path=photon_stream_path, 
-    	mmcs_corsika_path=mmcs_corsika_path
+        photon_stream_path=photon_stream_path, 
+        mmcs_corsika_path=mmcs_corsika_path
     )
 
     events = []
     for event in simread:
-    	events.append(event)
+        events.append(event)
 
     assert len(events) == simread.event_passed_trigger.sum()
