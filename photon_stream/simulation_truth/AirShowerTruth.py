@@ -4,6 +4,8 @@ from math import isclose
 
 class AirShowerTruth(object):
     """
+    Simulation truth on the air-shower as particle type and particle energy.
+    Based on the inputs for the KIT CORSIKA air-shower simulation. 
     See the KIT CORSKIA documentation:
     https://web.ikp.kit.edu/corsika/usersguide/usersguide.pdf
     """

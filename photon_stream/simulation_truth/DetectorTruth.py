@@ -3,7 +3,10 @@ from math import isclose
 
 
 class DetectorTruth(object):
-
+    '''
+    Simulation Truth of the FACT detector as e.g. number of air-shower photons 
+    in a pixel, or single pulse origins.
+    '''
     @classmethod
     def from_event_dict(cls, event_dict):
         truth = cls()
