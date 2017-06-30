@@ -4,6 +4,7 @@ from .Event import Event
 from . import simulation_truth
 from .ObservationInformation import ObservationInformation
 from .EventListReader import EventListReader
+from .SimulationReader import SimulationReader
 from .PhotonCluster import PhotonStreamCluster
 from .PhotonCluster import PhotonTimeLineCluster
 from .JsonLinesGzipReader import JsonLinesGzipReader
