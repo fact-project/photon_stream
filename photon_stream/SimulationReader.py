@@ -35,7 +35,6 @@ class SimulationReader(object):
         assert event.simulation_truth.run == self.run_header[IDX_RUNH_RUN_NUMBER]
         event.simulation_truth.corsika_run_header = self.run_header
         idx = self.id_to_index[(event.simulation_truth.event, event.simulation_truth.reuse)]
-        print(idx, event.simulation_truth.event)
         event.simulation_truth.corsika_event_header = self.event_headers[idx]
         assert event.simulation_truth.run == event.simulation_truth.corsika_event_header[IDX_EVTH_RUN_NUMBER]
         assert event.simulation_truth.event == event.simulation_truth.corsika_event_header[IDX_EVTH_EVENT_NUMBER]
