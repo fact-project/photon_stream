@@ -24,23 +24,36 @@ def read_corsika_headers(path):
     raw event headers.
     '''
     c = np.fromfile(path, dtype=np.float32)
+
+    # RUN HEADER
     run_header = c[0:273]
     assert run_header[0] == CORSIKA_RUN_MARKER
 
+    # EVENTS
     number_of_blocks = c.shape[0]/273
     assert number_of_blocks%1 == 0.
     number_of_blocks = int(number_of_blocks)
 
     event_headers = []
-    for block_index in range(number_of_blocks-1):
+    for block_index in range(number_of_blocks-2):
         start = (block_index+1)*273
         end = start + 273
         event_header = c[start:end].copy()
         if event_header[0] == CORSIKA_EVENT_MARKER:
             event_headers.append(event_header)
-
     event_headers = np.array(event_headers)
-    return {'run_header': run_header, 'event_headers': event_headers}
+
+    # RUN END
+    start = (block_index+2)*273
+    end = start + 273
+    run_end = c[start:end]
+    assert run_end[0] == CORSIKA_RUN_END_MARKER
+
+    return {
+        'run_header': run_header, 
+        'event_headers': event_headers, 
+        'run_end': run_end
+    }
 
 
 def write_corsika_headers(headers, path):
