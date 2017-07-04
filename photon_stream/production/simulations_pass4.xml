@@ -1,82 +1,57 @@
 <container>
     <properties url="classpath:/default/settings_mc.properties" />
 
-    <property name="infile" value="file:src/main/resources/testMcFile.fits.gz" />
-    <property name="drsfile" value="file:src/main/resources/testMcDrsFile.drs.fits.gz" />
-
+    <property name="infile" value="classpath:/ceres_output/18000/00018000.000_D_MonteCarlo018_Events.fits.gz" />
+    <property name="drsfile" value="classpath:/testMcDrsFile.drs.fits.gz" />
     <property name="integralGainFile" value="classpath:/default/defaultIntegralGains.csv" />
 
-    <property name="out_path_basename" value="output" />
+    <property name="out_path_basename" value="test_ceres" />
 
     <service id="calibService" class="fact.calibrationservice.ConstantCalibService" />
 
-    <!--<stream id="fact" class="fact.io.hdureader.FITSStream" url="${infile}"/>-->
-    <stream id="fact" class="fact.io.zfits.ZFitsStream" url="${infile}"/>
+    <stream id="fact" class="fact.io.CeresStream" url="${infile}"/>
 
     <process id="2" input="fact">
-        <stream.flow.Skip condition="%{data.TriggerType} != 4" />
-        <!--    FACT trigger types:
-                Design and commissioning of the trigger
-                electronics for a novel Geiger-mode avalanche
-                photodiode based camera for Imaging
-                Atmospheric Cherenkov Telescopes
-                Dissertation Patrick Vogler, page 93
-                1: external 1 GPS (like pedestal)
-                2: external 2 GPS (like pedestal)
-                1024: pedestal
-                4: physics (self triggered)
-        -->
 
         <include url="classpath:/default/mc/calibration_mc.xml" />
         <include url="classpath:/default/mc/extraction_mc.xml" />
 
-        <fact.extraction.AboveThreshold
-                dataKey="Data"
-                threshold="2040"
-                outputKey="Saturation"
+        <fact.extraction.AboveThreshold 
+            dataKey="Data" 
+            threshold="2040" 
+            outputKey="Saturation"
         />
-
-        <!--PrintData/-->
 
         <stream.flow.If condition="%{data.SaturationPixelCount} &lt; 100">
             <fact.photonstream.SinglePulseExtraction
-                    dataKey="DataCalibrated"
-                    outputKey="PhotonArrivals"
-                    maxIterations="500"
+                dataKey="DataCalibrated"
+                outputKey="PhotonArrivals"
+                maxIterations="500"
             />
         </stream.flow.If>
         <stream.flow.If condition="%{data.SaturationPixelCount} &gt; 99">
             <fact.photonstream.SinglePulseExtraction
-                    dataKey="DataCalibrated"
-                    outputKey="PhotonArrivals"
-                    maxIterations="0"
+                dataKey="DataCalibrated"
+                outputKey="PhotonArrivals"
+                maxIterations="0"
             />
         </stream.flow.If>
 
-        <fact.features.source.SourcePosition
-                outputKey="sourcePosition"
-                pointingZdKey="MPointingPos.fZd"
-                pointingAzKey="MPointingPos.fAz"
-                sourceZdKey="MSimSourcePos.fZd"
-                sourceAzKey="MSimSourcePos.fAz"
-        />
-
         <fact.utils.ElementwiseMultiplyDoubleArray
-                inputKey="PhotonArrivalsBaseLine"
-                outputKey="CentiBaseLines"
-                factor="100.0"
+            inputKey="PhotonArrivalsBaseLine"
+            outputKey="CentiBaseLines"
+            factor="100.0"
         />
 
         <fact.utils.CastDoubleArrayToIntArray
-                inputKey="CentiBaseLines"
-                outputKey="CentiBaseLines"
+            inputKey="CentiBaseLines"
+            outputKey="CentiBaseLines"
         />
-
 
         <stream.data.RenameKey from="PhotonArrivals" to="PhotonArrivals_500ps"/>
         <stream.data.RenameKey from="Saturation" to="SaturatedPixels"/>
-        <stream.data.RenameKey from="AzPointing" to="Az_deg"/>
-        <stream.data.RenameKey from="ZdPointing" to="Zd_deg"/>
+        <stream.data.RenameKey from="MPointingPos.fAz" to="Az_deg"/>
+        <stream.data.RenameKey from="MPointingPos.fZd" to="Zd_deg"/>
 
         <stream.data.RenameKey from="MCorsikaRunHeader.fRunNumber" to="Run"/>
         <stream.data.RenameKey from="MCorsikaEvtHeader.fEvtNumber" to="Event"/>
@@ -90,39 +65,22 @@
                     Az_deg,
                     Zd_deg,
                     PhotonArrivals_500ps,
-                    SaturatedPixels,
-                    ${mc_truth},
-                    McCherPhotWeight,
-                    McCherPhotNumber,
-                    McMuonCherPhotWeight,
-                    McMuonCherPhotNumber,
-                    McNoisePhotWeight,
-                    McCherArrTimeMean,
-                    McCherArrTimeVar,
-                    McCherArrTimeMin,
-                    McCherArrTimeMax,
-                    MSimSourcePos.fZd,
-                    MSimSourcePos.fAz
+                    SaturatedPixels
                 "
-                url="${out_path_basename}.phs.jsonl.gz"
+                url="file:${out_path_basename}.phs.jsonl.gz"
                 writeListOfItems="true"
                 pixelSetsAsInt="true"
                 gzip="true"
                 jsonl="true"
         />
 
-        <fact.io.JSONWriter
-                keys="
-                    Night,
-                    Run,
-                    Event,
-                    CentiBaseLines
-                "
-                url="${out_path_basename}.bsl.jsonl.gz"
-                writeListOfItems="true"
-                pixelSetsAsInt="true"
-                gzip="true"
-                jsonl="true"
+        <fact.io.JSONWriter 
+            keys="Night,Run,Event,CentiBaseLines"
+            url="file:${out_path_basename}.bsl.jsonl.gz"
+            writeListOfItems="true"
+            pixelSetsAsInt="true"
+            gzip="true"
+            jsonl="true"
         />
     </process>
 </container>
