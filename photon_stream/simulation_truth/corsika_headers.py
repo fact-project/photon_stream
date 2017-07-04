@@ -9,6 +9,7 @@ def fourChars2float32(four_byte_string):
     return struct.unpack('f', four_byte_string.encode())[0]
 
 CORSIKA_RUN_MARKER = np.float32(fourChars2float32('RUNH'))
+CORSIKA_RUN_END_MARKER = np.float32(fourChars2float32('RUNE'))
 CORSIKA_EVENT_MARKER = np.float32(fourChars2float32('EVTH'))
 
 IDX_RUNH_RUN_NUMBER = 2-1
