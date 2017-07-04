@@ -64,3 +64,4 @@ def write_corsika_headers(headers, path):
         fout.write(headers['run_header'])
         for event_header in headers['event_headers']:
             fout.write(event_header)
+        fout.write(headers['run_end'])
