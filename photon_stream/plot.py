@@ -17,7 +17,7 @@ def add_event_2_ax(event, ax, mask=None, color='b'):
     if mask is not None:
         xyt = xyt[mask]
 
-    ax.set_title('Night '+str(event.night)+', Run '+str(event.run_id)+', Event '+str(event.id))
+    ax.set_title(event._info())
     fovR = event.photon_stream.geometry['fov_radius']
     add_ring_2_ax(x=0.0, y=0.0, z=min_time, r=fovR, ax=ax)
     ax.set_xlim(-fovR, fovR)

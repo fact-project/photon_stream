@@ -6,7 +6,7 @@ def test_properties():
         'photon_stream',
         'tests/resources/20170119_229_pass4_100events.phs.jsonl.gz')
 
-    event = next(ps.Run(run_path))
+    event = next(ps.EventListReader(run_path))
 
     assert event.photon_stream.number_photons == 4984
     assert event.photon_stream.flatten().shape == (4984, 3)
@@ -19,7 +19,7 @@ def test_can_truncate_itself():
         'photon_stream',
         'tests/resources/20170119_229_pass4_100events.phs.jsonl.gz')
 
-    event = next(ps.Run(run_path))
+    event = next(ps.EventListReader(run_path))
     event.photon_stream.truncated_time_lines(30e-9, 130e-9)
 
 

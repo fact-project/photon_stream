@@ -12,12 +12,31 @@ pip install git+https://github.com/fact-project/photon_stream
 import photon_stream as ps
 import matplotlib.pyplot as plt
 
-run = ps.Run('20151001_011.phs.jsonl.gz')
-event = next(run)
+reader = ps.EventListReader('20151001_011.phs.jsonl.gz')
+event = next(reader)
 event.plot()
 
 plt.show()
 ```
+Read in the full CORSIKA simulation truth and estimate instrument response functions:
+```python
+import photon_stream as ps
+
+sim_reader = ps.SimulationReader(
+    photon_stream_path='tests/resources/cer011014.phs.jsonl.gz', 
+    mmcs_corsika_path='tests/resources/cer011014'
+)
+
+for event in sim_reader:
+    # process event ...
+    # extract Hiilas and other features ....
+    # do deep learning ...
+    pass
+
+sim_reader.event_passed_trigger
+```
+
+
 ![img](example/example_event_small.gif)
 
 # The Photon-Stream File Format Rationale
@@ -88,7 +107,7 @@ Since a single photon is now defined by only one sharp arrival time in contrast 
 ```json
 "SaturatedPixels":[123,456]
 ```
-A list of pixels in ```CHID``` to indicate that the corresponding pixel had an saturated analog time line out of the raw DRS4 chip. The maximim number of saturated pixels is ```100```, as the event is skipped then anyhow. Usually this list is empty. Such saturations happen not only for ultra high energy air showers, but also when the DRS4 calibration was not possible or is broken elseway. 
+A list of pixels in ```CHID``` to indicate that the corresponding pixel had an saturated analog time line out of the raw DRS4 chip. The maximim number of saturated pixels is ```100```, as the event is skipped then anyhow. Usually this list is empty. Such saturations happen not only for ultra high energy air showers, but also when the DRS4 calibration was not possible or is broken elseway.
 
 ## Integration into existing air shower reconstruction software
 When the idea of the photon-stream is inverted, the amplitude time lines of an individual pixel can be reconstructed from the photon-stream events which enables FACT to use ist usual air shower reconstruction programs right ahead without modifications.  

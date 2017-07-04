@@ -1,5 +1,5 @@
 import numpy as np
-from ..Run import Run
+from ..EventListReader import EventListReader
 from .detection import detection
 from ..PhotonCluster import PhotonStreamCluster
 import gzip
@@ -25,9 +25,9 @@ FACT_PHYSICS_SELF_TRIGGER = 4
 
 def extract_muons_from_run(input_run_path, output_run_path, output_run_header_path):
     """
-    Detects and extracts muon candidate events from a run. The muon candidate   
+    Detects and extracts muon candidate events from a run. The muon candidate
     events are exported into a new output run. In addidion a header for the muon
-    candidates is exported. 
+    candidates is exported.
 
 
     Parameter
@@ -57,13 +57,13 @@ def extract_muons_from_run(input_run_path, output_run_path, output_run_header_pa
    12)      float32     muon ring overlapp with field of view (0.0 to 1.0) [1]
    13)      float32     number of photons muon cluster [1]
     """
-    run = Run(input_run_path)
+    run = EventListReader(input_run_path)
     with gzip.open(output_run_path, 'wt') as f_muon_run, open(output_run_header_path, 'wb') as f_muon_run_header:
-        
+
         for event in run:
-            
+
             if event.trigger_type == FACT_PHYSICS_SELF_TRIGGER:
-                
+
                 photon_clusters = PhotonStreamCluster(event.photon_stream)
                 muon_features = detection(event, photon_clusters)
 

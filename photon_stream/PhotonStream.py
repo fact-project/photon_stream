@@ -13,6 +13,8 @@ geometry = {
     'fov_radius': fact.instrument.camera.FOV_RADIUS,
 }
 
+MAX_RESIDUAL_SLICE_DURATION_NS = 1e-9
+
 class PhotonStream(object):
     def __init__(self, time_lines=None, slice_duration=nan):
         self.slice_duration = slice_duration
@@ -29,15 +31,18 @@ class PhotonStream(object):
         ps.time_lines = []
         for time_line in event_dict['PhotonArrivals_500ps']:
             ps.time_lines.append(array('B', time_line))
+        ps.saturated_pixels = np.array(
+            event_dict['SaturatedPixels'],
+            dtype=np.uint16
+        )
         return ps
 
     def add_to_dict(self, event_dict):
-
         time_lines = []
         for time_line in self.time_lines:
             time_lines.append(time_line.tolist())
-
         event_dict['PhotonArrivals_500ps'] = time_lines
+        event_dict['SaturatedPixels'] = self.saturated_pixels.tolist()
         return event_dict
 
     @property
@@ -107,9 +112,43 @@ class PhotonStream(object):
                         ])
         return np.array(xyt)
 
+
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            if not np.abs(self.slice_duration - other.slice_duration) < MAX_RESIDUAL_SLICE_DURATION_NS: return False
+            if not self.number_photons == other.number_photons: return False
+            if not len(self.time_lines) == len(other.time_lines): return False
+
+            # Saturated Pixels
+            if not len(self.saturated_pixels) == len(other.saturated_pixels): return False            
+            for i, saturated_pixel_in in enumerate(self.saturated_pixels):
+                if not saturated_pixel_in == other.saturated_pixels[i]: return False
+
+            # Raw Photon-Stream
+            for pixel in range(len(self.time_lines)):
+                number_of_photons_in_pixel_in = len(self.time_lines[pixel])
+                number_of_photons_in_pixel_ba = len(other.time_lines[pixel])
+
+                if not number_of_photons_in_pixel_in == number_of_photons_in_pixel_ba:
+                    return False
+
+                for photon in range(number_of_photons_in_pixel_in):
+                    if not self.time_lines[pixel][photon] == other.time_lines[pixel][photon]:
+                        return False
+
+            return True
+        else:
+            return NotImplemented
+
+
+    def _info(self):
+        info  = str(len(self.time_lines)) + ' time lines, '
+        info += str(self.number_photons) + ' photons'
+        return info
+
+
     def __repr__(self):
         info = 'PhotonStream('
-        info += str(len(self.time_lines)) + ' time lines, '
-        info += str(self.number_photons) + ' photons'
+        info += self._info()
         info += ')'
         return info

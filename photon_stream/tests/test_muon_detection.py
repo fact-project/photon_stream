@@ -45,7 +45,7 @@ def test_muon_detection():
         'photon_stream', 
         'tests/resources/20140101_104_muon_sample.phs.jsonl.gz')
 
-    run = ps.Run(muon_sample_path)
+    run = ps.EventListReader(muon_sample_path)
 
 
 
@@ -60,12 +60,12 @@ def test_muon_detection():
         ret = ps.muons.detection(event, clusters)
         
         if ret['is_muon']:
-            if event.id in muon_truth:
+            if event.observation_info.event in muon_truth:
                 true_positives += 1
             else:
                 false_positives += 1
         else:
-            if event.id in muon_truth:
+            if event.observation_info.event in muon_truth:
                 false_negatives += 1
             else:
                 true_negatives += 1

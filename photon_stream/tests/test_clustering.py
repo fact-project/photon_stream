@@ -9,7 +9,7 @@ def test_cluster_api():
         'photon_stream', 
         'tests/resources/20170119_229_pass4_100events.phs.jsonl.gz')
 
-    run = ps.Run(run_path)
+    run = ps.EventListReader(run_path)
 
     counter = 0
     for event in run:
