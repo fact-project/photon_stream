@@ -24,28 +24,44 @@ import photon_stream as ps
 from os.path import join
 from os.path import split
 from os.path import exists
+import subprocess
+import tempfile
+import shutil
+
 
 def run_job(job):
-    ps.production.write_worker_script(
-        path=job['job_path'],
-        java_path=job['java_path'],
-        fact_tools_jar_path=job['fact_tools_jar_path'],
-        fact_tools_xml_path=job['fact_tools_xml_path'],
-        in_run_path=job['raw_path'],
-        drs_path=job['drs_path'],
-        aux_dir=job['aux_dir'],
-        out_dir=job['phs_dir'],
-        out_base_name=job['base_name'],
-        tmp_dir_base_name=job['worker_tmp_dir_base_name'],
-    )
 
-    job_return_code = subprocess.call(
-        job['job_path'], 
-        stdout=job['stdout_path'], 
-        stderr=job['stderr_path'],
-    )
+    my_env = os.environ.copy()
+    my_env["PATH"] = job['java_path'] + my_env["PATH"]
 
-    return job_return_code
+    with tempfile.TemporaryDirectory(prefix=job['worker_tmp_dir_base_name']) as tmp:
+         with open(job['stdout_path'],'w') as stdout, open(job['stderr_path'],'w') as stderr:
+            rc = subprocess.call(
+                [
+                    join(job['java_path'], 'bin', 'java'),
+                    '-XX:MaxHeapSize=1024m',
+                    '-XX:InitialHeapSize=512m',
+                    '-XX:CompressedClassSpaceSize=64m',
+                    '-XX:MaxMetaspaceSize=128m',
+                    '-XX:+UseConcMarkSweepGC',
+                    '-XX:+UseParNewGC',
+                    '-jar',
+                    job['fact_tools_jar_path'],
+                    job['fact_tools_xml_path'],
+                    '-Dinfile=file:'+job['raw_path'],
+                    '-Ddrsfile=file:'+job['drs_path'],
+                    '-Daux_dir=file:'+job['aux_dir'],
+                    '-Dout_path_basename=file:'+join(tmp, job['base_name'])
+                ],
+                stdout=stdout, 
+                stderr=stderr,
+                env=my_env,
+            )
+
+            for intermediate_file_path in glob.glob(join(tmp, '*')):
+                if os.path.isfile(intermediate_file_path):
+                    shutil.copy(intermediate_file_path, job['phs_dir'])
+    return rc
 
 
 def main():
@@ -59,9 +75,7 @@ def main():
         else:
             raise ValueError("--only_append must be either 'True' or 'False'.")
 
-        subprocess.call(
-            ['export', 'FACT_PASSWORD='+arguments['--fact_password']]
-        )
+        os.environ["FACT_PASSWORD"] = arguments['--fact_password']
 
         jobs = ps.production.make_job_list(
             out_dir=arguments['--out_dir'],
