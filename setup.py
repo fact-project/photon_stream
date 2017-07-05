@@ -29,6 +29,7 @@ setup(
     ],
     entry_points={'console_scripts': [
         'phs_extract_muons = photon_stream.muons.isdc_production.worker_node_main:main',
+        'phs_produce = photon_stream.production.scoop_main:main',
     ]},
     zip_safe=False,
 )

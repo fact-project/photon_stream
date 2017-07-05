@@ -24,7 +24,7 @@ from os.path import split
 from os.path import exists
 
 def run_job(job):
-    write_worker_script(
+    ps.production.write_worker_script(
         path=job['job_path'],
         java_path=job['java_path'],
         fact_tools_jar_path=job['fact_tools_jar_path'],
@@ -57,7 +57,7 @@ if __name__ == '__main__':
         else:
             raise ValueError("--only_append must be either 'True' or 'False'.")
 
-        jobs = make_job_list(
+        jobs = ps.production.make_job_list(
             out_dir=arguments['--out_dir'],
             start_night=int(arguments['--start_night']),
             end_night=int(arguments['--end_night']),
