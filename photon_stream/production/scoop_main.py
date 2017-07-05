@@ -60,6 +60,7 @@ def run_job(job):
 
             for intermediate_file_path in glob.glob(join(tmp, '*')):
                 if os.path.isfile(intermediate_file_path):
+                    os.makedirs(job['phs_dir'], exist_ok=True)
                     shutil.copy(intermediate_file_path, job['phs_dir'])
     return rc
 
