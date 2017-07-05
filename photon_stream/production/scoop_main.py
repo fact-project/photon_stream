@@ -46,7 +46,7 @@ def run_job(job):
     return job_return_code
 
 
-if __name__ == '__main__':
+def main():
     try:
         arguments = docopt.docopt(__doc__)
 
@@ -77,3 +77,6 @@ if __name__ == '__main__':
 
     except docopt.DocoptExit as e:
         print(e)
+
+if __name__ == '__main__':
+    main()
