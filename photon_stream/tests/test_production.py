@@ -46,12 +46,14 @@ def test_production_run_collection():
         out_dir = join(tmp, 'passX')
 
         # FIRST CHUNK
-        ps.production.submit_to_qsub(
+        ps.production.isdc(
             out_dir=out_dir, 
             start_night=20141215, 
             end_night=20141229,
             only_a_fraction=1.0,
-            fact_dir=fact_dir, 
+            fact_raw_dir=join(fact_dir, 'raw'),
+            fact_drs_dir=join(fact_dir, 'raw'),
+            fact_aux_dir=join(fact_dir, 'aux'),
             java_path='/usr/java/jdk1.8.0_77/bin',
             fact_tools_jar_path=my_fact_tools_jar_path,
             fact_tools_xml_path=my_fact_tools_xml_path,
@@ -59,7 +61,9 @@ def test_production_run_collection():
             queue='fact_medium', 
             email='sebmuell@phys.ethz.ch',
             use_dummy_qsub=True,
-            runinfo=runinfo)
+            runinfo=runinfo,
+            only_append=False,
+        )
 
         assert exists(join(tmp, 'passX/resources'))
         all_dirs_in_resources = glob.glob(join(tmp, 'passX/resources/*'))
@@ -75,12 +79,14 @@ def test_production_run_collection():
             fftools.write('Hi, I am another fact tools dummy java jar!')    
 
         # SECOND CHUNK with 2nd fact-tools.jar
-        ps.production.submit_to_qsub(
+        ps.production.isdc(
             out_dir=out_dir, 
             start_night=20141229, 
             end_night=20150103,
             only_a_fraction=1.0,
-            fact_dir=fact_dir, 
+            fact_raw_dir=join(fact_dir, 'raw'),
+            fact_drs_dir=join(fact_dir, 'raw'),
+            fact_aux_dir=join(fact_dir, 'aux'),
             java_path='/usr/java/jdk1.8.0_77/bin',
             fact_tools_jar_path=my_2nd_fact_tools_jar_path,
             fact_tools_xml_path=my_fact_tools_xml_path,
@@ -88,7 +94,9 @@ def test_production_run_collection():
             queue='fact_medium', 
             email='sebmuell@phys.ethz.ch',
             use_dummy_qsub=True,
-            runinfo=runinfo)
+            runinfo=runinfo,
+            only_append=True,
+        )
 
         all_dirs_in_resources = glob.glob(join(tmp, 'passX/resources/*'))
         assert len(all_dirs_in_resources) == 2
