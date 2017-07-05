@@ -50,9 +50,9 @@ def main():
     try:
         arguments = docopt.docopt(__doc__)
 
-        if args['--only_append'] == 'True':
+        if arguments['--only_append'] == 'True':
             only_append = True
-        elif args['--only_append'] == 'False':
+        elif arguments['--only_append'] == 'False':
             only_append = False
         else:
             raise ValueError("--only_append must be either 'True' or 'False'.")
