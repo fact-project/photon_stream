@@ -1,5 +1,5 @@
 """
-Usage: scoop_produce_phs --out_dir=DIR --start_night=NIGHT --end_night=NIGHT --fact_raw_dir=DIR --fact_drs_dir=DIR --fact_aux_dir=DIR --fact_tools_jar_path=PATH --fact_tools_xml_path=PATH --java_path=PATH --tmp_dir_base_name=BASE --only_a_fraction=FACTOR --only_append=BOOL
+Usage: scoop_produce_phs --out_dir=DIR --start_night=NIGHT --end_night=NIGHT --fact_raw_dir=DIR --fact_drs_dir=DIR --fact_aux_dir=DIR --fact_tools_jar_path=PATH --fact_tools_xml_path=PATH --java_path=PATH --tmp_dir_base_name=BASE --only_a_fraction=FACTOR --only_append=BOOL --fact_password=PASSWORD
 
 Options:
     --out_dir=DIR
@@ -14,6 +14,7 @@ Options:
     --java_path=PATH [default: /home/relleums/java8/jdk1.8.0_111]
     --tmp_dir_base_name=BASE  [default: fact_photon_stream_JOB_ID_]  
     --only_append=BOOL [default: True]
+    --fact_password=PASSWORD
 """
 import docopt
 import scoop
@@ -57,6 +58,10 @@ def main():
             only_append = False
         else:
             raise ValueError("--only_append must be either 'True' or 'False'.")
+
+        subprocess.call(
+            ['export', 'FACT_PASSWORD='+arguments['--fact_password']]
+        )
 
         jobs = ps.production.make_job_list(
             out_dir=arguments['--out_dir'],
