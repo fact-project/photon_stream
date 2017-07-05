@@ -5,7 +5,7 @@ from .make_job_list import make_job_list
 from .write_worker_script import write_worker_script
 
 
-def isdc(
+def qsub(
     out_dir,
     start_night=20110101,
     end_night=20501231,
