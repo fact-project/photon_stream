@@ -1,5 +1,5 @@
 """
-Usage: scoop_produce_phs --out_dir=DIR --start_night=NIGHT --end_night=NIGHT --fact_raw_dir=DIR --fact_drs_dir=DIR --fact_aux_dir=DIR --fact_tools_jar_path=PATH --fact_tools_xml_path=PATH --tmp_dir_base_name=BASE --only_a_fraction=FACTOR
+Usage: scoop_produce_phs --out_dir=DIR --start_night=NIGHT --end_night=NIGHT --fact_raw_dir=DIR --fact_drs_dir=DIR --fact_aux_dir=DIR --fact_tools_jar_path=PATH --fact_tools_xml_path=PATH --tmp_dir_base_name=BASE --only_a_fraction=FACTOR --only_append=BOOL
 
 Options:
     --out_dir=DIR
