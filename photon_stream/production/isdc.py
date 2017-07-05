@@ -2,7 +2,6 @@ from tqdm import tqdm
 
 from .dummy_qsub import dummy_qsub
 from .make_job_list import make_job_list
-from .make_job_list import FACT_TOOLS_OBSERVATIONS_STEERING_CARD_PATH
 from .write_worker_script import write_worker_script
 
 
@@ -16,7 +15,7 @@ def isdc(
     fact_aux_dir='/fact/aux',
     java_path='/home/guest/relleums/java8/jdk1.8.0_111',
     fact_tools_jar_path='/home/guest/relleums/fact_photon_stream/fact-tools/target/fact-tools-0.18.0.jar',
-    fact_tools_xml_path=FACT_TOOLS_OBSERVATIONS_STEERING_CARD_PATH,
+    fact_tools_xml_path='/home/guest/relleums/fact_photon_stream/photon_stream/photon_stream/production/observations_pass4.xml',
     tmp_dir_base_name='fact_photon_stream_JOB_ID_',
     runinfo=None,
     only_append=True,

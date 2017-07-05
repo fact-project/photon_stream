@@ -2,22 +2,14 @@ import os
 from os.path import abspath
 from os.path import join
 from os.path import exists
-from tqdm import tqdm
-import subprocess as sp
 import shutil
 import datetime as dt
-import pkg_resources
 
 from .runinfo import get_runinfo
 from . import tools
-from .write_worker_script import write_worker_script
 from .runinfo import observation_runs_in_runinfo_in_night_range
 from .runinfo import add_drs_run_info_to_jobs
 
-FACT_TOOLS_OBSERVATIONS_STEERING_CARD_PATH = pkg_resources.resource_filename(
-    'photon_stream',
-    os.path.join('production','observations_pass4.xml')
-)
 
 def make_job_list(
     out_dir,
