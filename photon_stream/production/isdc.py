@@ -51,7 +51,8 @@ def isdc(
             aux_dir=job['aux_dir'],
             out_dir=job['phs_dir'],
             out_base_name=job['base_name'],
-            tmp_dir_base_name=job['worker_tmp_dir_base_name'],)
+            tmp_dir_base_name=job['worker_tmp_dir_base_name'],
+        )
 
         cmd = [ 
             'qsub',
