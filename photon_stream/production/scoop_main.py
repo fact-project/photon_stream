@@ -3,17 +3,17 @@ Usage: scoop_produce_phs --out_dir=DIR [--start_night=NIGHT] [--end_night=NIGHT]
 
 Options:
     --out_dir=DIR
-    --start_night=NIGHT [default: 20150101]
-    --end_night=NIGHT [default: 20150102]
-    --only_a_fraction=FACTOR [default: 1.0]
-    --fact_raw_dir=DIR [default: /data/fact_data]
-    --fact_drs_dir=DIR [default: /data/fact_drs.fits]
-    --fact_aux_dir=DIR [default: /data/fact_aux]
-    --fact_tools_jar_path=PATH [default: /home/relleums/fact-tools/target/fact-tools-0.18.0.jar]
-    --fact_tools_xml_path=PATH [default: /home/relleums/photon_stream/photon_stream/production/observations_pass4.xml]
-    --java_path=PATH [default: /home/relleums/java8/jdk1.8.0_111]
-    --tmp_dir_base_name=BASE  [default: fact_photon_stream_]  
-    --only_append=BOOL [default: True]
+    --start_night=NIGHT         [default: 20150101]
+    --end_night=NIGHT           [default: 20150102]
+    --only_a_fraction=FACTOR    [default: 1.0]
+    --fact_raw_dir=DIR          [default: /data/fact_data]
+    --fact_drs_dir=DIR          [default: /data/fact_drs.fits]
+    --fact_aux_dir=DIR          [default: /data/fact_aux]
+    --fact_tools_jar_path=PATH  [default: /home/relleums/fact-tools/target/fact-tools-0.18.0.jar]
+    --fact_tools_xml_path=PATH  [default: /home/relleums/photon_stream/photon_stream/production/observations_pass4.xml]
+    --java_path=PATH            [default: /home/relleums/java8/jdk1.8.0_111]
+    --tmp_dir_base_name=BASE    [default: fact_photon_stream_]  
+    --only_append=BOOL          [default: True]
     --run_info_path=PATH
     --fact_password=PASSWORD
 """
@@ -84,6 +84,7 @@ def main():
         else:
             os.environ["FACT_PASSWORD"] = arguments['--fact_password']
             runinfo = ps.production.runinfo.download_latest_runinfo()
+
 
         jobs = ps.production.make_job_list(
             out_dir=arguments['--out_dir'],
