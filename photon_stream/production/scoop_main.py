@@ -98,7 +98,7 @@ def main():
             fact_tools_jar_path=arguments['--fact_tools_jar_path'],
             fact_tools_xml_path=arguments['--fact_tools_xml_path'],
             tmp_dir_base_name=arguments['--tmp_dir_base_name'],
-            runinfo=None,
+            runinfo=runinfo,
             only_append=only_append,
         )
 
