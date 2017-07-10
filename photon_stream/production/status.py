@@ -24,7 +24,7 @@ def status(
     if 'photon_stream_NumTrigger' not in latest_runinfo:
         latest_runinfo['photon_stream_NumTrigger'] = pd.Series(
             np.zeros(latest_number_of_runs, dtype=np.int), 
-            index=info.index
+            index=latest_runinfo.index
         )
 
     info_path = os.path.abspath(
