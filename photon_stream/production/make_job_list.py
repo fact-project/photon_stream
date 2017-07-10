@@ -5,7 +5,7 @@ from os.path import exists
 import shutil
 import datetime as dt
 
-from .runinfo import get_runinfo
+from .runinfo import download_latest_runinfo
 from . import tools
 from .runinfo import observation_runs_in_runinfo_in_night_range
 from .runinfo import add_drs_run_info_to_jobs
@@ -94,7 +94,7 @@ def make_job_list(
     }
 
     if runinfo is None:
-        runinfo = get_runinfo()
+        runinfo = download_latest_runinfo()
 
     print('Find runs in night range '+str(start_night)+' to '+str(end_night)+' in runinfo database ...')
     
