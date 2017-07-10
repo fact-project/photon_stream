@@ -62,7 +62,6 @@ def test_production_run_collection():
             email='sebmuell@phys.ethz.ch',
             use_dummy_qsub=True,
             runinfo=runinfo,
-            only_append=False,
         )
 
         assert exists(join(tmp, 'passX', 'resources'))
@@ -95,7 +94,6 @@ def test_production_run_collection():
             email='sebmuell@phys.ethz.ch',
             use_dummy_qsub=True,
             runinfo=runinfo,
-            only_append=True,
         )
 
         all_dirs_in_resources = glob.glob(join(tmp, 'passX/resources/*'))

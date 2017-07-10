@@ -24,7 +24,6 @@ def make_job_list(
     fact_tools_xml_path='/home/guest/relleums/fact_photon_stream/photon_stream/photon_stream/production/observations_pass4.xml',
     tmp_dir_base_name='fact_photon_stream_JOB_ID_',
     runinfo=None,
-    only_append=True,
 ):
     """
     Returns a list of job dicts which contain all relevant paths to convert a
@@ -65,12 +64,9 @@ def make_job_list(
     runinfo             A pandas DataFrame() of the FACT run-info-database which
                         is used as a reference for the runs to be processed.
                         (default None, download the latest run-info on the fly)
-
-    only_append         If True, no output directories are created, but it is 
-                        asserted that there already output directories.
     """
     
-    print('Start photon stream conversion ...')
+    print('Make raw -> photon-stream conversion job list ...')
 
     out_dir = os.path.abspath(out_dir)
     fact_raw_dir = abspath(fact_raw_dir)
@@ -86,28 +82,16 @@ def make_job_list(
     job_dir = join(out_dir, 'job')
     phs_dir = join(out_dir, 'phs')
 
-    if only_append:
-        assert exists(out_dir)
-        assert exists(std_dir)
-        assert exists(job_dir)
-        assert exists(phs_dir)
-        assert exists(res_dir)
-    else:
-        os.makedirs(out_dir, exist_ok=True)
-        os.makedirs(std_dir, exist_ok=True)
-        os.makedirs(job_dir, exist_ok=True)
-        os.makedirs(phs_dir, exist_ok=True)
-        os.makedirs(res_dir, exist_ok=True)
-        
-    os.makedirs(this_processing_resource_dir, exist_ok=False)
-
-    print('Copy resources ...')
-    fact_tools_jar_path = os.path.abspath(
-        shutil.copy(fact_tools_jar_path, this_processing_resource_dir)
-    )
-    fact_tools_xml_path = os.path.abspath(
-        shutil.copy(fact_tools_xml_path, this_processing_resource_dir)
-    )
+    directory_structure = {
+        'out_dir': out_dir,
+        'std_dir': std_dir,
+        'job_dir': job_dir,
+        'res_dir': res_dir,
+        'phs_dir': phs_dir,
+        'res_dir_this_processing': this_processing_resource_dir,
+        'fact_tools_jar_path': fact_tools_jar_path,
+        'fact_tools_xml_path': fact_tools_xml_path,
+    }
 
     if runinfo is None:
         runinfo = get_runinfo()
@@ -179,4 +163,27 @@ def make_job_list(
         job['phs_dir'] = phs_dir
         job['phs_yyyy_mm_nn_dir'] = join(job['phs_dir'], job['yyyymmnn_dir'])
     print('Done.')
-    return jobs
+
+    return {
+        'jobs': jobs,
+        'directory_structure': directory_structure
+    }
+
+
+
+def prepare_directory_structure(directory_structure):
+    ds = directory_structure
+    print('Prepare output directory structure ...')
+    os.makedirs(ds['out_dir'], exist_ok=True)
+    os.makedirs(ds['std_dir'], exist_ok=True)
+    os.makedirs(ds['job_dir'], exist_ok=True)
+    os.makedirs(ds['phs_dir'], exist_ok=True)
+    os.makedirs(ds['res_dir'], exist_ok=True)
+
+
+def copy_resources(directory_structure):
+    ds = directory_structure
+    print('Copy resources ...')
+    os.makedirs(ds['res_dir_this_processing'], exist_ok=False)
+    shutil.copy(ds['fact_tools_jar_path'], ds['res_dir_this_processing'])
+    shutil.copy(ds['fact_tools_xml_path'], ds['res_dir_this_processing'])

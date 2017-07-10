@@ -1,5 +1,5 @@
 """
-Usage: scoop_produce_phs --out_dir=DIR [--start_night=NIGHT] [--end_night=NIGHT] --fact_raw_dir=DIR --fact_drs_dir=DIR --fact_aux_dir=DIR --fact_tools_jar_path=PATH --fact_tools_xml_path=PATH --java_path=PATH [--tmp_dir_base_name=BASE] [--only_a_fraction=FACTOR] [--only_append=BOOL] (--run_info_path=PATH | --fact_password=PASSWORD)
+Usage: scoop_produce_phs --out_dir=DIR [--start_night=NIGHT] [--end_night=NIGHT] --fact_raw_dir=DIR --fact_drs_dir=DIR --fact_aux_dir=DIR --fact_tools_jar_path=PATH --fact_tools_xml_path=PATH --java_path=PATH [--tmp_dir_base_name=BASE] [--only_a_fraction=FACTOR] (--run_info_path=PATH | --fact_password=PASSWORD)
 
 Options:
     --out_dir=DIR
@@ -13,7 +13,6 @@ Options:
     --fact_tools_xml_path=PATH  [default: /home/relleums/photon_stream/photon_stream/production/observations_pass4.xml]
     --java_path=PATH            [default: /home/relleums/java8/jdk1.8.0_111]
     --tmp_dir_base_name=BASE    [default: fact_photon_stream_]  
-    --only_append=BOOL          [default: True]
     --run_info_path=PATH
     --fact_password=PASSWORD
 """
@@ -88,7 +87,7 @@ def main():
             runinfo = ps.production.runinfo.download_latest_runinfo()
 
 
-        jobs = ps.production.make_job_list(
+        job_structure = ps.production.make_job_list(
             out_dir=arguments['--out_dir'],
             start_night=int(arguments['--start_night']),
             end_night=int(arguments['--end_night']),
@@ -101,8 +100,10 @@ def main():
             fact_tools_xml_path=arguments['--fact_tools_xml_path'],
             tmp_dir_base_name=arguments['--tmp_dir_base_name'],
             runinfo=runinfo,
-            only_append=only_append,
         )
+        jobs = job_structure['jobs']
+        prepare_directory_structure(job_structure['directory_structure'])
+        copy_resources(job_structure['directory_structure'])
 
         job_return_codes = list(scoop.futures.map(run_job, jobs))
 
