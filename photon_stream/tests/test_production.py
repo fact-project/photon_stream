@@ -65,12 +65,12 @@ def test_production_run_collection():
             only_append=False,
         )
 
-        assert exists(join(tmp, 'passX/resources'))
-        all_dirs_in_resources = glob.glob(join(tmp, 'passX/resources/*'))
+        assert exists(join(tmp, 'passX', 'resources'))
+        all_dirs_in_resources = glob.glob(join(tmp, 'passX', 'resources', '*'))
         assert len(all_dirs_in_resources) == 1
         current_res_dir = all_dirs_in_resources[0]
-        assert exists(join(tmp, 'passX/resources/', current_res_dir,'observations_passX.xml'))
-        assert exists(join(tmp, 'passX/resources/', current_res_dir,'my_fact_tools.jar'))
+        assert exists(join(tmp, 'passX', 'resources', current_res_dir, 'observations_passX.xml'))
+        assert exists(join(tmp, 'passX', 'resources', current_res_dir, 'my_fact_tools.jar'))
 
         #input('Take a look into '+tmp+' or press any key to continue')
 
@@ -102,8 +102,8 @@ def test_production_run_collection():
         assert len(all_dirs_in_resources) == 2
         all_dirs_in_resources.sort()
         current_res_dir = all_dirs_in_resources[1]
-        assert exists(join(tmp, 'passX/resources/', current_res_dir,'observations_passX.xml'))
-        assert exists(join(tmp, 'passX/resources/', current_res_dir,'my_2nd_fact_tools.jar'))
+        assert exists(join(tmp, 'passX', 'resources', current_res_dir, 'observations_passX.xml'))
+        assert exists(join(tmp, 'passX', 'resources', current_res_dir, 'my_2nd_fact_tools.jar'))
 
         #input('Take a look into '+tmp+' or press any key to continue')
 
