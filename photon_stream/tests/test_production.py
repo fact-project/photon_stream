@@ -96,7 +96,7 @@ def test_production_run_collection():
             runinfo=runinfo,
         )
 
-        all_dirs_in_resources = glob.glob(join(tmp, 'passX/resources/*'))
+        all_dirs_in_resources = glob.glob(join(tmp, 'passX', 'resources', '*'))
         assert len(all_dirs_in_resources) == 2
         all_dirs_in_resources.sort()
         current_res_dir = all_dirs_in_resources[1]
