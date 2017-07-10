@@ -99,7 +99,7 @@ def status(
 
 def triggers_in_photon_stream_run(run_path):
     if os.path.exists(run_path):
-        number_trigger = tools.number_of_events_in_run(run_path))
+        number_trigger = tools.number_of_events_in_run(run_path)
         print('Found ', number_trigger, ' in ', run_path)
         return number_trigger
     else:
