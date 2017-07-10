@@ -2,58 +2,108 @@ import os
 from tqdm import tqdm
 import pandas as pd
 import numpy as np
+from multiprocessing.pool import ThreadPool
 
 from . import runinfo
 from . import tools
 
 
-def status(photon_stream_dir, known_runs_database='known_runs.msg'):
+def status(
+    photon_stream_dir, 
+    max_worker_threads=8
+):
     """
-    Estimates the avaiability status of FACT events in a 'phs' directory using 
+    Estimates the production status of FACT events in a 'phs' directory using 
     the FACT run-info-database as a reference.
-    Writes a FACT run-info-database to disk with additional columns for the
+    Writes a FACT run-info-database to disk with an additional column for the
     number of events found in each run in the 'phs' directory.
     """
+    print('Download latest FACT run info ...')
+    latest_runinfo = runinfo.download_latest_runinfo()
+    latest_number_of_runs = len(latest_runinfo['fRunID'])
+    if 'photon_stream_NumTrigger' not in latest_runinfo:
+        latest_runinfo['photon_stream_NumTrigger'] = pd.Series(
+            np.zeros(latest_number_of_runs, dtype=np.int), 
+            index=info.index
+        )
+
     info_path = os.path.abspath(
-	os.path.join(photon_stream_dir, known_runs_database))
+       os.path.join(photon_stream_dir, 'known_runs.msg')
+    )
+
     try:
-        info = runinfo.read_runinfo_from_file(info_path)
+        existing_info = runinfo.read_runinfo_from_file(info_path)
+        print('Read in existing status info ', info_path)
+        print('Update existing status info with latest run info ...')
+        for index, row in tqdm(existing_info.iterrows()):
+            assert existing_info['fNight'][index] == latest_runinfo['fNight'][index]
+            assert existing_info['fRunID'][index] == latest_runinfo['fRunID'][index]
+            latest_runinfo.set_value(
+                index, 
+                'photon_stream_NumTrigger', 
+                existing_info['photon_stream_NumTrigger'][index]
+            )
     except:
-        info = runinfo.download_latest_runinfo()
-    number_of_runs = len(info['fRunID'])
-
-    if 'photon_stream_exists' not in info:
-        info['photon_stream_exists'] = pd.Series(
-            np.zeros(number_of_runs, dtype=np.bool), 
-            index=info.index)
-    if 'photon_stream_NumTrigger' not in info:
-        info['photon_stream_NumTrigger'] = pd.Series(
-            np.zeros(number_of_runs, dtype=np.int), 
-            index=info.index)
-
+        print('No status info yet, start with latest runinfo ...')
+        
+    info = latest_runinfo
+    
+    print('Collect Expected runs ...')
+    jobs = []
     for index, row in tqdm(info.iterrows()):
         night = info['fNight'][index]
         run = info['fRunID'][index]
 
         if info['fRunTypeKey'][index] == runinfo.observation_key:
-            if info['photon_stream_NumTrigger'][index]==0:
+            if info['photon_stream_NumTrigger'][index] == 0:
                 file_name = '{yyyymmnn:08d}_{rrr:03d}.phs.jsonl.gz'.format(
                     yyyymmnn=night,
-                    rrr=run)
+                    rrr=run
+                )
 
                 run_path = os.path.join(
                     photon_stream_dir, 
                     '{yyyy:04d}'.format(yyyy=tools.night_id_2_yyyy(night)), 
                     '{mm:02d}'.format(mm=tools.night_id_2_mm(night)), 
                     '{nn:02d}'.format(nn=tools.night_id_2_nn(night)), 
-                    file_name)
+                    file_name
+                )
 
-                if os.path.exists(run_path):    
-                    info.set_value(index, 'photon_stream_exists', True) 
-                    info.set_value(index, 'photon_stream_NumTrigger', tools.number_of_events_in_run(run_path))
-                    print('New run '+str(night)+' '+str(run)+' '+str(info['photon_stream_NumTrigger'][index])+' trigger.')
+                jobs.append({
+                    'index': index,
+                    'night': night,
+                    'run': run,
+                    'run_path': run_path,
+                })
+
+    print('Collect Actual runs ...')
+    with ThreadPool(max_worker_threads) as pool:
+        number_triggers = pool.map(
+            lambda job: triggers_in_photon_stream_run(run_path=job['run_path']),
+            jobs
+        )        
+
+    print('Save status of Actual runs ...')
+    for j, job in tqdm(enumerate(jobs)):
+        assert info['fNight'][job['index']] == job['night']
+        assert info['fRunID'][job['index']] == job['run']
+        info.set_value(
+            job['index'], 
+            'photon_stream_NumTrigger', 
+            number_triggers[j]
+        )
 
     runinfo.write_runinfo_to_file(info, info_path)
+    print('Done')
+
+
+def triggers_in_photon_stream_run(run_path):
+    if os.path.exists(run_path):
+        number_trigger = tools.number_of_events_in_run(run_path))
+        print('Found ', number_trigger, ' in ', run_path)
+        return number_trigger
+    else:
+        return 0
 
 
 def runs_in_range_str(info, start_night, end_night, max_trigger_rate=200):
@@ -107,7 +157,6 @@ def runs_in_range_str(info, start_night, end_night, max_trigger_rate=200):
         info['fNumPhysicsTrigger'][valid] + 
         info['fNumPedestalTrigger'][valid])
     actual_triggers = info['photon_stream_NumTrigger'][valid]
-    exisences = info['photon_stream_exists'][valid]
     completation_ratios = actual_triggers/expected_triggers
 
     out =  ''
