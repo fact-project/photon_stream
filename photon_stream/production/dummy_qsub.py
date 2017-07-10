@@ -28,6 +28,7 @@ def dummy_qsub(command):
     assert command[9] == '-M'
     email = command[10]
     job_path = command[11]
+    assert os.path.exists(os.path.split(stdout_path)[0])
 
     with open(stdout_path, 'w') as stdout:
         stdout.write('Dummy qsub:\n')

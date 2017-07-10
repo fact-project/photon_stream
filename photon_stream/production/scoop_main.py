@@ -35,8 +35,10 @@ def run_job(job):
     my_env = os.environ.copy()
     my_env["PATH"] = job['java_path'] + my_env["PATH"]
 
+    os.makedirs(job['std_yyyy_mm_nn_dir'], exist_ok=True)
+
     with tempfile.TemporaryDirectory(prefix=job['worker_tmp_dir_base_name']) as tmp:
-         with open(job['stdout_path'],'w') as stdout, open(job['stderr_path'],'w') as stderr:
+         with open(job['std_out_path'],'w') as stdout, open(job['std_err_path'],'w') as stderr:
             rc = subprocess.call(
                 [
                     join(job['java_path'], 'bin', 'java'),
@@ -61,8 +63,8 @@ def run_job(job):
 
             for intermediate_file_path in glob.glob(join(tmp, '*')):
                 if os.path.isfile(intermediate_file_path):
-                    os.makedirs(job['phs_dir'], exist_ok=True)
-                    shutil.copy(intermediate_file_path, job['phs_dir'])
+                    os.makedirs(job['phs_yyyy_mm_nn_dir'], exist_ok=True)
+                    shutil.copy(intermediate_file_path, job['phs_yyyy_mm_nn_dir'])
     return rc
 
 

@@ -27,8 +27,8 @@ def make_job_list(
     only_append=True,
 ):
     """
-    Submitts jobs into qsub to process the FACT raw observations to the novel
-    photon-stream representation.
+    Returns a list of job dicts which contain all relevant paths to convert a
+    raw FACT run into the photon-stream representation.
 
     Parameters
     ----------
@@ -163,17 +163,20 @@ def make_job_list(
 
     for job in jobs: 
         job['std_dir'] = std_dir
-        job['stdout_path'] = join(std_dir, job['base_name']+'.o')
-        job['stderr_path'] = join(std_dir, job['base_name']+'.e')
-        
-        job['job_path'] = join(job_dir, 'PhotonStream_'+job['base_name']+'.sh')
+        job['std_yyyy_mm_nn_dir'] = join(job['std_dir'], job['yyyymmnn_dir'])
+        job['std_out_path'] = join(job['std_yyyy_mm_nn_dir'], job['base_name']+'.o')
+        job['std_err_path'] = join(job['std_yyyy_mm_nn_dir'], job['base_name']+'.e')
+
+        job['job_dir'] = job_dir
+        job['job_yyyy_mm_nn_dir'] = join(job['job_dir'], job['yyyymmnn_dir'])    
+        job['job_path'] = join(job['job_yyyy_mm_nn_dir'], job['base_name']+'.sh')
         job['worker_tmp_dir_base_name'] = tmp_dir_base_name
 
         job['java_path'] = java_path
         job['fact_tools_jar_path'] = fact_tools_jar_path
         job['fact_tools_xml_path'] = fact_tools_xml_path
 
-        job['phs_dir'] = join(phs_dir, job['yyyymmnn_dir'])
-
+        job['phs_dir'] = phs_dir
+        job['phs_yyyy_mm_nn_dir'] = join(job['phs_dir'], job['yyyymmnn_dir'])
     print('Done.')
     return jobs
