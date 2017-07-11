@@ -71,13 +71,6 @@ def main():
     try:
         arguments = docopt.docopt(__doc__)
 
-        if arguments['--only_append'] == 'True':
-            only_append = True
-        elif arguments['--only_append'] == 'False':
-            only_append = False
-        else:
-            raise ValueError("--only_append must be either 'True' or 'False'.")
-
         if arguments['--run_info_path']:
             runinfo = ps.production.runinfo.read_runinfo_from_file(
                 arguments['--run_info_path']
@@ -86,8 +79,7 @@ def main():
             os.environ["FACT_PASSWORD"] = arguments['--fact_password']
             runinfo = ps.production.runinfo.download_latest_runinfo()
 
-
-        job_structure = ps.production.make_job_list(
+        job_structure = ps.production.prepare.make_job_list(
             out_dir=arguments['--out_dir'],
             start_night=int(arguments['--start_night']),
             end_night=int(arguments['--end_night']),
@@ -102,8 +94,8 @@ def main():
             runinfo=runinfo,
         )
         jobs = job_structure['jobs']
-        prepare_directory_structure(job_structure['directory_structure'])
-        copy_resources(job_structure['directory_structure'])
+        ps.production.prepare.prepare_directory_structure(job_structure['directory_structure'])
+        ps.production.prepare.copy_resources(job_structure['directory_structure'])
 
         job_return_codes = list(scoop.futures.map(run_job, jobs))
 

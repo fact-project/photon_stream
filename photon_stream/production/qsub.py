@@ -1,9 +1,7 @@
 from tqdm import tqdm
 import os
 from .dummy_qsub import dummy_qsub
-from .make_job_list import make_job_list
-from .make_job_list import prepare_directory_structure
-from .make_job_list import copy_resources
+from . import prepare
 from .write_worker_script import write_worker_script
 
 
@@ -24,7 +22,7 @@ def qsub(
     email='sebmuell@phys.ethz.ch',
     use_dummy_qsub=False,
 ):
-    job_structure = make_job_list(
+    job_structure = prepare.make_job_list(
         out_dir=out_dir,
         start_night=start_night,
         end_night=end_night,
@@ -39,8 +37,8 @@ def qsub(
         runinfo=runinfo,
     )
     jobs = job_structure['jobs']
-    prepare_directory_structure(job_structure['directory_structure'])
-    copy_resources(job_structure['directory_structure'])
+    prepare.prepare_directory_structure(job_structure['directory_structure'])
+    prepare.copy_resources(job_structure['directory_structure'])
 
     for job in tqdm(jobs):
 
