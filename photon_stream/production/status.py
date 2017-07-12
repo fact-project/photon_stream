@@ -263,7 +263,7 @@ def progress(ratio, length=20):
     return out
 
 
-def strip_runinfo_inplace(runinfo):
+def strip_runinfo_for_photon_stream_status_inplace(runinfo):
     keys_to_keep = [
         'fNight',
         'fRunID',
