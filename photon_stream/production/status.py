@@ -20,11 +20,10 @@ def status(photon_stream_dir, known_runs_database='known_runs.msg'):
         info = runinfo.read_runinfo_from_file(info_path)
     except:
         info = runinfo.download_latest_runinfo()
-    number_of_runs = len(info['fRunID'])
 
     if 'photon_stream_NumTrigger' not in info:
         info['photon_stream_NumTrigger'] = pd.Series(
-            np.zeros(number_of_runs, dtype=np.int), 
+            np.zeros(len(info['fRunID']), dtype=np.int), 
             index=info.index
         )
 
