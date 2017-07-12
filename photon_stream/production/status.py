@@ -107,7 +107,6 @@ def runs_in_range_str(info, start_night, end_night, max_trigger_rate=200):
         info['fNumPhysicsTrigger'][valid] + 
         info['fNumPedestalTrigger'][valid])
     actual_triggers = info['photon_stream_NumTrigger'][valid]
-    exisences = info['photon_stream_exists'][valid]
     completation_ratios = actual_triggers/expected_triggers
 
     out =  ''
