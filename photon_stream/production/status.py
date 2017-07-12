@@ -22,10 +22,6 @@ def status(photon_stream_dir, known_runs_database='known_runs.msg'):
         info = runinfo.download_latest_runinfo()
     number_of_runs = len(info['fRunID'])
 
-    if 'photon_stream_exists' not in info:
-        info['photon_stream_exists'] = pd.Series(
-            np.zeros(number_of_runs, dtype=np.bool), 
-            index=info.index)
     if 'photon_stream_NumTrigger' not in info:
         info['photon_stream_NumTrigger'] = pd.Series(
             np.zeros(number_of_runs, dtype=np.int), 
@@ -49,7 +45,6 @@ def status(photon_stream_dir, known_runs_database='known_runs.msg'):
                     file_name)
 
                 if os.path.exists(run_path):    
-                    info.set_value(index, 'photon_stream_exists', True) 
                     info.set_value(index, 'photon_stream_NumTrigger', tools.number_of_events_in_run(run_path))
                     print('New run '+str(night)+' '+str(run)+' '+str(info['photon_stream_NumTrigger'][index])+' trigger.')
 
