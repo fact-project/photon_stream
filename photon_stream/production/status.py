@@ -23,7 +23,8 @@ def status(photon_stream_dir, known_runs_database='known_runs.msg'):
 
     if 'photon_stream_NumTrigger' not in info:
         info['photon_stream_NumTrigger'] = pd.Series(
-            np.zeros(len(info['fRunID']), dtype=np.int), 
+            np.zeros(len(info['fRunID']), 
+            dtype=np.int), 
             index=info.index
         )
 
@@ -102,7 +103,8 @@ def runs_in_range_str(info, start_night, end_night, max_trigger_rate=200):
         before_end&
         is_observation_run&
         rate_below_max_trigger_rate&
-        has_at_least_one_expected_trigger)
+        has_at_least_one_expected_trigger
+    )
 
     night_ids = info['fNight'][valid]
     run_ids = info['fRunID'][valid]
@@ -110,7 +112,8 @@ def runs_in_range_str(info, start_night, end_night, max_trigger_rate=200):
         info['fNumExt1Trigger'][valid] + 
         info['fNumExt2Trigger'][valid] + 
         info['fNumPhysicsTrigger'][valid] + 
-        info['fNumPedestalTrigger'][valid])
+        info['fNumPedestalTrigger'][valid]
+    )
     actual_triggers = info['photon_stream_NumTrigger'][valid]
     completation_ratios = actual_triggers/expected_triggers
 
@@ -122,10 +125,12 @@ def runs_in_range_str(info, start_night, end_night, max_trigger_rate=200):
             year=tools.night_id_2_yyyy(night_ids.iloc[i]),
             month=tools.night_id_2_mm(night_ids.iloc[i]),
             night=tools.night_id_2_nn(night_ids.iloc[i]),
-            run=run_ids.iloc[i])
+            run=run_ids.iloc[i]
+        )
         out += table_row_str(
             expected_events=int(expected_triggers.iloc[i]),
-            actual_events=int(actual_triggers.iloc[i]))
+            actual_events=int(actual_triggers.iloc[i])
+        )
     return out
 
 
@@ -162,9 +167,9 @@ def overview_str(info, max_trigger_rate=120):
         info['fNumExt1Trigger'][valid] + 
         info['fNumExt2Trigger'][valid] + 
         info['fNumPhysicsTrigger'][valid] + 
-        info['fNumPedestalTrigger'][valid])
+        info['fNumPedestalTrigger'][valid]
+    )
     actual_triggers = info['photon_stream_NumTrigger'][valid]
-
 
     total_expected_events = int(expected_triggers.sum())
     total_actual_events = int(actual_triggers.sum())
@@ -198,12 +203,16 @@ def overview_str(info, max_trigger_rate=120):
             info['fNumExt1Trigger'][valid&is_in_year] + 
             info['fNumExt2Trigger'][valid&is_in_year] + 
             info['fNumPhysicsTrigger'][valid&is_in_year] + 
-            info['fNumPedestalTrigger'][valid&is_in_year]).sum())
-        actual_triggers_in_year = int(info['photon_stream_NumTrigger'][valid&is_in_year].sum())
+            info['fNumPedestalTrigger'][valid&is_in_year]).sum()
+        )
+        actual_triggers_in_year = int(
+            info['photon_stream_NumTrigger'][valid&is_in_year].sum()
+        )
         out += '    {year:04d}'.format(year=year)
-        out += '  '+table_row_str(
+        out += '  ' + table_row_str(
             expected_events=expected_triggers_in_year, 
-            actual_events=actual_triggers_in_year)
+            actual_events=actual_triggers_in_year
+        )
     
     out += '\n'
     out += 'cuts\n'
@@ -285,4 +294,6 @@ def strip_runinfo_for_photon_stream_status_inplace(runinfo):
     for key in runinfo.keys():
         if key not in keys_to_keep:
             runinfo.drop(key, axis=1, inplace=True)
+
+    runinfo = runinfo[runinfo['fRunTypeKey'] == runinfo.observation_key]
     
