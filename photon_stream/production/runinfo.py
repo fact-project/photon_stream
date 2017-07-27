@@ -63,15 +63,12 @@ def add_drs_run_info_to_jobs(runinfo, jobs):
                 bsn=job['Night'],
                 rrr=job["drs_Run"])
             job['drs_path'] = os.path.join(
-                job['fact_dir'], 
-                'raw', 
+                job['fact_drs_dir'], 
                 job['yyyymmnn_dir'], 
                 job['drs_file_name'])
         else:
             job["drs_Run"] = None
-            job['drs_path'] = os.path.join(
-                job['fact_dir'], 
-                'no_corresponding_drs_file_found_in_runinfo_data_base.sorry')
+            job['drs_path'] = 'nope.sorry'
     return jobs
 
 
