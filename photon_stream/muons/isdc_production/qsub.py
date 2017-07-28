@@ -55,11 +55,9 @@ def qsub(
     jobs = []
     # check if output already exists
     for job in tqdm(potential_jobs):
-        if exists(job['output_muon_path']+'*'):
-            pass
-        else:
+        existing_path = glob.glob(job['output_muon_path']+'*')
+        if len(existing_path) == 0:
             jobs.append(job)
-
 
     print('There are', len(jobs), 'runs left to be processed.')
     print('Submitt into qsub...')
