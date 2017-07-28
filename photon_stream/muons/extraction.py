@@ -59,11 +59,11 @@ def extract_muons_from_run(input_run_path, output_run_path, output_run_header_pa
     """
     run = EventListReader(input_run_path)
     with gzip.open(output_run_path, 'wt') as f_muon_run, open(output_run_header_path, 'wb') as f_muon_run_header:
-
+       
         for event in run:
-
-            if event.trigger_type == FACT_PHYSICS_SELF_TRIGGER:
-
+            
+            if event.observation_info.trigger_type == FACT_PHYSICS_SELF_TRIGGER: 
+                
                 photon_clusters = PhotonStreamCluster(event.photon_stream)
                 muon_features = detection(event, photon_clusters)
 
@@ -80,11 +80,11 @@ def extract_muons_from_run(input_run_path, output_run_path, output_run_header_pa
                     mean_arrival_time_muon_cluster = muon_cluster[:,2].mean()
 
                     head1 = np.zeros(5, dtype=np.uint32)
-                    head1[0] = event.night
-                    head1[1] = event.run_id
-                    head1[2] = event.id
-                    head1[3] = event._time_unix_s
-                    head1[4] = event._time_unix_us
+                    head1[0] = event.observation_info.night
+                    head1[1] = event.observation_info.run
+                    head1[2] = event.observation_info.event
+                    head1[3] = event.observation_info._time_unix_s
+                    head1[4] = event.observation_info._time_unix_us
 
                     head2 = np.zeros(8, dtype=np.float32)
                     head2[0] = event.zd
