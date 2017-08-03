@@ -7,7 +7,7 @@ from .EventListReader import EventListReader
 from .SimulationReader import SimulationReader
 from .PhotonCluster import PhotonStreamCluster
 from .PhotonCluster import PhotonTimeLineCluster
-from .JsonLinesGzipReader import JsonLinesGzipReader
+from .JsonLinesReader import JsonLinesReader
 from . import finger_histogram
 
 from . import production
