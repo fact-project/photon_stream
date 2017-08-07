@@ -21,7 +21,13 @@ class JsonLinesReader:
         else:
             self.file = open(path, 'rt')
 
-    def __exit__(self):
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.close()
+
+    def close(self):
         self.file.close()
 
     def __iter__(self):
