@@ -17,9 +17,9 @@ class JsonLinesReader:
             gzipped = marker[0] == 31 and marker[1] == 139
 
         if gzipped:
-            self.file = gzip.open(path, 'rb')
+            self.file = gzip.open(path, 'rt')
         else:
-            self.file = open(path, 'rb')
+            self.file = open(path, 'rt')
 
     def __exit__(self):
         self.file.close()
@@ -28,7 +28,7 @@ class JsonLinesReader:
         return self
 
     def __next__(self):
-        line = self.file.readline().decode('utf-8').strip().rstrip(',')
+        line = self.file.readline().strip().rstrip(',')
         if not line:
             raise StopIteration
         return json.loads(line)
