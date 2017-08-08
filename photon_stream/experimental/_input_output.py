@@ -55,6 +55,23 @@ def read_simulation_id_from_file(simulation_truth, fin):
     simulation_truth.reuse = raw_id[2]
 
 
+def append_observation_id_to_file(observation_info, fout):
+    fout.write(observation_info.night.tobytes())
+    fout.write(observation_info.run.tobytes())
+    fout.write(observation_info.event.tobytes())
+
+
+def read_observation_id_from_file(observation_info, fin):
+    raw_id = np.fromstring(
+        fin.read(12), 
+        dtype=np.uint32, 
+        count=3
+    )
+    observation_info.night = raw_id[0]
+    observation_info.run = raw_id[1]
+    observation_info.event = raw_id[2]
+
+
 def append_photonstream_to_file(phs, fout):
 
     # WRITE SLICE DURATION
@@ -137,9 +154,7 @@ def read_saturated_pixels_from_file(fin):
 
 
 def append_event_to_file(event, fout):
-    fout.write(np.uint32(event.observation_info.night).tobytes())
-    fout.write(np.uint32(event.observation_info.run).tobytes())
-    fout.write(np.uint32(event.observation_info.event).tobytes())
+    append_observation_id_to_file(event.observation_info, fout)
     # 12
     fout.write(np.uint32(event.observation_info._time_unix_s).tobytes())
     fout.write(np.uint32(event.observation_info._time_unix_us).tobytes())
@@ -154,21 +169,20 @@ def append_event_to_file(event, fout):
 
 def read_event_from_file(fin):
     try:
+        obs = ObservationInformation()
+        read_observation_id_from_file(obs, fin)
+
         header = np.fromstring(
-            fin.read(24),
+            fin.read(12),
             dtype=np.uint32,
-            count=6
+            count=3
         )
 
-        obs = ObservationInformation()
-        obs.night = header[0]
-        obs.run = header[1]
-        obs.event = header[2]
-        obs._time_unix_s = header[3]
-        obs._time_unix_us = header[4]
+        obs._time_unix_s = header[0]
+        obs._time_unix_us = header[1]
         obs.time = dt.datetime.utcfromtimestamp(
             obs._time_unix_s + obs._time_unix_us / 1e6)
-        obs.trigger_type = header[5]
+        obs.trigger_type = header[2]
 
         pointing = np.fromstring(
             fin.read(8),
