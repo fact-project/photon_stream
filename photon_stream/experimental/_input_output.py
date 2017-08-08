@@ -9,43 +9,27 @@ import os
 import gzip
 
 LINEBREAK = np.array([np.iinfo(np.uint8).max], dtype=np.uint8)
-OBSERVATION_HEADER = {
-    'pass': np.uint8(4),
-    'type': 'observation',
-    'future_problems_0': np.uint8(0),
-    'future_problems_1': np.uint8(1),
-}
-SIMULATION_HEADER = {
-    'pass': np.uint8(4),
-    'type': 'simulation',
-    'future_problems_0': np.uint8(0),
-    'future_problems_1': np.uint8(1),
-}
+OBSERVATION_TYPE_KEY = 0
+SIMULATION_TYPE_KEY = 1
 
-def append_header_to_file(header, fout):
-    fout.write(np.uint8(header['pass']).tobytes())
-    if header['type'] == 'observation':
-        event_type = np.uint8(0)
-    elif header['type'] == 'simulation':
-        event_type = np.uint8(1)
-    else:
-        raise
-    fout.write(event_type.tobytes())
-    fout.write(np.uint8(header['future_problems_0']).tobytes())
-    fout.write(np.uint8(header['future_problems_1']).tobytes())
+def append_header_to_file(
+    fout,
+    event_type=OBSERVATION_TYPE_KEY, 
+    pass_version=4, 
+    future_problems_0=0,
+    future_problems_1=0,
+):
+    fout.write(np.uint8(pass_version).tobytes())
+    fout.write(np.uint8(event_type).tobytes())
+    fout.write(np.uint8(future_problems_0).tobytes())
+    fout.write(np.uint8(future_problems_1).tobytes())
 
 
 def read_header_from_file(fin):
     raw_header = np.fromstring(fin.read(4), dtype=np.uint8, count=4)
-    if raw_header[1] == 0:
-        type_str = 'observation'
-    elif raw_header[1] == 1:
-        type_str = 'simulation'
-    else:
-        raise
     return {
-        'pass': raw_header[0],
-        'type': type_str,
+        'pass_version': raw_header[0],
+        'event_type': raw_header[1],
         'future_problems_0': raw_header[2],
         'future_problems_1': raw_header[3]
     }
@@ -202,11 +186,11 @@ def read_saturated_pixels_from_file(fin):
 
 def append_event_to_file(event, fout):
     if hasattr(event, 'observation_info'):
-        append_header_to_file(OBSERVATION_HEADER, fout)
+        append_header_to_file(fout, event_type=OBSERVATION_TYPE_KEY)
         append_observation_id_to_file(event.observation_info, fout)
         append_observation_info_to_file(event.observation_info, fout)
     elif hasattr(event, 'simulation_truth'):
-        append_header_to_file(SIMULATION_HEADER, fout)
+        append_header_to_file(fout, event_type=SIMULATION_TYPE_KEY)
         append_simulation_id_to_file(event.simulation_truth, fout)
     else:
         raise
@@ -219,13 +203,12 @@ def read_event_from_file(fin):
     try:
         header = read_header_from_file(fin)
         event = Event()
-        print(header['type'])
-        if header['type'] == 'observation':
+        if header['event_type'] == OBSERVATION_TYPE_KEY:
             obs = ObservationInformation()
             read_observation_id_from_file(obs, fin)
             read_observation_info_from_file(obs, fin)
             event.observation_info = obs
-        elif header['type'] == 'simulation': 
+        elif header['event_type'] == SIMULATION_TYPE_KEY:
             sim = SimulationTruth()
             read_simulation_id_from_file(sim, fin)
             event.simulation_truth = sim
