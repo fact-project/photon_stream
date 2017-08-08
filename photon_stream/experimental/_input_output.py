@@ -189,11 +189,8 @@ def read_saturated_pixels_from_file(fin):
 
 def append_event_to_file(event, fout):
     append_observation_id_to_file(event.observation_info, fout)
-    # 12
     append_observation_info_to_file(event.observation_info, fout)
-    # 24
     append_pointing_to_file(event, fout)
-    # 32
     append_photonstream_to_file(event.photon_stream, fout)
     append_saturated_pixels_to_file(event.photon_stream.saturated_pixels, fout)
 
