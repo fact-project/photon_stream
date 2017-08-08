@@ -142,6 +142,13 @@ def read_photonstream_from_file(fin):
         dtype=np.uint8
     )
 
+    """
+    The following conversion is the dominant limit for the event rate during 
+    reading.
+    Without: 9430Hz
+    With: 118Hz
+    """
+
     phs.time_lines = []
     if len(raw_time_lines) > 0:
         phs.time_lines.append(array('B'))
