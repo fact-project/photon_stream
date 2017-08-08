@@ -38,6 +38,23 @@ def read_header_from_file(fin):
     }
 
 
+def append_simulation_id_to_file(simulation_truth, fout):
+    fout.write(simulation_truth.run.tobytes())
+    fout.write(simulation_truth.event.tobytes())
+    fout.write(simulation_truth.reuse.tobytes())
+
+
+def read_simulation_id_from_file(simulation_truth, fin):
+    raw_id = np.fromstring(
+        fin.read(12), 
+        dtype=np.uint32, 
+        count=3
+    )
+    simulation_truth.run = raw_id[0]
+    simulation_truth.event = raw_id[1]
+    simulation_truth.reuse = raw_id[2]
+
+
 def append_photonstream_to_file(phs, fout):
 
     # WRITE SLICE DURATION
