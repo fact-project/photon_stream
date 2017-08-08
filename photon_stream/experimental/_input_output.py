@@ -72,6 +72,12 @@ def read_observation_id_from_file(observation_info, fin):
     observation_info.event = raw_id[2]
 
 
+def append_observation_info_to_file(observation_info, fout):
+    fout.write(observation_info._time_unix_s.tobytes())
+    fout.write(observation_info._time_unix_us.tobytes())
+    fout.write(observation_info.trigger_type.tobytes())
+
+
 def append_photonstream_to_file(phs, fout):
 
     # WRITE SLICE DURATION
@@ -156,9 +162,7 @@ def read_saturated_pixels_from_file(fin):
 def append_event_to_file(event, fout):
     append_observation_id_to_file(event.observation_info, fout)
     # 12
-    fout.write(np.uint32(event.observation_info._time_unix_s).tobytes())
-    fout.write(np.uint32(event.observation_info._time_unix_us).tobytes())
-    fout.write(np.uint32(event.observation_info.trigger_type).tobytes())
+    append_observation_info_to_file(event.observation_info, fout)
     # 24
     fout.write(np.float32(event.zd).tobytes())
     fout.write(np.float32(event.az).tobytes())
