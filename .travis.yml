@@ -8,4 +8,4 @@ before_install:
 install:
 - pip install .
 script:
-- py.test -k-nottravis
+- py.test -k-slow
