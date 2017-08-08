@@ -78,6 +78,19 @@ def append_observation_info_to_file(observation_info, fout):
     fout.write(observation_info.trigger_type.tobytes())
 
 
+def read_observation_info_from_file(observation_info, fin):
+    raw_info = np.fromstring(
+        fin.read(12), 
+        dtype=np.uint32, 
+        count=3
+    )
+    observation_info.set_time_unix(
+        time_unix_s=raw_info[0], 
+        time_unix_us=raw_info[1],
+    )
+    observation_info.trigger_type = raw_info[2]
+
+
 def append_photonstream_to_file(phs, fout):
 
     # WRITE SLICE DURATION
@@ -175,18 +188,7 @@ def read_event_from_file(fin):
     try:
         obs = ObservationInformation()
         read_observation_id_from_file(obs, fin)
-
-        header = np.fromstring(
-            fin.read(12),
-            dtype=np.uint32,
-            count=3
-        )
-
-        obs._time_unix_s = header[0]
-        obs._time_unix_us = header[1]
-        obs.time = dt.datetime.utcfromtimestamp(
-            obs._time_unix_s + obs._time_unix_us / 1e6)
-        obs.trigger_type = header[2]
+        read_observation_info_from_file(obs, fin)
 
         pointing = np.fromstring(
             fin.read(8),
