@@ -212,7 +212,7 @@ def read_event_from_file(fin):
         raise StopIteration
 
 
-class Run(object):
+class EventListReader(object):
     """
     Sequentially reads a gzipped binary run and provides events.
     """
@@ -230,6 +230,6 @@ class Run(object):
         return read_event_from_file(self.file)
 
     def __repr__(self):
-        out = 'BinaryRun('
+        out = 'BinaryEventListReader('
         out += self.path+')\n'
         return out
