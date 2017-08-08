@@ -80,3 +80,16 @@ def test_jsonl2binary():
         evt_in = run_in[i]
         evt_ba = run_back[i]
         assert evt_in == evt_ba
+
+
+def test_benchmark_binary_io(benchmark):
+
+    run_path = pkg_resources.resource_filename(
+        'photon_stream',
+        'tests/resources/20170119_229_pass4_100events.phs.bin.gz')
+
+    @benchmark
+    def foo():
+        for evt in ps.experimental.io.Run(run_path):
+            pass
+
