@@ -249,3 +249,15 @@ class EventListReader(object):
         out = 'BinaryEventListReader('
         out += self.path+')\n'
         return out
+
+
+from ..EventListReader import EventListReader as JsonlEventListReader
+import shutil
+def jsonl_gz_2_binary_gz(input_path, output_path):
+    run_in = JsonlEventListReader(input_path)
+    tmp_out_path = output_path+'.part'
+
+    with gzip.open(tmp_out_path, 'wb') as fout:
+        for event in run_in:
+           append_event_to_file(event, fout)
+    shutil.move(tmp_out_path, output_path)
