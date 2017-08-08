@@ -1,8 +1,52 @@
 # Binary Photon-Stream Format for FACT -- Pass4
 
+## Observation Event
+    - Header
+    - Observation Event Identifier
+    - Observation Information
+    - Pointing
+    - Photon-Stream
+    - Saturated Pixels
 
-### Event Header (32 Byte)
-    
+
+## Simulation Event
+    - Header
+    - Simulation Event Identifier
+    - Pointing
+    - Photon-Stream
+    - Saturated Pixels
+
+
+### Header (4 Byte)
+
+    uint8
+    +--------+
+    |VERSION |
+    +--------+
+    - VERSION == 4 is pass4 
+
+    uint8
+    +--------+
+    |  Type  |
+    +--------+
+    - Type == 0 is Observation
+    - Type == 1 is Simulation
+
+    uint8
+    +--------+
+    |   -    |
+    +--------+
+    future problems 0 (unused so far)
+
+    uint8
+    +--------+
+    |   -    |
+    +--------+
+    future problems 1 (unused so far)
+
+
+### Observation Event Identifier (12 Byte)
+        
     uint32
     +--------+--------+--------+--------+
     |              Night Id             |
@@ -18,6 +62,38 @@
     |             Event Id              |
     +--------+--------+--------+--------+
     
+### Simulation Event Identifier (12 Byte)
+
+    uint32
+    +--------+--------+--------+--------+
+    |           CORSIKA RUN Id          |
+    +--------+--------+--------+--------+
+
+    uint32
+    +--------+--------+--------+--------+
+    |         CORSIKA EVENT Id          |
+    +--------+--------+--------+--------+
+
+    uint32
+    +--------+--------+--------+--------+
+    |      CORSIKA Event Reuse Id       |
+    +--------+--------+--------+--------+
+
+### Pointing (8 Byte)
+
+    float32
+    +--------+--------+--------+--------+
+    |   Pointing Zenith Distance [Deg]  |
+    +--------+--------+--------+--------+
+    
+    float32
+    +--------+--------+--------+--------+
+    |          Pointing Azimuth  [Deg]  |
+    +--------+--------+--------+--------+
+
+
+### Observation Information (12 Byte)
+
     uint32
     +--------+--------+--------+--------+
     |          UNIX time [s]            |
@@ -33,24 +109,9 @@
     |            Trigger type           |
     +--------+--------+--------+--------+
     
-    float32
-    +--------+--------+--------+--------+
-    |   Pointing Zenith Distance [Deg]  |
-    +--------+--------+--------+--------+
     
-    float32
-    +--------+--------+--------+--------+
-    |          Pointing Azimuth  [Deg]  |
-    +--------+--------+--------+--------+
+### Photon-Stream  (8 + num. photons + num. pixel Byte)
     
-    
-### Photon-Stream Header (8 Byte)
-    
-    float32
-    +--------+--------+--------+--------+
-    |         Slice time duration [s]   |
-    +--------+--------+--------+--------+
-
     uint32
     +--------+--------+--------+--------+
     |   Number of pixels and photons    |
@@ -58,9 +119,8 @@
     The size of the photon-stream in bytes.
 
 
-### Photon-Stream (num. photons + num. pixel Byte)
-
-         Photon arrival times in slices (EXAMPLE, shape and structure depent on the individual event)
+         Photon arrival times in slices 
+         (EXAMPLE. The actual shape and structure depent on the specific event)
          uint8 
          +--------+--------+--------+--------+
        0 |   XXX  |   XXX  |   XXX  |   255  |
@@ -92,12 +152,12 @@
     Pixel
     CHID
 
-    A list of lists of photon arrival time slices.
-    The line break from one pixel to the next one is marked by the linebreab 
-    symbol 2^8-1 = 255. This leaves 255 (0-254) slices to encode arrival times.
+A list of lists of photon arrival time slices.
+The line break from one pixel to the next one is marked by the linebreab 
+symbol 2^8-1 = 255. This leaves 255 (0-254) slices to encode arrival times.
 
 ### Saturated Pixels (2 + 2 * num. saturated pixel Byte)
-   
+
     uint16
     +--------+--------+
     |        N        |
