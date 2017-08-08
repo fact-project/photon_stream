@@ -93,3 +93,15 @@ def test_benchmark_binary_io(benchmark):
         for evt in ps.experimental.io.Run(run_path):
             pass
 
+
+def test_benchmark_json_io(benchmark):
+
+    run_path = pkg_resources.resource_filename(
+        'photon_stream',
+        'tests/resources/20170119_229_pass4_100events.phs.jsonl.gz')
+
+    @benchmark
+    def foo():
+        for evt in ps.EventListReader(run_path):
+            pass
+
