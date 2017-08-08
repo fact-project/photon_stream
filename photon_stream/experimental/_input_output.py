@@ -115,7 +115,8 @@ def append_photonstream_to_file(phs, fout):
     # WRITE PHOTON ARRIVAL SLICES
     raw_time_lines = np.zeros(
         number_of_pixels_and_photons, 
-        dtype=np.uint8)
+        dtype=np.uint8
+    )
     pos = 0
     for time_line in phs.time_lines:
         for photon_arrival in time_line:
@@ -133,18 +134,21 @@ def read_photonstream_from_file(fin):
     phs.slice_duration = np.fromstring(
         fin.read(4),
         dtype=np.float32,
-        count=1)[0]
+        count=1
+    )[0]
 
     # read number of pixels and time lines
     number_of_pixels_and_photons = np.fromstring(
         fin.read(4),
         dtype=np.uint32,
-        count=1)[0]
+        count=1
+    )[0]
 
     # read photon-stream
     raw_time_lines = np.fromstring(
         fin.read(number_of_pixels_and_photons),
-        dtype=np.uint8)
+        dtype=np.uint8
+    )
 
     phs.time_lines = []
     if len(raw_time_lines) > 0:
@@ -175,12 +179,14 @@ def read_saturated_pixels_from_file(fin):
     number_of_pixels = np.fromstring(
         fin.read(2),
         dtype=np.uint16,
-        count=1)[0]
+        count=1
+    )[0]
 
     # READ saturated pixel CHIDs
     saturated_pixels_raw = np.fromstring(
         fin.read(number_of_pixels*2),
-        dtype=np.uint16)
+        dtype=np.uint16
+    )
     return saturated_pixels_raw
 
 
