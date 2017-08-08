@@ -91,6 +91,21 @@ def read_observation_info_from_file(observation_info, fin):
     observation_info.trigger_type = raw_info[2]
 
 
+def append_pointing_to_file(event, fout):
+    fout.write(event.zd.tobytes())
+    fout.write(event.az.tobytes())
+
+
+def read_pointing_from_file(event, fout):
+    raw_pointing= np.fromstring(
+        fout.read(8), 
+        dtype=np.float32, 
+        count=2
+    )
+    event.zd = raw_pointing[0]
+    event.az = raw_pointing[1]
+
+
 def append_photonstream_to_file(phs, fout):
 
     # WRITE SLICE DURATION
@@ -177,8 +192,7 @@ def append_event_to_file(event, fout):
     # 12
     append_observation_info_to_file(event.observation_info, fout)
     # 24
-    fout.write(np.float32(event.zd).tobytes())
-    fout.write(np.float32(event.az).tobytes())
+    append_pointing_to_file(event, fout)
     # 32
     append_photonstream_to_file(event.photon_stream, fout)
     append_saturated_pixels_to_file(event.photon_stream.saturated_pixels, fout)
@@ -190,15 +204,9 @@ def read_event_from_file(fin):
         read_observation_id_from_file(obs, fin)
         read_observation_info_from_file(obs, fin)
 
-        pointing = np.fromstring(
-            fin.read(8),
-            dtype=np.float32,
-            count=2)
-
         event = Event()
+        read_pointing_from_file(event, fin)
         event.observation_info = obs
-        event.zd = pointing[0]
-        event.az = pointing[1]
         event.photon_stream = read_photonstream_from_file(fin)  
         event.photon_stream.saturated_pixels = read_saturated_pixels_from_file(fin)
 
