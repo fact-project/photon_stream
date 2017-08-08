@@ -86,26 +86,26 @@ def test_pass_header_io():
 
     out_headers = [
         {
-            'pass': 1,
-            'type': 'observation',
+            'pass_version': 1,
+            'event_type': 0,
             'future_problems_0': 0,
             'future_problems_1': 0
         },
         {
-            'pass': 4,
-            'type': 'simulation',
+            'pass_version': 4,
+            'event_type': 1,
             'future_problems_0': 0,
             'future_problems_1': 0
         },
         {
-            'pass': 4,
-            'type': 'observation',
+            'pass_version': 4,
+            'event_type': 1,
             'future_problems_0': 6,
             'future_problems_1': 0
         },
         {
-            'pass': 5,
-            'type': 'simulation',
+            'pass_version': 5,
+            'event_type': 1,
             'future_problems_0': 13,
             'future_problems_1': 14
         },   
@@ -116,7 +116,13 @@ def test_pass_header_io():
 
         with gzip.open(binary_path, 'wb') as fout:
             for header in out_headers:
-                ps.experimental.io.append_header_to_file(header, fout)
+                ps.experimental.io.append_header_to_file(
+                    fout=fout,
+                    event_type=header['event_type'],
+                    pass_version=header['pass_version'], 
+                    future_problems_0=header['future_problems_0'],
+                    future_problems_1=header['future_problems_1'],
+                )
 
 
         in_headers = []
@@ -130,7 +136,7 @@ def test_pass_header_io():
     for i in range(len(out_headers)):
         out_h = out_headers[i]
         in_h = in_headers[i]
-        assert out_h['pass'] == in_h['pass']
-        assert out_h['type'] == in_h['type']
+        assert out_h['pass_version'] == in_h['pass_version']
+        assert out_h['event_type'] == in_h['event_type']
         assert out_h['future_problems_0'] == in_h['future_problems_0']
         assert out_h['future_problems_1'] == in_h['future_problems_1']
