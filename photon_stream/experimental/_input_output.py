@@ -20,7 +20,7 @@ def append_photonstream_to_file(phs, fout):
 
     # WRITE PHOTON ARRIVAL SLICES
     raw_time_lines = np.zeros(
-        number_of_pixels_and_photons, 
+        number_of_pixels_and_photons,
         dtype=np.uint8)
     pos = 0
     for time_line in phs.time_lines:
@@ -52,18 +52,11 @@ def read_photonstream_from_file(fin):
         fin.read(number_of_pixels_and_photons),
         dtype=np.uint8)
 
-    phs.time_lines = []
-    if len(raw_time_lines) > 0:
-        phs.time_lines.append(array('B'))
-
-    pixel = 0
-    for i, symbol in enumerate(raw_time_lines):
-        if symbol == linebreak:
-            pixel += 1
-            if i+1 < len(raw_time_lines):
-                phs.time_lines.append(array('B'))
-        else:
-            phs.time_lines[pixel].append(symbol)
+    where = np.where(raw_time_lines == linebreak)[0][:-1] + 1
+    phs.time_lines = [
+        array('B', part[:-1])
+        for part in np.split(raw_time_lines, where)
+    ]
     return phs
 
 
@@ -133,7 +126,7 @@ def read_event_from_file(fin):
         event.observation_info = obs
         event.zd = pointing[0]
         event.az = pointing[1]
-        event.photon_stream = read_photonstream_from_file(fin)  
+        event.photon_stream = read_photonstream_from_file(fin)
         event.photon_stream.saturated_pixels = read_saturated_pixels_from_file(fin)
 
         return event
