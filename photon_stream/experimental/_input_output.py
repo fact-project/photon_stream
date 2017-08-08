@@ -9,6 +9,35 @@ import gzip
 
 LINEBREAK = np.array([np.iinfo(np.uint8).max], dtype=np.uint8)
 
+def append_header_to_file(header, fout):
+    fout.write(np.uint8(header['pass']).tobytes())
+    if header['type'] == 'observation':
+        event_type = np.uint8(0)
+    elif header['type'] == 'simulation':
+        event_type = np.uint8(1)
+    else:
+        raise
+    fout.write(event_type.tobytes())
+    fout.write(np.uint8(header['future_problems_0']).tobytes())
+    fout.write(np.uint8(header['future_problems_1']).tobytes())
+
+
+def read_header_from_file(fin):
+    raw_header = np.fromstring(fin.read(4), dtype=np.uint8, count=4)
+    if raw_header[1] == 0:
+        type_str = 'observation'
+    elif raw_header[1] == 1:
+        type_str = 'simulation'
+    else:
+        raise
+    return {
+        'pass': raw_header[0],
+        'type': type_str,
+        'future_problems_0': raw_header[2],
+        'future_problems_1': raw_header[3]
+    }
+
+
 def append_photonstream_to_file(phs, fout):
 
     # WRITE SLICE DURATION

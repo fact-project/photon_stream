@@ -80,3 +80,57 @@ def test_jsonl2binary():
         evt_in = run_in[i]
         evt_ba = run_back[i]
         assert evt_in == evt_ba
+
+
+def test_pass_header_io():
+
+    out_headers = [
+        {
+            'pass': 1,
+            'type': 'observation',
+            'future_problems_0': 0,
+            'future_problems_1': 0
+        },
+        {
+            'pass': 4,
+            'type': 'simulation',
+            'future_problems_0': 0,
+            'future_problems_1': 0
+        },
+        {
+            'pass': 4,
+            'type': 'observation',
+            'future_problems_0': 6,
+            'future_problems_1': 0
+        },
+        {
+            'pass': 5,
+            'type': 'simulation',
+            'future_problems_0': 13,
+            'future_problems_1': 14
+        },   
+    ]
+
+    with tempfile.TemporaryDirectory(prefix='phs_test_header') as tmp:
+        binary_path = os.path.join(tmp, 'header.bin')
+
+        with gzip.open(binary_path, 'wb') as fout:
+            for header in out_headers:
+                ps.experimental.io.append_header_to_file(header, fout)
+
+
+        in_headers = []
+        with gzip.open(binary_path, 'rb') as fin:
+            for i in range(len(out_headers)):
+                in_headers.append(
+                    ps.experimental.io.read_header_from_file(fin)
+                )
+
+
+    for i in range(len(out_headers)):
+        out_h = out_headers[i]
+        in_h = in_headers[i]
+        assert out_h['pass'] == in_h['pass']
+        assert out_h['type'] == in_h['type']
+        assert out_h['future_problems_0'] == in_h['future_problems_0']
+        assert out_h['future_problems_1'] == in_h['future_problems_1']
