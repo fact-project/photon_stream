@@ -11,6 +11,7 @@ import gzip
 LINEBREAK = np.array([np.iinfo(np.uint8).max], dtype=np.uint8)
 OBSERVATION_TYPE_KEY = 0
 SIMULATION_TYPE_KEY = 1
+TIME_SLICE_DURATION_S = 0.5e-9;
 
 def append_header_to_file(
     fout,
@@ -105,9 +106,6 @@ def read_pointing_from_file(event, fout):
 
 def append_photonstream_to_file(phs, fout):
 
-    # WRITE SLICE DURATION
-    fout.write(np.float32(phs.slice_duration).tobytes())
-
     # Write number of pixels plus number of photons
     number_of_pixels_and_photons = len(phs.time_lines) + phs.number_photons
     fout.write(np.uint32(number_of_pixels_and_photons).tobytes())
@@ -129,13 +127,7 @@ def append_photonstream_to_file(phs, fout):
 
 def read_photonstream_from_file(fin):
     phs = PhotonStream()
-
-    # read slice duration
-    phs.slice_duration = np.fromstring(
-        fin.read(4),
-        dtype=np.float32,
-        count=1
-    )[0]
+    phs.slice_duration = np.float32(TIME_SLICE_DURATION_S)
 
     # read number of pixels and time lines
     number_of_pixels_and_photons = np.fromstring(
