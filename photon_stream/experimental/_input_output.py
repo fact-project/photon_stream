@@ -2,12 +2,12 @@ import numpy as np
 from ..PhotonStream import PhotonStream
 from ..Event import Event
 from ..ObservationInformation import ObservationInformation
-from array import array
 import datetime as dt
 import os
 import gzip
 
 linebreak = np.array([np.iinfo(np.uint8).max], dtype=np.uint8)
+
 
 def append_photonstream_to_file(phs, fout):
 
@@ -127,7 +127,8 @@ def read_event_from_file(fin):
         event.zd = pointing[0]
         event.az = pointing[1]
         event.photon_stream = read_photonstream_from_file(fin)
-        event.photon_stream.saturated_pixels = read_saturated_pixels_from_file(fin)
+        event.photon_stream.saturated_pixels = (
+            read_saturated_pixels_from_file(fin))
 
         return event
     except:
