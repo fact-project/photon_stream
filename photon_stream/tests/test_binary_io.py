@@ -140,3 +140,36 @@ def test_pass_header_io():
         assert out_h['event_type'] == in_h['event_type']
         assert out_h['future_problems_0'] == in_h['future_problems_0']
         assert out_h['future_problems_1'] == in_h['future_problems_1']
+
+
+def test_io_simulation_events():
+    photon_stream_path = pkg_resources.resource_filename(
+        'photon_stream',
+        'tests/resources/cer011014.phs.jsonl.gz'
+    )
+
+    run = ps.EventListReader(photon_stream_path)
+
+    run_in = []
+    run_back = []
+    for event in run:
+        run_in.append(event)
+
+    with tempfile.TemporaryDirectory(prefix='phs_sim_io_test') as tmp:
+        binary_path = os.path.join(tmp, 'cer011014.phs.gz')
+
+        with gzip.open(binary_path, 'wb') as fout:
+            for event in run_in:
+                ps.experimental.io.append_event_to_file(event, fout)
+
+        with gzip.open(binary_path, 'rb') as fin:
+            while True:
+                try:
+                    run_back.append(ps.experimental.io.read_event_from_file(fin))
+                except StopIteration:
+                    break
+
+    for i in range(len(run_in)):
+        evt_in = run_in[i]
+        evt_ba = run_back[i]
+        assert evt_in == evt_ba
