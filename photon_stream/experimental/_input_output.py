@@ -2,12 +2,25 @@ import numpy as np
 from ..PhotonStream import PhotonStream
 from ..Event import Event
 from ..ObservationInformation import ObservationInformation
+from ..simulation_truth import SimulationTruth
 from array import array
 import datetime as dt
 import os
 import gzip
 
 LINEBREAK = np.array([np.iinfo(np.uint8).max], dtype=np.uint8)
+OBSERVATION_HEADER = {
+    'pass': np.uint8(4),
+    'type': 'observation',
+    'future_problems_0': np.uint8(0),
+    'future_problems_1': np.uint8(1),
+}
+SIMULATION_HEADER = {
+    'pass': np.uint8(4),
+    'type': 'simulation',
+    'future_problems_0': np.uint8(0),
+    'future_problems_1': np.uint8(1),
+}
 
 def append_header_to_file(header, fout):
     fout.write(np.uint8(header['pass']).tobytes())
@@ -188,8 +201,15 @@ def read_saturated_pixels_from_file(fin):
 
 
 def append_event_to_file(event, fout):
-    append_observation_id_to_file(event.observation_info, fout)
-    append_observation_info_to_file(event.observation_info, fout)
+    if hasattr(event, 'observation_info'):
+        append_header_to_file(OBSERVATION_HEADER, fout)
+        append_observation_id_to_file(event.observation_info, fout)
+        append_observation_info_to_file(event.observation_info, fout)
+    elif hasattr(event, 'simulation_truth'):
+        append_header_to_file(SIMULATION_HEADER, fout)
+        append_simulation_id_to_file(event.simulation_truth, fout)
+    else:
+        raise
     append_pointing_to_file(event, fout)
     append_photonstream_to_file(event.photon_stream, fout)
     append_saturated_pixels_to_file(event.photon_stream.saturated_pixels, fout)
@@ -197,16 +217,23 @@ def append_event_to_file(event, fout):
 
 def read_event_from_file(fin):
     try:
-        obs = ObservationInformation()
-        read_observation_id_from_file(obs, fin)
-        read_observation_info_from_file(obs, fin)
-
+        header = read_header_from_file(fin)
         event = Event()
+        print(header['type'])
+        if header['type'] == 'observation':
+            obs = ObservationInformation()
+            read_observation_id_from_file(obs, fin)
+            read_observation_info_from_file(obs, fin)
+            event.observation_info = obs
+        elif header['type'] == 'simulation': 
+            sim = SimulationTruth()
+            read_simulation_id_from_file(sim, fin)
+            event.simulation_truth = sim
+        else:
+            raise
         read_pointing_from_file(event, fin)
-        event.observation_info = obs
         event.photon_stream = read_photonstream_from_file(fin)  
         event.photon_stream.saturated_pixels = read_saturated_pixels_from_file(fin)
-
         return event
     except:
         raise StopIteration
