@@ -54,7 +54,7 @@ def read_photonstream_from_file(fin):
 
     where = np.where(raw_time_lines == linebreak)[0][:-1] + 1
     phs.time_lines = [
-        array('B', part[:-1])
+        part[:-1]
         for part in np.split(raw_time_lines, where)
     ]
     return phs
