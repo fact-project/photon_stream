@@ -7,7 +7,7 @@ import datetime as dt
 import os
 import gzip
 
-linebreak = np.array([np.iinfo(np.uint8).max], dtype=np.uint8)
+LINEBREAK = np.array([np.iinfo(np.uint8).max], dtype=np.uint8)
 
 def append_photonstream_to_file(phs, fout):
 
@@ -27,7 +27,7 @@ def append_photonstream_to_file(phs, fout):
         for photon_arrival in time_line:
             raw_time_lines[pos] = photon_arrival
             pos += 1
-        raw_time_lines[pos] = linebreak
+        raw_time_lines[pos] = LINEBREAK
         pos += 1
     fout.write(raw_time_lines.tobytes())
 
@@ -58,7 +58,7 @@ def read_photonstream_from_file(fin):
 
     pixel = 0
     for i, symbol in enumerate(raw_time_lines):
-        if symbol == linebreak:
+        if symbol == LINEBREAK:
             pixel += 1
             if i+1 < len(raw_time_lines):
                 phs.time_lines.append(array('B'))
