@@ -4,7 +4,8 @@ python:
 before_install:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
+  - pip install pytest-benchmark
 install:
 - pip install .
 script:
-- py.test -k-nottravis
+- py.test -k-slow
