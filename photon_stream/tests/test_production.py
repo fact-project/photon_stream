@@ -12,7 +12,7 @@ def test_number_of_events_in_run():
     run_path = pkg_resources.resource_filename(
         'photon_stream', 
         'tests/resources/20170119_229_pass4_100events.phs.jsonl.gz')    
-    assert ps.production.tools.number_of_events_in_run(run_path) == 100
+    assert ps.production.status.number_of_events_in_run(run_path) == 100
 
 
 def test_production_write_worker_script():

@@ -7,6 +7,16 @@ from . import runinfo
 from . import tools
 
 
+def number_of_events_in_run(run_path):
+    """
+    Returns the number of lines inside a gzipped text file.
+    """
+    ps = subprocess.Popen(['zcat', run_path], stdout=subprocess.PIPE)
+    wc_out = subprocess.check_output(('wc', '-l'), stdin=ps.stdout)
+    ps.wait()
+    return int(wc_out)
+
+
 def status(photon_stream_dir, known_runs_database='known_runs.msg'):
     """
     Estimates the avaiability status of FACT events in a 'phs' directory using 
@@ -51,7 +61,7 @@ def status(photon_stream_dir, known_runs_database='known_runs.msg'):
                     info.set_value(
                         index, 
                         'photon_stream_NumTrigger', 
-                        tools.number_of_events_in_run(run_path)
+                        number_of_events_in_run(run_path)
                     )
                     print(
                         'New run '+str(night)+' '+str(run)+' '+

@@ -22,13 +22,3 @@ def night_id_2_mm(night):
 
 def night_id_2_nn(night):
     return night % 100
-
-
-def number_of_events_in_run(run_path):
-    """
-    Returns the number of lines inside a gzipped text file.
-    """
-    ps = subprocess.Popen(['zcat', run_path], stdout=subprocess.PIPE)
-    wc_out = subprocess.check_output(('wc', '-l'), stdin=ps.stdout)
-    ps.wait()
-    return int(wc_out)
