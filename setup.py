@@ -11,6 +11,7 @@ setup(
     packages=[
         'photon_stream',
         'photon_stream.production',
+        'photon_stream.production.ethz',
         'photon_stream.experimental',
         'photon_stream.muons',
         'photon_stream.simulation_truth',
