@@ -130,13 +130,13 @@ def make_job_list(
             job['yyyymmnn_dir']
         )
 
-    jobs = tools.jobs_where_path_exists(jobs, path='raw_path')
+    jobs = jobs_where_path_exists(jobs, path='raw_path')
 
     print('Found '+str(len(jobs))+' runs both in database and accesible in "'+fact_raw_dir+'".')
     print('Find matching drs calibration runs ...')
 
     jobs = add_drs_run_info_to_jobs(runinfo=runinfo, jobs=jobs)
-    jobs = tools.jobs_where_path_exists(jobs=jobs, path='drs_path')
+    jobs = jobs_where_path_exists(jobs, path='drs_path')
 
     print('Found '+str(len(jobs))+' with accesible drs files.')
 
@@ -230,3 +230,11 @@ def add_drs_run_info_to_jobs(runinfo, jobs):
             job["drs_Run"] = None
             job['drs_path'] = 'nope.sorry'
     return jobs
+
+
+def jobs_where_path_exists(jobs, path='raw_path'):
+    accesible_jobs = []
+    for job in jobs:
+        if os.path.exists(job[path]):
+            accesible_jobs.append(job)
+    return accesible_jobs
