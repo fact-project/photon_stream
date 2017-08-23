@@ -1,5 +1,6 @@
 from tqdm import tqdm
 import os
+import subprocess as sp
 from .dummy_qsub import dummy_qsub
 from .. import prepare
 from .write_worker_script import write_worker_script
@@ -71,6 +72,9 @@ def qsub(
         if use_dummy_qsub:
             dummy_qsub(cmd)
         else:
-            qsub_return_code = sp.call(cmd)
-            if qsub_return_code > 0:
-                print('qsub return code: ', qsub_return_code)
+            try:
+                sp.check_output(cmd, stderr=sp.STDOUT)
+            except sp.CalledProcessError as e:
+                print('returncode', e.returncode)
+                print('output', e.output)
+                raise
