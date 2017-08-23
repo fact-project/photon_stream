@@ -19,29 +19,6 @@ def write_runinfo_to_file(runinfo, path='runinfo.msg'):
     runinfo.to_msgpack(path)
 
 
-def add_drs_run_info_to_jobs(runinfo, jobs):
-    for job in jobs:   
-        drs_run_candidates = runinfo[
-            (runinfo.fNight == job["Night"])&
-            (runinfo.fDrsStep == 2)&
-            (runinfo.fRunTypeKey == 2)&
-            (runinfo.fRunID < job["Run"])]
-        
-        if len(drs_run_candidates) >= 1:
-            job["drs_Run"] = drs_run_candidates.iloc[-1].fRunID
-            job["drs_file_name"] = '{bsn:08d}_{rrr:03d}.drs.fits.gz'.format(
-                bsn=job['Night'],
-                rrr=job["drs_Run"])
-            job['drs_path'] = os.path.join(
-                job['fact_drs_dir'], 
-                job['yyyymmnn_dir'], 
-                job['drs_file_name'])
-        else:
-            job["drs_Run"] = None
-            job['drs_path'] = 'nope.sorry'
-    return jobs
-
-
 def create_fake_fact_dir(path, runinfo):
     for index, row in runinfo.iterrows():
         night_id = runinfo['fNight'][index]

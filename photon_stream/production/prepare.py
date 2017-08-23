@@ -7,10 +7,9 @@ import datetime as dt
 import numpy as np
 
 from .runinfo import download_latest_runinfo
-from . import tools
-from .runinfo import add_drs_run_info_to_jobs
 from .runinfo import OBSERVATION_RUN_TYPE_KEY
-
+from .runinfo import DRS_RUN_TYPE_KEY
+from . import tools
 
 def make_job_list(
     out_dir,
@@ -208,4 +207,27 @@ def observation_runs_in_runinfo_in_night_range(
         jobs.append({
             'Night': night_ids.iloc[i],
             'Run': run_id})
+    return jobs
+
+
+def add_drs_run_info_to_jobs(runinfo, jobs):
+    for job in jobs:   
+        drs_run_candidates = runinfo[
+            (runinfo.fNight == job["Night"])&
+            (runinfo.fDrsStep == 2)&
+            (runinfo.fRunTypeKey == 2)&
+            (runinfo.fRunID < job["Run"])]
+        
+        if len(drs_run_candidates) >= 1:
+            job["drs_Run"] = drs_run_candidates.iloc[-1].fRunID
+            job["drs_file_name"] = '{bsn:08d}_{rrr:03d}.drs.fits.gz'.format(
+                bsn=job['Night'],
+                rrr=job["drs_Run"])
+            job['drs_path'] = os.path.join(
+                job['fact_drs_dir'], 
+                job['yyyymmnn_dir'], 
+                job['drs_file_name'])
+        else:
+            job["drs_Run"] = None
+            job['drs_path'] = 'nope.sorry'
     return jobs
