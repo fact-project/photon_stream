@@ -32,12 +32,3 @@ def number_of_events_in_run(run_path):
     wc_out = subprocess.check_output(('wc', '-l'), stdin=ps.stdout)
     ps.wait()
     return int(wc_out)
-
-
-def night_id_split(night):
-    assert len(str(night)) == 8
-    return {
-        'yyyy': night_id_2_yyyy(night),
-        'mm': night_id_2_mm(night),
-        'nn': night_id_2_nn(night),
-    }
