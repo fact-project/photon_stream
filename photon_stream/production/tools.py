@@ -1,7 +1,6 @@
 import os
 import numpy as np
 import json
-import subprocess
 import datetime as dt
 
 def jobs_where_path_exists(jobs, path='raw_path'):
