@@ -14,6 +14,7 @@ from .runinfo import OBSERVATION_RUN_TYPE_KEY
 
 def make_job_list(
     out_dir,
+    runinfo,
     start_night=20110101,
     end_night=20501231,
     only_a_fraction=1.0,
@@ -24,7 +25,6 @@ def make_job_list(
     fact_tools_jar_path='/home/guest/relleums/fact_photon_stream/fact-tools/target/fact-tools-0.18.0.jar',
     fact_tools_xml_path='/home/guest/relleums/fact_photon_stream/photon_stream/photon_stream/production/resources/observations_pass4.xml',
     tmp_dir_base_name='fact_photon_stream_JOB_ID_',
-    runinfo=None,
 ):
     """
     Returns a list of job dicts which contain all relevant paths to convert a
@@ -36,6 +36,9 @@ def make_job_list(
     out_dir             The path to the output directory where the photon-stream
                         is collected. The out_dir is created if not existing.
     
+    runinfo             A pandas DataFrame() of the FACT run-info-database which
+                        is used as a reference for the runs to be processed.
+
     start_night         The start night integer 'YYYYmmnn', processes only runs 
                         after this night. (default 20110101)
 
@@ -61,10 +64,6 @@ def make_job_list(
 
     tmp_dir_base_name   The base name of the temporary directory on the qsub 
                         worker nodes. (default 'fact_photon_stream_JOB_ID_')
-
-    runinfo             A pandas DataFrame() of the FACT run-info-database which
-                        is used as a reference for the runs to be processed.
-                        (default None, download the latest run-info on the fly)
     """
     
     print('Make raw -> photon-stream conversion job list ...')
@@ -93,9 +92,6 @@ def make_job_list(
         'fact_tools_jar_path': fact_tools_jar_path,
         'fact_tools_xml_path': fact_tools_xml_path,
     }
-
-    if runinfo is None:
-        runinfo = download_latest_runinfo()
 
     print('Find runs in night range '+str(start_night)+' to '+str(end_night)+' in runinfo database ...')
     
