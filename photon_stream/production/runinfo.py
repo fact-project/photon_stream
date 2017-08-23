@@ -19,30 +19,6 @@ def write_runinfo_to_file(runinfo, path='runinfo.msg'):
     runinfo.to_msgpack(path)
 
 
-def observation_runs_in_runinfo_in_night_range(
-    runinfo, 
-    start_night=20110101, 
-    end_night=20171231,
-    only_a_fraction=1.0):
-    past_start = (runinfo['fNight'] >= start_night).as_matrix()
-    before_end = (runinfo['fNight'] < end_night).as_matrix()
-    is_observation_run = (runinfo['fRunTypeKey'] == OBSERVATION_RUN_TYPE_KEY).as_matrix()
-    valid = past_start*before_end*is_observation_run
-
-    fraction = np.random.uniform(size=len(valid)) < only_a_fraction
-    
-    night_ids = runinfo['fNight'][valid*fraction]
-    run_ids = runinfo['fRunID'][valid*fraction]
-
-    jobs = []
-
-    for i, run_id in enumerate(run_ids):
-        jobs.append({
-            'Night': night_ids.iloc[i],
-            'Run': run_id})
-    return jobs
-
-
 def add_drs_run_info_to_jobs(runinfo, jobs):
     for job in jobs:   
         drs_run_candidates = runinfo[

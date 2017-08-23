@@ -4,11 +4,12 @@ from os.path import join
 from os.path import exists
 import shutil
 import datetime as dt
+import numpy as np
 
 from .runinfo import download_latest_runinfo
 from . import tools
-from .runinfo import observation_runs_in_runinfo_in_night_range
 from .runinfo import add_drs_run_info_to_jobs
+from .runinfo import OBSERVATION_RUN_TYPE_KEY
 
 
 def make_job_list(
@@ -187,3 +188,28 @@ def copy_resources(directory_structure):
     os.makedirs(ds['res_dir_this_processing'], exist_ok=False)
     shutil.copy(ds['fact_tools_jar_path'], ds['res_dir_this_processing'])
     shutil.copy(ds['fact_tools_xml_path'], ds['res_dir_this_processing'])
+
+
+def observation_runs_in_runinfo_in_night_range(
+    runinfo, 
+    start_night=20110101, 
+    end_night=20171231,
+    only_a_fraction=1.0
+):
+    past_start = (runinfo['fNight'] >= start_night).as_matrix()
+    before_end = (runinfo['fNight'] < end_night).as_matrix()
+    is_observation_run = (runinfo['fRunTypeKey'] == OBSERVATION_RUN_TYPE_KEY).as_matrix()
+    valid = past_start*before_end*is_observation_run
+
+    fraction = np.random.uniform(size=len(valid)) < only_a_fraction
+    
+    night_ids = runinfo['fNight'][valid*fraction]
+    run_ids = runinfo['fRunID'][valid*fraction]
+
+    jobs = []
+
+    for i, run_id in enumerate(run_ids):
+        jobs.append({
+            'Night': night_ids.iloc[i],
+            'Run': run_id})
+    return jobs
