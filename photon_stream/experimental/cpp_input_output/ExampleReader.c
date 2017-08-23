@@ -1,4 +1,10 @@
-// g++ UnitTest.c -o PhotonStreamTest -lm
+// compile using:
+// g++ ExampleReader.c -o PhotonStreamTest -lm
+// 
+// gunzip the example binary run in the photon_stream/tests/resources and
+// run the executable right next tu the unzipped binary file.
+// It will print some basic event information on the command line.
+
 #include <stdio.h>
 #include <string.h>
 #include "PhotonStream.h"
