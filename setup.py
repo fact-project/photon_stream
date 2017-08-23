@@ -16,7 +16,12 @@ setup(
         'photon_stream.simulation_truth',
         'photon_stream.muons.isdc_production',
     ],
-    package_data={'photon_stream': ['tests/resources/*']},
+    package_data={
+        'photon_stream': [
+            'tests/resources/*',
+            'production/resources/*',
+        ]
+    },
     install_requires=[
         'docopt',
         'scipy',
