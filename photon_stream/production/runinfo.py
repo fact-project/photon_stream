@@ -5,7 +5,7 @@ from . import tools
 import numpy as np
 
 DRS_RUN_TYPE_KEY = 2
-observation_key = 1
+OBSERVATION_RUN_TYPE_KEY = 1
 
 def download_latest_runinfo():
     factdb = credentials.create_factdb_engine()
@@ -26,7 +26,7 @@ def observation_runs_in_runinfo_in_night_range(
     only_a_fraction=1.0):
     past_start = (runinfo['fNight'] >= start_night).as_matrix()
     before_end = (runinfo['fNight'] < end_night).as_matrix()
-    is_observation_run = (runinfo['fRunTypeKey'] == observation_key).as_matrix()
+    is_observation_run = (runinfo['fRunTypeKey'] == OBSERVATION_RUN_TYPE_KEY).as_matrix()
     valid = past_start*before_end*is_observation_run
 
     fraction = np.random.uniform(size=len(valid)) < only_a_fraction
@@ -83,7 +83,7 @@ def create_fake_fact_dir(path, runinfo):
             with open(fake_drs_path, 'w') as drs_file:
                 drs_file.write('I am a fake FACT drs file.')
 
-        if run_type_key == observation_key:
+        if run_type_key == OBSERVATION_RUN_TYPE_KEY:
             rrr = '{rrr:03d}'.format(rrr=run_id)
             fake_run_path = os.path.join(path, 'raw', yyyy, mm, nn, yyyy+mm+nn+'_'+rrr+'.fits.fz')
             with open(fake_run_path, 'w') as raw_file:

@@ -32,7 +32,7 @@ def status(photon_stream_dir, known_runs_database='known_runs.msg'):
         night = info['fNight'][index]
         run = info['fRunID'][index]
 
-        if info['fRunTypeKey'][index] == runinfo.observation_key:
+        if info['fRunTypeKey'][index] == runinfo.OBSERVATION_RUN_TYPE_KEY:
             if info['photon_stream_NumTrigger'][index]==0:
                 file_name = '{yyyymmnn:08d}_{rrr:03d}.phs.jsonl.gz'.format(
                     yyyymmnn=night,
@@ -84,7 +84,7 @@ def runs_in_range_str(info, start_night, end_night, max_trigger_rate=200):
     """
     past_start = info['fNight'] >= start_night
     before_end = info['fNight'] < end_night
-    is_observation_run = info['fRunTypeKey'] == runinfo.observation_key
+    is_observation_run = info['fRunTypeKey'] == runinfo.OBSERVATION_RUN_TYPE_KEY
 
     rate_below_max_trigger_rate = (
         info['fNumExt1Trigger'] + 
@@ -147,7 +147,7 @@ def overview_str(info, max_trigger_rate=120):
     max_trigger_rate    Cuts all runs with less then 300*max_trigger_rate events
                         in it.
     """
-    is_obs = info['fRunTypeKey'] == runinfo.observation_key
+    is_obs = info['fRunTypeKey'] == runinfo.OBSERVATION_RUN_TYPE_KEY
 
     rate_below_max_trigger_rate = (
         info['fNumExt1Trigger'] + 
@@ -295,5 +295,5 @@ def strip_runinfo_for_photon_stream_status_inplace(runinfo):
         if key not in keys_to_keep:
             runinfo.drop(key, axis=1, inplace=True)
 
-    runinfo = runinfo[runinfo['fRunTypeKey'] == runinfo.observation_key]
+    runinfo = runinfo[runinfo['fRunTypeKey'] == runinfo.OBSERVATION_RUN_TYPE_KEY]
     
