@@ -18,12 +18,6 @@ def read_runinfo_from_file(path='runinfo.msg'):
 def write_runinfo_to_file(runinfo, path='runinfo.msg'):
     runinfo.to_msgpack(path)
 
-def get_runinfo():
-    if os.path.exists('runinfo.msg'):
-        return read_runinfo_from_file('runinfo.msg')
-    else:
-    	return download_latest_runinfo()
-
 
 def observation_runs_in_runinfo_in_night_range(
     runinfo, 
