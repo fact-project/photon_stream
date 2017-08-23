@@ -18,7 +18,7 @@ def test_number_of_events_in_run():
 def test_production_write_worker_script():
     with tempfile.TemporaryDirectory(prefix='photon_stream_test_production') as tmp:
         worker_script_path = join(tmp, 'worker.sh')
-        ps.production.write_worker_script(worker_script_path)
+        ps.production.isdc.write_worker_script(worker_script_path)
         assert os.path.exists(worker_script_path)
         assert os.access(worker_script_path, os.X_OK)
 

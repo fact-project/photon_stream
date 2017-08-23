@@ -10,7 +10,7 @@ def test_output_path_extraction_from_worker_job():
         out_dir = '/home/photon_stream/YYYY/mm/dd/'
         out_base_name = 'YYYYmmdd_RRR'
 
-        ps.production.write_worker_script(
+        ps.production.isdc.write_worker_script(
             path=job_path,
             out_dir=out_dir,
             out_base_name=out_base_name)

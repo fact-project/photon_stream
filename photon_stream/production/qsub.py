@@ -2,7 +2,7 @@ from tqdm import tqdm
 import os
 from .dummy_qsub import dummy_qsub
 from . import prepare
-from .write_worker_script import write_worker_script
+from .isdc.write_worker_script import write_worker_script
 
 
 def qsub(
