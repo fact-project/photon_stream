@@ -6,7 +6,6 @@ import shutil
 import datetime as dt
 import numpy as np
 
-from .runinfo import download_latest_runinfo
 from .runinfo import OBSERVATION_RUN_TYPE_KEY
 from .runinfo import DRS_RUN_TYPE_KEY
 from . import tools
