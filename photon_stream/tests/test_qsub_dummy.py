@@ -15,7 +15,7 @@ def test_output_path_extraction_from_worker_job():
             out_dir=out_dir,
             out_base_name=out_base_name)
 
-        out_dir, out_base_name = ps.production.dummy_qsub.extract_out_path_from_worker_job(
+        out_dir, out_base_name = ps.production.isdc.dummy_qsub.extract_out_path_from_worker_job(
             job_path)
         out_path = os.path.join(out_dir, out_base_name)
 

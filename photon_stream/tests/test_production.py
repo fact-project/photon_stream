@@ -46,7 +46,7 @@ def test_production_run_collection():
         out_dir = join(tmp, 'passX')
 
         # FIRST CHUNK
-        ps.production.qsub(
+        ps.production.isdc.qsub(
             out_dir=out_dir, 
             start_night=20141215, 
             end_night=20141229,
@@ -78,7 +78,7 @@ def test_production_run_collection():
             fftools.write('Hi, I am another fact tools dummy java jar!')    
 
         # SECOND CHUNK with 2nd fact-tools.jar
-        ps.production.qsub(
+        ps.production.isdc.qsub(
             out_dir=out_dir, 
             start_night=20141229, 
             end_night=20150103,
