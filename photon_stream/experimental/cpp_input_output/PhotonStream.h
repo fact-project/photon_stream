@@ -17,6 +17,42 @@ const uint8_t OBSERVATION_KEY = 0;
 const uint8_t SIMULATION_KEY = 1;
 const uint8_t PASS_VERSION = 4;
 
+void append_float32(float &v, std::ofstream &fout) {
+    fout.write(reinterpret_cast<char*>(&v), sizeof(v));
+}
+
+float read_float32(std::ifstream &fin) {
+    float v;
+    fin.read(reinterpret_cast<char*>(&v), sizeof(v));
+    return v;
+}
+
+void append_uint32(uint32_t &v, std::ofstream &fout) {
+    fout.write(reinterpret_cast<char*>(&v), sizeof(v));
+}
+uint32_t read_uint32(std::ifstream &fin) {
+    uint32_t v;
+    fin.read(reinterpret_cast<char*>(&v), sizeof(v));
+    return v;
+}
+
+void append_uint16(uint16_t &v, std::ofstream &fout) {
+    fout.write(reinterpret_cast<char*>(&v), sizeof(v));
+}
+uint16_t read_uint16(std::ifstream &fin) {
+    uint16_t v;
+    fin.read(reinterpret_cast<char*>(&v), sizeof(v));
+    return v;
+}
+
+void append_uint8(uint8_t &v, std::ofstream &fout) {
+    fout.write(reinterpret_cast<char*>(&v), sizeof(v));
+}
+uint8_t read_uint8(std::ifstream &fin) {
+    uint8_t v;
+    fin.read(reinterpret_cast<char*>(&v), sizeof(v));
+    return v;
+}
 
 //------------------------------------------------------------------------------
 struct Descriptor {
@@ -26,14 +62,14 @@ struct Descriptor {
 
 Descriptor read_Descriptor_from_file(std::ifstream &fin) {
     Descriptor d;
-    fin.read(reinterpret_cast<char*>(&d.pass_version), sizeof(d.pass_version));
-    fin.read(reinterpret_cast<char*>(&d.event_type), sizeof(d.event_type));
+    d.pass_version = read_uint8(fin);
+    d.event_type = read_uint8(fin);
     return d;
 }
 
 void append_Descriptor_to_file(Descriptor &d, std::ofstream &fout) {
-    fout.write(reinterpret_cast<char*>(&d.pass_version), sizeof(d.pass_version));
-    fout.write(reinterpret_cast<char*>(&d.event_type), sizeof(d.event_type));
+    append_uint8(d.pass_version, fout);
+    append_uint8(d.event_type, fout);
 }
 
 //------------------------------------------------------------------------------
@@ -44,14 +80,14 @@ struct FutureProblems {
 
 FutureProblems read_FutureProblems_from_file(std::ifstream &fin) {
     FutureProblems f;
-    fin.read(reinterpret_cast<char*>(&f.a), sizeof(f.a));
-    fin.read(reinterpret_cast<char*>(&f.b), sizeof(f.b));
+    f.a = read_uint8(fin);
+    f.b = read_uint8(fin);
     return f;
 }
 
 void append_FutureProblems_to_file(FutureProblems &f, std::ofstream &fout) {
-    fout.write(reinterpret_cast<char*>(&f.a), sizeof(f.a));
-    fout.write(reinterpret_cast<char*>(&f.b), sizeof(f.b));
+    append_uint8(f.a, fout);
+    append_uint8(f.b, fout);
 }
 
 //------------------------------------------------------------------------------
@@ -63,16 +99,16 @@ struct ObservationIdentifier {
 
 ObservationIdentifier read_ObservationIdentifier_from_file(std::ifstream &fin) {
     ObservationIdentifier obsid;
-    fin.read(reinterpret_cast<char*>(&obsid.night), sizeof(obsid.night));
-    fin.read(reinterpret_cast<char*>(&obsid.run), sizeof(obsid.run));
-    fin.read(reinterpret_cast<char*>(&obsid.event), sizeof(obsid.event));
+    obsid.night = read_uint32(fin);
+    obsid.run = read_uint32(fin);
+    obsid.event = read_uint32(fin);
     return obsid;
 }
 
 void append_ObservationIdentifier_to_file(ObservationIdentifier &obsid, std::ofstream &fout) {
-    fout.write(reinterpret_cast<char*>(&obsid.night), sizeof(obsid.night));
-    fout.write(reinterpret_cast<char*>(&obsid.run), sizeof(obsid.run));
-    fout.write(reinterpret_cast<char*>(&obsid.event), sizeof(obsid.event));
+    append_uint32(obsid.night, fout);
+    append_uint32(obsid.run, fout);
+    append_uint32(obsid.event, fout);
 }
 
 //------------------------------------------------------------------------------
@@ -84,16 +120,16 @@ struct ObservationInformation {
 
 ObservationInformation read_ObservationInformation_from_file(std::ifstream &fin) {
     ObservationInformation obsinfo;
-    fin.read(reinterpret_cast<char*>(&obsinfo.unix_time_s), sizeof(obsinfo.unix_time_s));
-    fin.read(reinterpret_cast<char*>(&obsinfo.unix_time_us), sizeof(obsinfo.unix_time_us));
-    fin.read(reinterpret_cast<char*>(&obsinfo.trigger_type), sizeof(obsinfo.trigger_type));
+    obsinfo.unix_time_s = read_uint32(fin);
+    obsinfo.unix_time_us = read_uint32(fin);
+    obsinfo.trigger_type = read_uint32(fin);
     return obsinfo;
 }
 
 void append_ObservationInformation_to_file(ObservationInformation &obsinfo, std::ofstream &fout) {
-    fout.write(reinterpret_cast<char*>(&obsinfo.unix_time_s), sizeof(obsinfo.unix_time_s));
-    fout.write(reinterpret_cast<char*>(&obsinfo.unix_time_us), sizeof(obsinfo.unix_time_us));
-    fout.write(reinterpret_cast<char*>(&obsinfo.trigger_type), sizeof(obsinfo.trigger_type));
+    append_uint32(obsinfo.unix_time_s , fout);
+    append_uint32(obsinfo.unix_time_us, fout);
+    append_uint32(obsinfo.trigger_type, fout);
 }
 
 //------------------------------------------------------------------------------
@@ -105,16 +141,16 @@ struct SimulationIdentifier {
 
 SimulationIdentifier read_SimulationIdentifier_from_file(std::ifstream &fin) {
     SimulationIdentifier simid;
-    fin.read(reinterpret_cast<char*>(&simid.run), sizeof(simid.run));
-    fin.read(reinterpret_cast<char*>(&simid.event), sizeof(simid.event));
-    fin.read(reinterpret_cast<char*>(&simid.reuse), sizeof(simid.reuse));
+    simid.run = read_uint32(fin);
+    simid.event = read_uint32(fin);
+    simid.reuse = read_uint32(fin);
     return simid;
 }
 
 void append_SimulationIdentifier_to_file(SimulationIdentifier &simid, std::ofstream &fout) {
-    fout.write(reinterpret_cast<char*>(&simid.run), sizeof(simid.run));
-    fout.write(reinterpret_cast<char*>(&simid.event), sizeof(simid.event));
-    fout.write(reinterpret_cast<char*>(&simid.reuse), sizeof(simid.reuse));
+    append_uint32(simid.run , fout);
+    append_uint32(simid.event, fout);
+    append_uint32(simid.reuse, fout);
 }
 
 //------------------------------------------------------------------------------
@@ -125,14 +161,14 @@ struct Pointing {
 
 Pointing read_Pointing_from_file(std::ifstream &fin) {
     Pointing p;
-    fin.read(reinterpret_cast<char*>(&p.zd), sizeof(float));
-    fin.read(reinterpret_cast<char*>(&p.az), sizeof(float));
+    p.zd = read_float32(fin);
+    p.az = read_float32(fin);
     return p;
 }
 
 void append_Pointing_to_file(Pointing &p, std::ofstream &fout) {
-    fout.write(reinterpret_cast<char*>(&p.zd), sizeof(float));
-    fout.write(reinterpret_cast<char*>(&p.az), sizeof(float));
+    append_float32(p.zd, fout);
+    append_float32(p.az, fout);
 }
 
 //------------------------------------------------------------------------------
@@ -175,28 +211,38 @@ struct PhotonStream {
 
 PhotonStream read_PhotonStream_from_file(std::ifstream &fin) {
     PhotonStream phs;
-    uint32_t number_of_pixels_plus_number_of_photons;
-    fin.read(reinterpret_cast<char*>(&number_of_pixels_plus_number_of_photons), sizeof(uint32_t));
+    uint32_t number_of_pixels_plus_number_of_photons = read_uint32(fin);
 
     phs.raw.resize(number_of_pixels_plus_number_of_photons);
-    fin.read(reinterpret_cast<char*>(&phs.raw[0]), number_of_pixels_plus_number_of_photons);
+    fin.read(
+        reinterpret_cast<char*>(&phs.raw[0]), 
+        number_of_pixels_plus_number_of_photons
+    );
 
-    uint16_t number_of_saturated_pixels;
-    fin.read(reinterpret_cast<char*>(&number_of_saturated_pixels), sizeof(uint16_t));
+    uint16_t number_of_saturated_pixels = read_uint16(fin);
 
     phs.saturated_pixels.resize(number_of_saturated_pixels);
-    fin.read(reinterpret_cast<char*>(&phs.saturated_pixels[0]), sizeof(uint16_t)*number_of_saturated_pixels);
+    fin.read(
+        reinterpret_cast<char*>(&phs.saturated_pixels[0]), 
+        sizeof(uint16_t)*number_of_saturated_pixels
+    );
     return phs;
 }
 
 void append_PhotonStream_to_file(PhotonStream &phs, std::ofstream &fout) {
     uint32_t number_of_pixels_plus_number_of_photons = phs.raw.size();
-    fout.write(reinterpret_cast<char*>(&number_of_pixels_plus_number_of_photons), sizeof(uint32_t));
-    fout.write(reinterpret_cast<char*>(phs.raw.data()), number_of_pixels_plus_number_of_photons);
+    append_uint32(number_of_pixels_plus_number_of_photons, fout);
+    fout.write(
+        reinterpret_cast<char*>(phs.raw.data()), 
+        number_of_pixels_plus_number_of_photons
+    );
 
     uint16_t number_of_saturated_pixels = phs.saturated_pixels.size();
-    fout.write(reinterpret_cast<char*>(&number_of_saturated_pixels), sizeof(uint16_t));
-    fout.write(reinterpret_cast<char*>(phs.saturated_pixels.data()), number_of_saturated_pixels);
+    append_uint16(number_of_saturated_pixels, fout);
+    fout.write(
+        reinterpret_cast<char*>(phs.saturated_pixels.data()), 
+        number_of_saturated_pixels
+    );
 }
 
 
