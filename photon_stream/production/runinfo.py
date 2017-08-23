@@ -4,7 +4,7 @@ import pandas as pd
 from . import tools
 import numpy as np
 
-drs_key = 2
+DRS_RUN_TYPE_KEY = 2
 observation_key = 1
 
 def download_latest_runinfo():
@@ -77,7 +77,7 @@ def create_fake_fact_dir(path, runinfo):
         nn = '{nn:02d}'.format(nn=tools.night_id_2_nn(night_id))
         os.makedirs(os.path.join(path, 'raw', yyyy, mm, nn), exist_ok=True)
         
-        if run_type_key == drs_key:
+        if run_type_key == DRS_RUN_TYPE_KEY:
             rrr = '{rrr:03d}'.format(rrr=run_id)
             fake_drs_path = os.path.join(path, 'raw', yyyy, mm, nn, yyyy+mm+nn+'_'+rrr+'.drs.fits.gz')
             with open(fake_drs_path, 'w') as drs_file:
