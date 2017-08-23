@@ -66,7 +66,7 @@ def make_job_list(
     
     print('Make raw -> photon-stream conversion job list ...')
 
-    out_dir = os.path.abspath(out_dir)
+    out_dir = abspath(out_dir)
     fact_raw_dir = abspath(fact_raw_dir)
     fact_drs_dir = abspath(fact_drs_dir)
     fact_aux_dir = abspath(fact_aux_dir)
