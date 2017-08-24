@@ -34,8 +34,10 @@ def status(photon_stream_dir, known_runs_database='known_runs.msg'):
 
     if 'PhotonStreamNumEvents' not in info:
         info['PhotonStreamNumEvents'] = pd.Series(
-            np.zeros(len(info['fRunID']), 
-            dtype=np.int32), 
+            np.zeros(
+                len(info['fRunID']), 
+                dtype=np.int32
+            ), 
             index=info.index
         )
 
