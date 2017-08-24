@@ -285,26 +285,3 @@ def progress(ratio, length=20):
 
     out += ' '+str(int(percent))+'%'
     return out
-
-
-def strip_runinfo_for_photon_stream_status_inplace(runinfo):
-    keys_to_keep = [
-        'fNight',
-        'fRunID',
-        'fNumExt1Trigger',
-        'fNumExt2Trigger',
-        'fNumPhysicsTrigger', 
-        'fNumPedestalTrigger',
-        'fRunTypeKey',
-        'photon_stream_NumTrigger'
-    ]
-    for key in keys_to_keep:
-        assert key in runinfo
-	
-    cols_to_drop = []
-    for key in runinfo.keys():
-        if key not in keys_to_keep:
-            runinfo.drop(key, axis=1, inplace=True)
-
-    runinfo = runinfo[runinfo['fRunTypeKey'] == runinfo.OBSERVATION_RUN_TYPE_KEY]
-    
