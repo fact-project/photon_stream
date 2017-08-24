@@ -73,3 +73,16 @@ def runinfo_only_with_keys(runinfo, desired_keys):
         if key not in desired_keys:
             ri_out.drop(key, axis=1, inplace=True)
     return ri_out
+
+
+def append_runinfo_to_known_runs(runinfo, known_runs):
+    phs_info = runinfo_only_with_keys(
+        runinfo=known_runs,
+        desired_keys=ID_RUNINFO_KEYS + PHS_RUNINFO_KEYS,
+    )
+    new_known_runs = runinfo.merge(phs_info, how='left', on=ID_RUNINFO_KEYS)
+    # Pandas BUG casts int64 to float64,
+    # https://github.com/pandas-dev/pandas/issues/9958
+    for phs_key in PHS_RUNINFO_KEYS:
+        new_known_runs[phs_key] = new_known_runs[phs_key].astype(np.int64)
+    return new_known_runs
