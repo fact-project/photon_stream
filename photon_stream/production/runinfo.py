@@ -84,5 +84,8 @@ def append_runinfo_to_known_runs(runinfo, known_runs):
     # Pandas BUG casts int64 to float64,
     # https://github.com/pandas-dev/pandas/issues/9958
     for phs_key in PHS_RUNINFO_KEYS:
-        new_known_runs[phs_key] = new_known_runs[phs_key].astype(np.int32)
+        series = new_known_runs[phs_key]
+        is_nan = np.isnan(series.values)
+        series.values[is_nan] = 0
+        new_known_runs[phs_key] = series.astype(np.int32)
     return new_known_runs
