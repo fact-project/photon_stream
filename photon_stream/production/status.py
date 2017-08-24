@@ -32,8 +32,8 @@ def status(photon_stream_dir, known_runs_database='known_runs.msg'):
     except:
         info = runinfo.download_latest_runinfo()
 
-    if 'photon_stream_NumTrigger' not in info:
-        info['photon_stream_NumTrigger'] = pd.Series(
+    if 'PhotonStreamNumEvents' not in info:
+        info['PhotonStreamNumEvents'] = pd.Series(
             np.zeros(len(info['fRunID']), 
             dtype=np.int), 
             index=info.index
@@ -44,7 +44,7 @@ def status(photon_stream_dir, known_runs_database='known_runs.msg'):
         run = info['fRunID'][index]
 
         if info['fRunTypeKey'][index] == runinfo.OBSERVATION_RUN_TYPE_KEY:
-            if info['photon_stream_NumTrigger'][index]==0:
+            if info['PhotonStreamNumEvents'][index]==0:
                 file_name = '{yyyymmnn:08d}_{rrr:03d}.phs.jsonl.gz'.format(
                     yyyymmnn=night,
                     rrr=run
@@ -61,12 +61,12 @@ def status(photon_stream_dir, known_runs_database='known_runs.msg'):
                 if os.path.exists(run_path):    
                     info.set_value(
                         index, 
-                        'photon_stream_NumTrigger', 
+                        'PhotonStreamNumEvents', 
                         number_of_events_in_run(run_path)
                     )
                     print(
                         'New run '+str(night)+' '+str(run)+' '+
-                        str(info['photon_stream_NumTrigger'][index])+
+                        str(info['PhotonStreamNumEvents'][index])+
                         ' trigger.'
                     )
 
@@ -125,7 +125,7 @@ def runs_in_range_str(info, start_night, end_night, max_trigger_rate=200):
         info['fNumPhysicsTrigger'][valid] + 
         info['fNumPedestalTrigger'][valid]
     )
-    actual_triggers = info['photon_stream_NumTrigger'][valid]
+    actual_triggers = info['PhotonStreamNumEvents'][valid]
     completation_ratios = actual_triggers/expected_triggers
 
     out =  ''
@@ -180,7 +180,7 @@ def overview_str(info, max_trigger_rate=120):
         info['fNumPhysicsTrigger'][valid] + 
         info['fNumPedestalTrigger'][valid]
     )
-    actual_triggers = info['photon_stream_NumTrigger'][valid]
+    actual_triggers = info['PhotonStreamNumEvents'][valid]
 
     total_expected_events = int(expected_triggers.sum())
     total_actual_events = int(actual_triggers.sum())
@@ -217,7 +217,7 @@ def overview_str(info, max_trigger_rate=120):
             info['fNumPedestalTrigger'][valid&is_in_year]).sum()
         )
         actual_triggers_in_year = int(
-            info['photon_stream_NumTrigger'][valid&is_in_year].sum()
+            info['PhotonStreamNumEvents'][valid&is_in_year].sum()
         )
         out += '    {year:04d}'.format(year=year)
         out += '  ' + table_row_str(

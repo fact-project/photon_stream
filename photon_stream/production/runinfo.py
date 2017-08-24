@@ -23,7 +23,7 @@ TRIGGER_NUMBER_RUNINFO_KEYS = [
 ]
 
 PHS_RUNINFO_KEYS = [
-    'photon_stream_NumTrigger',
+    'PhotonStreamNumEvents',
 ]
 
 
