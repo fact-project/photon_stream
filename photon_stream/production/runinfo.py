@@ -4,8 +4,28 @@ import pandas as pd
 from . import tools
 import numpy as np
 
+
 DRS_RUN_TYPE_KEY = 2
+
 OBSERVATION_RUN_TYPE_KEY = 1
+
+ID_RUNINFO_KEYS = [
+    'fNight',
+    'fRunID',
+]
+
+TRIGGER_NUMBER_RUNINFO_KEYS = [
+    'fRunTypeKey',
+    'fNumExt1Trigger',
+    'fNumExt2Trigger',
+    'fNumPhysicsTrigger',
+    'fNumPedestalTrigger',
+]
+
+PHS_RUNINFO_KEYS = [
+    'photon_stream_NumTrigger',
+]
+
 
 def download_latest_runinfo():
     factdb = credentials.create_factdb_engine()
