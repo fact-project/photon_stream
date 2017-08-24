@@ -30,7 +30,11 @@ PHS_RUNINFO_KEYS = [
 def download_latest_runinfo():
     factdb = credentials.create_factdb_engine()
     print("Reading fresh RunInfo table, takes about 1min.")
-    return pd.read_sql_table("RunInfo", factdb)
+    return pd.read_sql_table(
+        table_name="RunInfo",
+        con=factdb,
+        columns=ID_RUNINFO_KEYS + TRIGGER_NUMBER_RUNINFO_KEYS
+    )
 
 def read_runinfo_from_file(path='runinfo.msg'):
     return pd.read_msgpack(path)
