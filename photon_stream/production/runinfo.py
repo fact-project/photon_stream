@@ -65,3 +65,11 @@ def create_fake_fact_dir(path, runinfo):
             fake_run_path = os.path.join(path, 'raw', yyyy, mm, nn, yyyy+mm+nn+'_'+rrr+'.fits.fz')
             with open(fake_run_path, 'w') as raw_file:
                 raw_file.write('I am a fake FACT raw observation file.')
+
+
+def runinfo_only_with_keys(runinfo, desired_keys):
+    ri_out = runinfo.copy()
+    for key in ri_out.keys():
+        if key not in desired_keys:
+            ri_out.drop(key, axis=1, inplace=True)
+    return ri_out
