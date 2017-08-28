@@ -1,7 +1,8 @@
 from tqdm import tqdm
 import os
+import subprocess as sp
 from .dummy_qsub import dummy_qsub
-from . import prepare
+from .. import prepare
 from .write_worker_script import write_worker_script
 
 
@@ -15,7 +16,7 @@ def qsub(
     fact_aux_dir='/fact/aux',
     java_path='/home/guest/relleums/java8/jdk1.8.0_111',
     fact_tools_jar_path='/home/guest/relleums/fact_photon_stream/fact-tools/target/fact-tools-0.18.0.jar',
-    fact_tools_xml_path='/home/guest/relleums/fact_photon_stream/photon_stream/photon_stream/production/observations_pass4.xml',
+    fact_tools_xml_path='/home/guest/relleums/fact_photon_stream/photon_stream/photon_stream/production/resources/observations_pass4.xml',
     tmp_dir_base_name='fact_photon_stream_JOB_ID_',
     runinfo=None,
     queue='fact_medium', 
@@ -71,6 +72,9 @@ def qsub(
         if use_dummy_qsub:
             dummy_qsub(cmd)
         else:
-            qsub_return_code = sp.call(cmd)
-            if qsub_return_code > 0:
-                print('qsub return code: ', qsub_return_code)
+            try:
+                sp.check_output(cmd, stderr=sp.STDOUT)
+            except sp.CalledProcessError as e:
+                print('returncode', e.returncode)
+                print('output', e.output)
+                raise

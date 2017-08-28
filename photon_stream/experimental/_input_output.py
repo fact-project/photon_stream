@@ -2,17 +2,109 @@ import numpy as np
 from ..PhotonStream import PhotonStream
 from ..Event import Event
 from ..ObservationInformation import ObservationInformation
+from ..simulation_truth import SimulationTruth
 from array import array
 import datetime as dt
 import os
 import gzip
 
-linebreak = np.array([np.iinfo(np.uint8).max], dtype=np.uint8)
+LINEBREAK = np.array([np.iinfo(np.uint8).max], dtype=np.uint8)
+OBSERVATION_TYPE_KEY = 0
+SIMULATION_TYPE_KEY = 1
+TIME_SLICE_DURATION_S = 0.5e-9;
+
+def append_header_to_file(
+    fout,
+    event_type=OBSERVATION_TYPE_KEY, 
+    pass_version=4, 
+    future_problems_0=0,
+    future_problems_1=0,
+):
+    fout.write(np.uint8(pass_version).tobytes())
+    fout.write(np.uint8(event_type).tobytes())
+    fout.write(np.uint8(future_problems_0).tobytes())
+    fout.write(np.uint8(future_problems_1).tobytes())
+
+
+def read_header_from_file(fin):
+    raw_header = np.fromstring(fin.read(4), dtype=np.uint8, count=4)
+    return {
+        'pass_version': raw_header[0],
+        'event_type': raw_header[1],
+        'future_problems_0': raw_header[2],
+        'future_problems_1': raw_header[3]
+    }
+
+
+def append_simulation_id_to_file(simulation_truth, fout):
+    fout.write(simulation_truth.run.tobytes())
+    fout.write(simulation_truth.event.tobytes())
+    fout.write(simulation_truth.reuse.tobytes())
+
+
+def read_simulation_id_from_file(simulation_truth, fin):
+    raw_id = np.fromstring(
+        fin.read(12), 
+        dtype=np.uint32, 
+        count=3
+    )
+    simulation_truth.run = raw_id[0]
+    simulation_truth.event = raw_id[1]
+    simulation_truth.reuse = raw_id[2]
+
+
+def append_observation_id_to_file(observation_info, fout):
+    fout.write(observation_info.night.tobytes())
+    fout.write(observation_info.run.tobytes())
+    fout.write(observation_info.event.tobytes())
+
+
+def read_observation_id_from_file(observation_info, fin):
+    raw_id = np.fromstring(
+        fin.read(12), 
+        dtype=np.uint32, 
+        count=3
+    )
+    observation_info.night = raw_id[0]
+    observation_info.run = raw_id[1]
+    observation_info.event = raw_id[2]
+
+
+def append_observation_info_to_file(observation_info, fout):
+    fout.write(observation_info._time_unix_s.tobytes())
+    fout.write(observation_info._time_unix_us.tobytes())
+    fout.write(observation_info.trigger_type.tobytes())
+
+
+def read_observation_info_from_file(observation_info, fin):
+    raw_info = np.fromstring(
+        fin.read(12), 
+        dtype=np.uint32, 
+        count=3
+    )
+    observation_info.set_time_unix(
+        time_unix_s=raw_info[0], 
+        time_unix_us=raw_info[1],
+    )
+    observation_info.trigger_type = raw_info[2]
+
+
+def append_pointing_to_file(event, fout):
+    fout.write(event.zd.tobytes())
+    fout.write(event.az.tobytes())
+
+
+def read_pointing_from_file(event, fout):
+    raw_pointing= np.fromstring(
+        fout.read(8), 
+        dtype=np.float32, 
+        count=2
+    )
+    event.zd = raw_pointing[0]
+    event.az = raw_pointing[1]
+
 
 def append_photonstream_to_file(phs, fout):
-
-    # WRITE SLICE DURATION
-    fout.write(np.float32(phs.slice_duration).tobytes())
 
     # Write number of pixels plus number of photons
     number_of_pixels_and_photons = len(phs.time_lines) + phs.number_photons
@@ -21,36 +113,41 @@ def append_photonstream_to_file(phs, fout):
     # WRITE PHOTON ARRIVAL SLICES
     raw_time_lines = np.zeros(
         number_of_pixels_and_photons, 
-        dtype=np.uint8)
+        dtype=np.uint8
+    )
     pos = 0
     for time_line in phs.time_lines:
         for photon_arrival in time_line:
             raw_time_lines[pos] = photon_arrival
             pos += 1
-        raw_time_lines[pos] = linebreak
+        raw_time_lines[pos] = LINEBREAK
         pos += 1
     fout.write(raw_time_lines.tobytes())
 
 
 def read_photonstream_from_file(fin):
     phs = PhotonStream()
-
-    # read slice duration
-    phs.slice_duration = np.fromstring(
-        fin.read(4),
-        dtype=np.float32,
-        count=1)[0]
+    phs.slice_duration = np.float32(TIME_SLICE_DURATION_S)
 
     # read number of pixels and time lines
     number_of_pixels_and_photons = np.fromstring(
         fin.read(4),
         dtype=np.uint32,
-        count=1)[0]
+        count=1
+    )[0]
 
     # read photon-stream
     raw_time_lines = np.fromstring(
         fin.read(number_of_pixels_and_photons),
-        dtype=np.uint8)
+        dtype=np.uint8
+    )
+
+    """
+    The following conversion is the dominant limit for the event rate during 
+    reading.
+    Without: 9430Hz
+    With: 118Hz
+    """
 
     phs.time_lines = []
     if len(raw_time_lines) > 0:
@@ -58,7 +155,7 @@ def read_photonstream_from_file(fin):
 
     pixel = 0
     for i, symbol in enumerate(raw_time_lines):
-        if symbol == linebreak:
+        if symbol == LINEBREAK:
             pixel += 1
             if i+1 < len(raw_time_lines):
                 phs.time_lines.append(array('B'))
@@ -81,67 +178,56 @@ def read_saturated_pixels_from_file(fin):
     number_of_pixels = np.fromstring(
         fin.read(2),
         dtype=np.uint16,
-        count=1)[0]
+        count=1
+    )[0]
 
     # READ saturated pixel CHIDs
     saturated_pixels_raw = np.fromstring(
         fin.read(number_of_pixels*2),
-        dtype=np.uint16)
+        dtype=np.uint16
+    )
     return saturated_pixels_raw
 
 
 def append_event_to_file(event, fout):
-    fout.write(np.uint32(event.observation_info.night).tobytes())
-    fout.write(np.uint32(event.observation_info.run).tobytes())
-    fout.write(np.uint32(event.observation_info.event).tobytes())
-    # 12
-    fout.write(np.uint32(event.observation_info._time_unix_s).tobytes())
-    fout.write(np.uint32(event.observation_info._time_unix_us).tobytes())
-    fout.write(np.uint32(event.observation_info.trigger_type).tobytes())
-    # 24
-    fout.write(np.float32(event.zd).tobytes())
-    fout.write(np.float32(event.az).tobytes())
-    # 32
+    if hasattr(event, 'observation_info'):
+        append_header_to_file(fout, event_type=OBSERVATION_TYPE_KEY)
+        append_observation_id_to_file(event.observation_info, fout)
+        append_observation_info_to_file(event.observation_info, fout)
+    elif hasattr(event, 'simulation_truth'):
+        append_header_to_file(fout, event_type=SIMULATION_TYPE_KEY)
+        append_simulation_id_to_file(event.simulation_truth, fout)
+    else:
+        raise
+    append_pointing_to_file(event, fout)
     append_photonstream_to_file(event.photon_stream, fout)
     append_saturated_pixels_to_file(event.photon_stream.saturated_pixels, fout)
 
 
 def read_event_from_file(fin):
     try:
-        header = np.fromstring(
-            fin.read(24),
-            dtype=np.uint32,
-            count=6
-        )
-
-        obs = ObservationInformation()
-        obs.night = header[0]
-        obs.run = header[1]
-        obs.event = header[2]
-        obs._time_unix_s = header[3]
-        obs._time_unix_us = header[4]
-        obs.time = dt.datetime.utcfromtimestamp(
-            obs._time_unix_s + obs._time_unix_us / 1e6)
-        obs.trigger_type = header[5]
-
-        pointing = np.fromstring(
-            fin.read(8),
-            dtype=np.float32,
-            count=2)
-
+        header = read_header_from_file(fin)
         event = Event()
-        event.observation_info = obs
-        event.zd = pointing[0]
-        event.az = pointing[1]
+        if header['event_type'] == OBSERVATION_TYPE_KEY:
+            obs = ObservationInformation()
+            read_observation_id_from_file(obs, fin)
+            read_observation_info_from_file(obs, fin)
+            event.observation_info = obs
+        elif header['event_type'] == SIMULATION_TYPE_KEY:
+            sim = SimulationTruth()
+            read_simulation_id_from_file(sim, fin)
+            event.simulation_truth = sim
+        else:
+            raise
+        read_pointing_from_file(event, fin)
         event.photon_stream = read_photonstream_from_file(fin)  
         event.photon_stream.saturated_pixels = read_saturated_pixels_from_file(fin)
-
         return event
     except:
         raise StopIteration
 
 
-class Run(object):
+class EventListReader(object):
     """
     Sequentially reads a gzipped binary run and provides events.
     """
@@ -159,6 +245,18 @@ class Run(object):
         return read_event_from_file(self.file)
 
     def __repr__(self):
-        out = 'BinaryRun('
+        out = 'BinaryEventListReader('
         out += self.path+')\n'
         return out
+
+
+from ..EventListReader import EventListReader as JsonlEventListReader
+import shutil
+def jsonl_gz_2_binary_gz(input_path, output_path):
+    run_in = JsonlEventListReader(input_path)
+    tmp_out_path = output_path+'.part'
+
+    with gzip.open(tmp_out_path, 'wb') as fout:
+        for event in run_in:
+           append_event_to_file(event, fout)
+    shutil.move(tmp_out_path, output_path)

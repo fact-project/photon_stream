@@ -80,3 +80,96 @@ def test_jsonl2binary():
         evt_in = run_in[i]
         evt_ba = run_back[i]
         assert evt_in == evt_ba
+
+
+def test_pass_header_io():
+
+    out_headers = [
+        {
+            'pass_version': 1,
+            'event_type': 0,
+            'future_problems_0': 0,
+            'future_problems_1': 0
+        },
+        {
+            'pass_version': 4,
+            'event_type': 1,
+            'future_problems_0': 0,
+            'future_problems_1': 0
+        },
+        {
+            'pass_version': 4,
+            'event_type': 1,
+            'future_problems_0': 6,
+            'future_problems_1': 0
+        },
+        {
+            'pass_version': 5,
+            'event_type': 1,
+            'future_problems_0': 13,
+            'future_problems_1': 14
+        },   
+    ]
+
+    with tempfile.TemporaryDirectory(prefix='phs_test_header') as tmp:
+        binary_path = os.path.join(tmp, 'header.bin')
+
+        with gzip.open(binary_path, 'wb') as fout:
+            for header in out_headers:
+                ps.experimental.io.append_header_to_file(
+                    fout=fout,
+                    event_type=header['event_type'],
+                    pass_version=header['pass_version'], 
+                    future_problems_0=header['future_problems_0'],
+                    future_problems_1=header['future_problems_1'],
+                )
+
+
+        in_headers = []
+        with gzip.open(binary_path, 'rb') as fin:
+            for i in range(len(out_headers)):
+                in_headers.append(
+                    ps.experimental.io.read_header_from_file(fin)
+                )
+
+
+    for i in range(len(out_headers)):
+        out_h = out_headers[i]
+        in_h = in_headers[i]
+        assert out_h['pass_version'] == in_h['pass_version']
+        assert out_h['event_type'] == in_h['event_type']
+        assert out_h['future_problems_0'] == in_h['future_problems_0']
+        assert out_h['future_problems_1'] == in_h['future_problems_1']
+
+
+def test_io_simulation_events():
+    photon_stream_path = pkg_resources.resource_filename(
+        'photon_stream',
+        'tests/resources/cer011014.phs.jsonl.gz'
+    )
+
+    run = ps.EventListReader(photon_stream_path)
+
+    run_in = []
+    run_back = []
+    for event in run:
+        run_in.append(event)
+
+    with tempfile.TemporaryDirectory(prefix='phs_sim_io_test') as tmp:
+        binary_path = os.path.join(tmp, 'cer011014.phs.gz')
+
+        with gzip.open(binary_path, 'wb') as fout:
+            for event in run_in:
+                ps.experimental.io.append_event_to_file(event, fout)
+
+        with gzip.open(binary_path, 'rb') as fin:
+            while True:
+                try:
+                    run_back.append(ps.experimental.io.read_event_from_file(fin))
+                except StopIteration:
+                    break
+
+    for i in range(len(run_in)):
+        evt_in = run_in[i]
+        evt_ba = run_back[i]
+        assert evt_in == evt_ba

@@ -4,72 +4,44 @@ import pandas as pd
 from . import tools
 import numpy as np
 
-drs_key = 2
-observation_key = 1
+
+DRS_RUN_TYPE_KEY = 2
+
+OBSERVATION_RUN_TYPE_KEY = 1
+
+ID_RUNINFO_KEYS = [
+    'fNight',
+    'fRunID',
+]
+
+TYPE_RUNINFO_KEYS = ['fRunTypeKey']
+
+TRIGGER_NUMBER_RUNINFO_KEYS = [
+    'fNumExt1Trigger',
+    'fNumExt2Trigger',
+    'fNumPhysicsTrigger',
+    'fNumPedestalTrigger',
+]
+
+PHS_RUNINFO_KEYS = [
+    'PhotonStreamNumEvents',
+]
+
 
 def download_latest_runinfo():
     factdb = credentials.create_factdb_engine()
     print("Reading fresh RunInfo table, takes about 1min.")
-    return pd.read_sql_table("RunInfo", factdb)
+    return pd.read_sql_table(
+        table_name="RunInfo",
+        con=factdb,
+        columns=ID_RUNINFO_KEYS + TYPE_RUNINFO_KEYS + TRIGGER_NUMBER_RUNINFO_KEYS
+    )
 
 def read_runinfo_from_file(path='runinfo.msg'):
     return pd.read_msgpack(path)
 
 def write_runinfo_to_file(runinfo, path='runinfo.msg'):
     runinfo.to_msgpack(path)
-
-def get_runinfo():
-    if os.path.exists('runinfo.msg'):
-        return read_runinfo_from_file('runinfo.msg')
-    else:
-    	return download_latest_runinfo()
-
-
-def observation_runs_in_runinfo_in_night_range(
-    runinfo, 
-    start_night=20110101, 
-    end_night=20171231,
-    only_a_fraction=1.0):
-    past_start = (runinfo['fNight'] >= start_night).as_matrix()
-    before_end = (runinfo['fNight'] < end_night).as_matrix()
-    is_observation_run = (runinfo['fRunTypeKey'] == observation_key).as_matrix()
-    valid = past_start*before_end*is_observation_run
-
-    fraction = np.random.uniform(size=len(valid)) < only_a_fraction
-    
-    night_ids = runinfo['fNight'][valid*fraction]
-    run_ids = runinfo['fRunID'][valid*fraction]
-
-    jobs = []
-
-    for i, run_id in enumerate(run_ids):
-        jobs.append({
-            'Night': night_ids.iloc[i],
-            'Run': run_id})
-    return jobs
-
-
-def add_drs_run_info_to_jobs(runinfo, jobs):
-    for job in jobs:   
-        drs_run_candidates = runinfo[
-            (runinfo.fNight == job["Night"])&
-            (runinfo.fDrsStep == 2)&
-            (runinfo.fRunTypeKey == 2)&
-            (runinfo.fRunID < job["Run"])]
-        
-        if len(drs_run_candidates) >= 1:
-            job["drs_Run"] = drs_run_candidates.iloc[-1].fRunID
-            job["drs_file_name"] = '{bsn:08d}_{rrr:03d}.drs.fits.gz'.format(
-                bsn=job['Night'],
-                rrr=job["drs_Run"])
-            job['drs_path'] = os.path.join(
-                job['fact_drs_dir'], 
-                job['yyyymmnn_dir'], 
-                job['drs_file_name'])
-        else:
-            job["drs_Run"] = None
-            job['drs_path'] = 'nope.sorry'
-    return jobs
 
 
 def create_fake_fact_dir(path, runinfo):
@@ -83,14 +55,38 @@ def create_fake_fact_dir(path, runinfo):
         nn = '{nn:02d}'.format(nn=tools.night_id_2_nn(night_id))
         os.makedirs(os.path.join(path, 'raw', yyyy, mm, nn), exist_ok=True)
         
-        if run_type_key == drs_key:
+        if run_type_key == DRS_RUN_TYPE_KEY:
             rrr = '{rrr:03d}'.format(rrr=run_id)
             fake_drs_path = os.path.join(path, 'raw', yyyy, mm, nn, yyyy+mm+nn+'_'+rrr+'.drs.fits.gz')
             with open(fake_drs_path, 'w') as drs_file:
                 drs_file.write('I am a fake FACT drs file.')
 
-        if run_type_key == observation_key:
+        if run_type_key == OBSERVATION_RUN_TYPE_KEY:
             rrr = '{rrr:03d}'.format(rrr=run_id)
             fake_run_path = os.path.join(path, 'raw', yyyy, mm, nn, yyyy+mm+nn+'_'+rrr+'.fits.fz')
             with open(fake_run_path, 'w') as raw_file:
                 raw_file.write('I am a fake FACT raw observation file.')
+
+
+def runinfo_only_with_keys(runinfo, desired_keys):
+    ri_out = runinfo.copy()
+    for key in ri_out.keys():
+        if key not in desired_keys:
+            ri_out.drop(key, axis=1, inplace=True)
+    return ri_out
+
+
+def append_runinfo_to_known_runs(runinfo, known_runs):
+    phs_info = runinfo_only_with_keys(
+        runinfo=known_runs,
+        desired_keys=ID_RUNINFO_KEYS + PHS_RUNINFO_KEYS,
+    )
+    new_known_runs = runinfo.merge(phs_info, how='left', on=ID_RUNINFO_KEYS)
+    # Pandas BUG casts int64 to float64,
+    # https://github.com/pandas-dev/pandas/issues/9958
+    for phs_key in PHS_RUNINFO_KEYS:
+        series = new_known_runs[phs_key]
+        is_nan = np.isnan(series.values)
+        series.values[is_nan] = 0
+        new_known_runs[phs_key] = series.astype(np.int32)
+    return new_known_runs

@@ -12,13 +12,13 @@ def test_number_of_events_in_run():
     run_path = pkg_resources.resource_filename(
         'photon_stream', 
         'tests/resources/20170119_229_pass4_100events.phs.jsonl.gz')    
-    assert ps.production.tools.number_of_events_in_run(run_path) == 100
+    assert ps.production.status.number_of_events_in_run(run_path) == 100
 
 
 def test_production_write_worker_script():
     with tempfile.TemporaryDirectory(prefix='photon_stream_test_production') as tmp:
         worker_script_path = join(tmp, 'worker.sh')
-        ps.production.write_worker_script(worker_script_path)
+        ps.production.isdc.write_worker_script(worker_script_path)
         assert os.path.exists(worker_script_path)
         assert os.access(worker_script_path, os.X_OK)
 
@@ -46,7 +46,7 @@ def test_production_run_collection():
         out_dir = join(tmp, 'passX')
 
         # FIRST CHUNK
-        ps.production.qsub(
+        ps.production.isdc.qsub(
             out_dir=out_dir, 
             start_night=20141215, 
             end_night=20141229,
@@ -78,7 +78,7 @@ def test_production_run_collection():
             fftools.write('Hi, I am another fact tools dummy java jar!')    
 
         # SECOND CHUNK with 2nd fact-tools.jar
-        ps.production.qsub(
+        ps.production.isdc.qsub(
             out_dir=out_dir, 
             start_night=20141229, 
             end_night=20150103,
