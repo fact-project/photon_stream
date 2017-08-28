@@ -4,7 +4,14 @@ import datetime as dt
 import photon_stream as ps
 import pkg_resources
 import gzip
+import tempfile
+import os
 
+
+run_jsonl_path = pkg_resources.resource_filename(
+    'photon_stream', 
+    'tests/resources/20170119_229_pass4_100events.phs.jsonl.gz'
+)
 
 def type_check(event):
     assert isinstance(event.zd, np.float32)
@@ -45,18 +52,21 @@ def type_check(event):
 
 
 def test_types_from_json():
-    run_path = pkg_resources.resource_filename(
-        'photon_stream', 
-        'tests/resources/20170119_229_pass4_100events.phs.jsonl.gz')
-    run = ps.EventListReader(run_path)
-    event = next(run)
-    type_check(event)
+    run = ps.EventListReader(run_jsonl_path)
+    for event in run:
+        type_check(event)
     
 
 def test_types_from_binary():
-    run_path = pkg_resources.resource_filename(
-        'photon_stream', 
-        'tests/resources/20170119_229_pass4_100events.phs.bin.gz')
-    with gzip.open(run_path, 'rb') as f:
-        event = ps.experimental.io.read_event_from_file(f)
-    type_check(event)
+    with tempfile.TemporaryDirectory(prefix='photon_stream_types') as tmp:   
+        
+        run_bin_path = os.path.join(tmp, 'run.phs.gz')
+
+        ps.experimental.io.jsonl_gz_2_binary_gz(
+            input_path=run_jsonl_path, 
+            output_path=run_bin_path,
+        )
+        
+        run = ps.experimental.io.EventListReader(run_bin_path)
+        for event in run:
+            type_check(event)
