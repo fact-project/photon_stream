@@ -19,6 +19,7 @@ def test_known_runs_20110101_has_correct_keys():
     for key in known_runs.keys():
         assert key in (
             ps.production.runinfo.ID_RUNINFO_KEYS + 
+            ps.production.runinfo.TYPE_RUNINFO_KEYS +
             ps.production.runinfo.TRIGGER_NUMBER_RUNINFO_KEYS + 
             ps.production.runinfo.PHS_RUNINFO_KEYS
         )
@@ -29,6 +30,7 @@ def test_runinfo_20120201_has_correct_keys():
     for key in runinfo.keys():
         assert key in (
             ps.production.runinfo.ID_RUNINFO_KEYS + 
+            ps.production.runinfo.TYPE_RUNINFO_KEYS +
             ps.production.runinfo.TRIGGER_NUMBER_RUNINFO_KEYS
         )
 
@@ -52,6 +54,9 @@ def test_append_runinfo():
         if i < known_runs.shape[0]:
             for id_key in ps.production.runinfo.ID_RUNINFO_KEYS:
                 assert new_known_runs[id_key][i] == known_runs[id_key][i]
+
+            for type_key in ps.production.runinfo.TYPE_RUNINFO_KEYS:
+                assert new_known_runs[type_key][i] == known_runs[type_key][i]
 
             for phs_key in ps.production.runinfo.PHS_RUNINFO_KEYS:
                 assert new_known_runs[phs_key][i] == known_runs[phs_key][i]
