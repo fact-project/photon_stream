@@ -13,3 +13,4 @@ from . import finger_histogram
 from . import production
 from . import experimental
 from . import muons
+from . import plot
