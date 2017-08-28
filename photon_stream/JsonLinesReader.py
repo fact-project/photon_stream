@@ -11,12 +11,7 @@ class JsonLinesReader:
     def __init__(self, path):
         self.path = os.path.abspath(path)
 
-        # check for gzip file, see https://tools.ietf.org/html/rfc1952#page-5
-        with open(path, 'rb') as f:
-            marker = f.read(2)
-            gzipped = marker[0] == 31 and marker[1] == 139
-
-        if gzipped:
+        if is_gzipped_file(path):
             self.file = gzip.open(path, 'rt')
         else:
             self.file = open(path, 'rt')
@@ -43,3 +38,15 @@ class JsonLinesReader:
         out = '{}('.format(self.__class__.__name__)
         out += self.path+')\n'
         return out
+
+
+def is_gzipped_file(path):
+    """
+    Check for gzip file, see https://tools.ietf.org/html/rfc1952#page-5
+
+    Reads in the first two bytes of a file and compares with the gzip magic 
+    numbers.
+    """
+    with open(path, 'rb') as f:
+        marker = f.read(2)
+        return marker[0] == 31 and marker[1] == 139
