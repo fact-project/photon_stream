@@ -73,24 +73,6 @@ void append_Descriptor_to_file(Descriptor &d, std::ofstream &fout) {
 }
 
 //------------------------------------------------------------------------------
-struct FutureProblems {
-    uint8_t a;
-    uint8_t b;
-};
-
-FutureProblems read_FutureProblems_from_file(std::ifstream &fin) {
-    FutureProblems f;
-    f.a = read_uint8(fin);
-    f.b = read_uint8(fin);
-    return f;
-}
-
-void append_FutureProblems_to_file(FutureProblems &f, std::ofstream &fout) {
-    append_uint8(f.a, fout);
-    append_uint8(f.b, fout);
-}
-
-//------------------------------------------------------------------------------
 struct ObservationIdentifier {
     uint32_t night;
     uint32_t run;
@@ -248,7 +230,6 @@ void append_PhotonStream_to_file(PhotonStream &phs, std::ofstream &fout) {
 
 //------------------------------------------------------------------------------
 struct ObservationEvent {
-    FutureProblems future_problems;
     ObservationIdentifier id;
     ObservationInformation info;
     Pointing pointing;
@@ -257,7 +238,6 @@ struct ObservationEvent {
 
 ObservationEvent read_ObservationEvent_from_file(std::ifstream &fin) {
     ObservationEvent evt;
-    evt.future_problems = read_FutureProblems_from_file(fin);
     evt.id = read_ObservationIdentifier_from_file(fin);
     evt.info = read_ObservationInformation_from_file(fin);
     evt.pointing = read_Pointing_from_file(fin);
@@ -270,7 +250,6 @@ void append_ObservationEvent_to_file(ObservationEvent evt, std::ofstream &fout) 
     h.pass_version = PASS_VERSION;
     h.event_type = OBSERVATION_KEY;
     append_Descriptor_to_file(h, fout);
-    append_FutureProblems_to_file(evt.future_problems, fout);
     append_ObservationIdentifier_to_file(evt.id, fout);
     append_ObservationInformation_to_file(evt.info, fout);
     append_PhotonStream_to_file(evt.photon_stream, fout);
@@ -279,7 +258,6 @@ void append_ObservationEvent_to_file(ObservationEvent evt, std::ofstream &fout) 
 
 //------------------------------------------------------------------------------
 struct SimulationEvent {
-    FutureProblems future_problems;
     SimulationIdentifier id;
     Pointing pointing;
     PhotonStream photon_stream;
@@ -287,7 +265,6 @@ struct SimulationEvent {
 
 SimulationEvent read_SimulationEvent_from_file(std::ifstream &fin) {
     SimulationEvent evt;
-    evt.future_problems = read_FutureProblems_from_file(fin);
     evt.id = read_SimulationIdentifier_from_file(fin);
     evt.pointing = read_Pointing_from_file(fin);
     evt.photon_stream = read_PhotonStream_from_file(fin);
@@ -299,7 +276,6 @@ void append_SimulationEvent_to_file(SimulationEvent evt, std::ofstream &fout) {
     h.pass_version = PASS_VERSION;
     h.event_type = SIMULATION_KEY;
     append_Descriptor_to_file(h, fout);
-    append_FutureProblems_to_file(evt.future_problems, fout);
     append_SimulationIdentifier_to_file(evt.id, fout);
     append_PhotonStream_to_file(evt.photon_stream, fout);
 }

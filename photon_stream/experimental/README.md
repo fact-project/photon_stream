@@ -17,7 +17,7 @@
     - Saturated Pixels
 
 
-### Header (4 Byte)
+### Header (2 Byte)
 
     uint8
     +--------+
@@ -31,18 +31,6 @@
     +--------+
     - Type == 0 is Observation
     - Type == 1 is Simulation
-
-    uint8
-    +--------+
-    |   -    |
-    +--------+
-    future problems 0 (unused so far)
-
-    uint8
-    +--------+
-    |   -    |
-    +--------+
-    future problems 1 (unused so far)
 
 
 ### Observation Event Identifier (12 Byte)

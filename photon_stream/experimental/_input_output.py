@@ -16,23 +16,17 @@ TIME_SLICE_DURATION_S = 0.5e-9;
 def append_header_to_file(
     fout,
     event_type=OBSERVATION_TYPE_KEY, 
-    pass_version=4, 
-    future_problems_0=0,
-    future_problems_1=0,
+    pass_version=4
 ):
     fout.write(np.uint8(pass_version).tobytes())
     fout.write(np.uint8(event_type).tobytes())
-    fout.write(np.uint8(future_problems_0).tobytes())
-    fout.write(np.uint8(future_problems_1).tobytes())
 
 
 def read_header_from_file(fin):
-    raw_header = np.fromstring(fin.read(4), dtype=np.uint8, count=4)
+    raw_header = np.fromstring(fin.read(2), dtype=np.uint8, count=2)
     return {
         'pass_version': raw_header[0],
         'event_type': raw_header[1],
-        'future_problems_0': raw_header[2],
-        'future_problems_1': raw_header[3]
     }
 
 
