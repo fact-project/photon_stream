@@ -7,7 +7,7 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "PhotonStream.h"
+#include "photon_stream.h"
 #include <fstream>
 #include <iostream>
 
