@@ -11,12 +11,19 @@ setup(
     packages=[
         'photon_stream',
         'photon_stream.production',
+        'photon_stream.production.ethz',
+        'photon_stream.production.isdc',
         'photon_stream.experimental',
         'photon_stream.muons',
         'photon_stream.simulation_truth',
         'photon_stream.muons.isdc_production',
     ],
-    package_data={'photon_stream': ['tests/resources/*']},
+    package_data={
+        'photon_stream': [
+            'tests/resources/*',
+            'production/resources/*',
+        ]
+    },
     install_requires=[
         'docopt',
         'scipy',

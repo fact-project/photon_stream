@@ -10,7 +10,7 @@ Options:
     --fact_drs_dir=DIR          [default: /data/fact_drs.fits]
     --fact_aux_dir=DIR          [default: /data/fact_aux]
     --fact_tools_jar_path=PATH  [default: /home/relleums/fact-tools/target/fact-tools-0.18.0.jar]
-    --fact_tools_xml_path=PATH  [default: /home/relleums/photon_stream/photon_stream/production/observations_pass4.xml]
+    --fact_tools_xml_path=PATH  [default: /home/relleums/photon_stream/photon_stream/production/resources/observations_pass4.xml]
     --java_path=PATH            [default: /home/relleums/java8/jdk1.8.0_111]
     --tmp_dir_base_name=BASE    [default: fact_photon_stream_]  
     --run_info_path=PATH

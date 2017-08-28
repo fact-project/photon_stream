@@ -2,9 +2,20 @@ import os
 from tqdm import tqdm
 import pandas as pd
 import numpy as np
+import subprocess
 
 from . import runinfo
 from . import tools
+
+
+def number_of_events_in_run(run_path):
+    """
+    Returns the number of lines inside a gzipped text file.
+    """
+    ps = subprocess.Popen(['zcat', run_path], stdout=subprocess.PIPE)
+    wc_out = subprocess.check_output(('wc', '-l'), stdin=ps.stdout)
+    ps.wait()
+    return int(wc_out)
 
 
 def status(photon_stream_dir, known_runs_database='known_runs.msg'):
@@ -21,10 +32,12 @@ def status(photon_stream_dir, known_runs_database='known_runs.msg'):
     except:
         info = runinfo.download_latest_runinfo()
 
-    if 'photon_stream_NumTrigger' not in info:
-        info['photon_stream_NumTrigger'] = pd.Series(
-            np.zeros(len(info['fRunID']), 
-            dtype=np.int), 
+    if 'PhotonStreamNumEvents' not in info:
+        info['PhotonStreamNumEvents'] = pd.Series(
+            np.zeros(
+                len(info['fRunID']), 
+                dtype=np.int32
+            ), 
             index=info.index
         )
 
@@ -32,8 +45,8 @@ def status(photon_stream_dir, known_runs_database='known_runs.msg'):
         night = info['fNight'][index]
         run = info['fRunID'][index]
 
-        if info['fRunTypeKey'][index] == runinfo.observation_key:
-            if info['photon_stream_NumTrigger'][index]==0:
+        if info['fRunTypeKey'][index] == runinfo.OBSERVATION_RUN_TYPE_KEY:
+            if info['PhotonStreamNumEvents'][index]==0:
                 file_name = '{yyyymmnn:08d}_{rrr:03d}.phs.jsonl.gz'.format(
                     yyyymmnn=night,
                     rrr=run
@@ -50,12 +63,12 @@ def status(photon_stream_dir, known_runs_database='known_runs.msg'):
                 if os.path.exists(run_path):    
                     info.set_value(
                         index, 
-                        'photon_stream_NumTrigger', 
-                        tools.number_of_events_in_run(run_path)
+                        'PhotonStreamNumEvents', 
+                        number_of_events_in_run(run_path)
                     )
                     print(
                         'New run '+str(night)+' '+str(run)+' '+
-                        str(info['photon_stream_NumTrigger'][index])+
+                        str(info['PhotonStreamNumEvents'][index])+
                         ' trigger.'
                     )
 
@@ -84,7 +97,7 @@ def runs_in_range_str(info, start_night, end_night, max_trigger_rate=200):
     """
     past_start = info['fNight'] >= start_night
     before_end = info['fNight'] < end_night
-    is_observation_run = info['fRunTypeKey'] == runinfo.observation_key
+    is_observation_run = info['fRunTypeKey'] == runinfo.OBSERVATION_RUN_TYPE_KEY
 
     rate_below_max_trigger_rate = (
         info['fNumExt1Trigger'] + 
@@ -114,7 +127,7 @@ def runs_in_range_str(info, start_night, end_night, max_trigger_rate=200):
         info['fNumPhysicsTrigger'][valid] + 
         info['fNumPedestalTrigger'][valid]
     )
-    actual_triggers = info['photon_stream_NumTrigger'][valid]
+    actual_triggers = info['PhotonStreamNumEvents'][valid]
     completation_ratios = actual_triggers/expected_triggers
 
     out =  ''
@@ -147,7 +160,7 @@ def overview_str(info, max_trigger_rate=120):
     max_trigger_rate    Cuts all runs with less then 300*max_trigger_rate events
                         in it.
     """
-    is_obs = info['fRunTypeKey'] == runinfo.observation_key
+    is_obs = info['fRunTypeKey'] == runinfo.OBSERVATION_RUN_TYPE_KEY
 
     rate_below_max_trigger_rate = (
         info['fNumExt1Trigger'] + 
@@ -169,7 +182,7 @@ def overview_str(info, max_trigger_rate=120):
         info['fNumPhysicsTrigger'][valid] + 
         info['fNumPedestalTrigger'][valid]
     )
-    actual_triggers = info['photon_stream_NumTrigger'][valid]
+    actual_triggers = info['PhotonStreamNumEvents'][valid]
 
     total_expected_events = int(expected_triggers.sum())
     total_actual_events = int(actual_triggers.sum())
@@ -206,7 +219,7 @@ def overview_str(info, max_trigger_rate=120):
             info['fNumPedestalTrigger'][valid&is_in_year]).sum()
         )
         actual_triggers_in_year = int(
-            info['photon_stream_NumTrigger'][valid&is_in_year].sum()
+            info['PhotonStreamNumEvents'][valid&is_in_year].sum()
         )
         out += '    {year:04d}'.format(year=year)
         out += '  ' + table_row_str(
@@ -274,26 +287,3 @@ def progress(ratio, length=20):
 
     out += ' '+str(int(percent))+'%'
     return out
-
-
-def strip_runinfo_for_photon_stream_status_inplace(runinfo):
-    keys_to_keep = [
-        'fNight',
-        'fRunID',
-        'fNumExt1Trigger',
-        'fNumExt2Trigger',
-        'fNumPhysicsTrigger', 
-        'fNumPedestalTrigger',
-        'fRunTypeKey',
-        'photon_stream_NumTrigger'
-    ]
-    for key in keys_to_keep:
-        assert key in runinfo
-	
-    cols_to_drop = []
-    for key in runinfo.keys():
-        if key not in keys_to_keep:
-            runinfo.drop(key, axis=1, inplace=True)
-
-    runinfo = runinfo[runinfo['fRunTypeKey'] == runinfo.observation_key]
-    
