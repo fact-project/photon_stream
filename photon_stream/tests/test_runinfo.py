@@ -63,3 +63,28 @@ def test_append_runinfo():
         else:
             for phs_key in ps.production.runinfo.PHS_RUNINFO_KEYS:
                 assert new_known_runs[phs_key][i] == 0
+
+
+def test_expected_number_of_triggers():
+    known_runs = ps.production.runinfo.read_runinfo_from_file(known_runs_path)
+
+    num_expected_phs_trigger = ps.production.runinfo.number_expected_phs_events(
+        known_runs
+    )
+
+    num_actual_phs_trigger = known_runs['PhotonStreamNumEvents'].values
+
+    for i, row in known_runs.iterrows():
+
+        if row['fRunTypeKey'] == ps.production.runinfo.OBSERVATION_RUN_TYPE_KEY:
+            manual_expected = (
+                row['fNumExt1Trigger'] + 
+                row['fNumExt2Trigger'] +
+                row['fNumPhysicsTrigger'] +
+                row['fNumPedestalTrigger']
+            )
+
+            if np.isnan(manual_expected):
+                assert num_expected_phs_trigger[i] == 0
+            else:
+                assert num_expected_phs_trigger[i] == manual_expected

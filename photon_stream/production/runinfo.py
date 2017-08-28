@@ -90,3 +90,11 @@ def append_runinfo_to_known_runs(runinfo, known_runs):
         series.values[is_nan] = 0
         new_known_runs[phs_key] = series.astype(np.int32)
     return new_known_runs
+
+
+def number_expected_phs_events(runinfo):
+    count = np.zeros(runinfo.shape[0], dtype=np.int64)
+    for key in TRIGGER_NUMBER_RUNINFO_KEYS:
+        count += np.int64(np.round(runinfo[key]))
+    count[np.isnan(count)] = 0.0
+    return (np.round(count)).astype(np.int64)
