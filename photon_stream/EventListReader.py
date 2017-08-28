@@ -1,8 +1,9 @@
 from .Event import Event
-from .JsonLinesGzipReader import JsonLinesGzipReader
+from .JsonLinesReader import JsonLinesReader
 import pandas as pd
 
-class EventListReader(object):
+
+class EventListReader:
     """
     An EventListReader() reads Events() from a file.
     The Events are sequentially loaded from the file as needed.
@@ -29,7 +30,7 @@ class EventListReader(object):
         ----------
         path        The path to the observation file.
         """
-        self.reader = JsonLinesGzipReader(path)
+        self.reader = JsonLinesReader(path)
 
     def __iter__(self):
         return self
@@ -41,7 +42,13 @@ class EventListReader(object):
         out = 'EventListReader('
         out += "path '" + self.reader.path + "'"
         out += ')\n'
-        return out        
+        return out
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.reader.close()
 
     @staticmethod
     def inspect(path):
@@ -54,8 +61,8 @@ class EventListReader(object):
             'number_of_saturated_pixels': len(event.photon_stream.saturated_pixels),
             'total_number_of_photons': event.photon_stream.number_photons,
             'zd': event.zd,
-            'az': event.az,}
-            for event in reader])
+            'az': event.az,
+        } for event in reader])
         """
         'trigger_type': event.trigger_type,
         'time': event.time,

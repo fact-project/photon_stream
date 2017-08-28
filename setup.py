@@ -32,7 +32,8 @@ setup(
         'matplotlib',
         'pyfact',
         'pandas',
-        'tqdm'
+        'tqdm',
+        'ujson',
     ],
     entry_points={'console_scripts': [
         'phs_extract_muons = photon_stream.muons.isdc_production.worker_node_main:main',
