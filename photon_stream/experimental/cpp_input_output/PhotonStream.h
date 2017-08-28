@@ -7,6 +7,8 @@
 #include <fstream>
 #include <iostream>
 
+namespace photon_stream {
+
 const uint8_t NUMBER_OF_TIME_SLICES_OFFSET_AFTER_BEGIN_OF_ROI = 30;
 const uint8_t NUMBER_OF_TIME_SLICES = 100;
 const uint32_t NUMBER_OF_PIXELS = 1440;
@@ -281,5 +283,6 @@ void append_SimulationEvent_to_file(SimulationEvent evt, std::ofstream &fout) {
 }
 
 //------------------------------------------------------------------------------
+} //photon_stream
 
 #endif // __PhotonStreamPass4_H_INCLUDED__

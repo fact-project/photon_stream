@@ -11,6 +11,8 @@
 #include <fstream>
 #include <iostream>
 
+namespace ps = photon_stream;
+
 int main() {
 
     std::string path = "20170119_229_pass4_100events.phs.bin";
@@ -18,11 +20,11 @@ int main() {
 
     if (fin.is_open()) {
         while(true) {
-            Descriptor desc = read_Descriptor_from_file(fin);
+            ps::Descriptor desc = ps::read_Descriptor_from_file(fin);
             if(fin.eof())
                 break;
 
-            ObservationEvent event = read_ObservationEvent_from_file(fin);
+            ps::ObservationEvent event = ps::read_ObservationEvent_from_file(fin);
             std::cout << "Event(night:" << event.id.night << ", ";
             std::cout << "run:" << event.id.run << ", ";
             std::cout << "event:" << event.id.event << ") ";
