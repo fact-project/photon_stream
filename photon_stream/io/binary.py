@@ -5,7 +5,6 @@ from ..ObservationInformation import ObservationInformation
 from ..simulation_truth import SimulationTruth
 from . import magic_constants as magic
 from array import array
-import datetime as dt
 import os
 import gzip
 
