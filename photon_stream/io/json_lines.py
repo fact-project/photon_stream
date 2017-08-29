@@ -4,7 +4,7 @@ import gzip
 from .is_gzipped_file import is_gzipped_file
 from ..Event import Event
 
-class JsonLinesReader:
+class Reader:
     def __init__(self, fin):
         self.fin = fin
 
