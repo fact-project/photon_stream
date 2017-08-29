@@ -3,6 +3,7 @@ from ..PhotonStream import PhotonStream
 from ..Event import Event
 from ..ObservationInformation import ObservationInformation
 from ..simulation_truth import SimulationTruth
+from . import magic_constants as magic
 from array import array
 import datetime as dt
 import os
@@ -11,7 +12,6 @@ import gzip
 LINEBREAK = np.array([np.iinfo(np.uint8).max], dtype=np.uint8)
 OBSERVATION_TYPE_KEY = 0
 SIMULATION_TYPE_KEY = 1
-TIME_SLICE_DURATION_S = 0.5e-9;
 
 MAGIC_DESCRIPTOR_1 = ord('p')
 MAGIC_DESCRIPTOR_2 = ord('h')
@@ -132,7 +132,7 @@ def append_photonstream_to_file(phs, fout):
 
 def read_photonstream_from_file(fin):
     phs = PhotonStream()
-    phs.slice_duration = np.float32(TIME_SLICE_DURATION_S)
+    phs.slice_duration = np.float32(magic.TIME_SLICE_DURATION_S)
 
     # read number of pixels and time lines
     number_of_pixels_and_photons = np.fromstring(

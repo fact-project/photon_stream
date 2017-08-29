@@ -8,6 +8,7 @@ from ..PhotonStream import PhotonStream
 from ..Event import Event
 from ..ObservationInformation import ObservationInformation
 from ..simulation_truth import SimulationTruth
+from . import magic_constants as magic
 
 
 def read_event_from_dict(event_dict):
@@ -67,7 +68,7 @@ def append_ObservationInformation_to_dict(obs, event_dict):
 
 def read_PhotonStream_from_dict(event_dict):
     ps = PhotonStream()
-    ps.slice_duration = np.float32(0.5e-9)
+    ps.slice_duration = np.float32(magic.TIME_SLICE_DURATION_S)
     ps.time_lines = []
     for time_line in event_dict['PhotonArrivals_500ps']:
         ps.time_lines.append(array('B', time_line))
