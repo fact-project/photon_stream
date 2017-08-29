@@ -15,8 +15,8 @@ const uint32_t NUMBER_OF_PIXELS = 1440;
 const uint32_t NUMBER_OF_PHOTONS_IN_PIXEL_BEFORE_SATURATION = 500;
 const uint8_t NEXT_PIXEL_MARKER = 255;
 const float TIME_SLICE_DURATION_S = 0.5e-9;
-const uint8_t OBSERVATION_KEY = 0;
-const uint8_t SIMULATION_KEY = 1;
+const uint8_t OBSERVATION_EVENT_TYPE_KEY = 0;
+const uint8_t SIMULATION_EVENT_TYPE_KEY = 1;
 const uint8_t PASS_VERSION = 4;
 const uint8_t MAGIC_DESCRIPTOR_1 = 112;     // ascii for 'p'
 const uint8_t MAGIC_DESCRIPTOR_2 = 104;     // ascii for 'h'
@@ -263,7 +263,7 @@ struct ObservationEvent {
 ObservationEvent read_ObservationEvent_from_file(std::istream &fin) {
     ObservationEvent evt;
     evt.descriptor = read_Descriptor_from_file(fin);
-    if (evt.descriptor.event_type != OBSERVATION_KEY) {
+    if (evt.descriptor.event_type != OBSERVATION_EVENT_TYPE_KEY) {
         throw std::runtime_error("Expected observation key");
     }
     evt.id = read_ObservationIdentifier_from_file(fin);
@@ -292,7 +292,7 @@ struct SimulationEvent {
 SimulationEvent read_SimulationEvent_from_file(std::istream &fin) {
     SimulationEvent evt;
     evt.descriptor = read_Descriptor_from_file(fin);
-    if (evt.descriptor.event_type != SIMULATION_KEY) {
+    if (evt.descriptor.event_type != SIMULATION_EVENT_TYPE_KEY) {
         throw std::runtime_error("Expected simulation key");
     }
     evt.id = read_SimulationIdentifier_from_file(fin);
