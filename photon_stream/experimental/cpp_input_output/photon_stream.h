@@ -67,6 +67,14 @@ struct Descriptor {
     uint8_t magic_3;
     uint8_t pass_version;
     uint8_t event_type;
+
+    bool is_valid() {
+        return (
+            magic_1 == MAGIC_DESCRIPTOR_1 &&
+            magic_2 == MAGIC_DESCRIPTOR_2 &&
+            magic_3 == MAGIC_DESCRIPTOR_3
+        );
+    }
 };
 
 Descriptor read_Descriptor_from_file(std::ifstream &fin) {
@@ -245,6 +253,7 @@ void append_PhotonStream_to_file(PhotonStream &phs, std::ofstream &fout) {
 
 //------------------------------------------------------------------------------
 struct ObservationEvent {
+    Descriptor descriptor;
     ObservationIdentifier id;
     ObservationInformation info;
     Pointing pointing;
@@ -253,6 +262,10 @@ struct ObservationEvent {
 
 ObservationEvent read_ObservationEvent_from_file(std::ifstream &fin) {
     ObservationEvent evt;
+    evt.descriptor = read_Descriptor_from_file(fin);
+    if (evt.descriptor.event_type != OBSERVATION_KEY) {
+        throw std::runtime_error("Expected observation key");
+    }
     evt.id = read_ObservationIdentifier_from_file(fin);
     evt.info = read_ObservationInformation_from_file(fin);
     evt.pointing = read_Pointing_from_file(fin);
@@ -261,10 +274,7 @@ ObservationEvent read_ObservationEvent_from_file(std::ifstream &fin) {
 };
 
 void append_ObservationEvent_to_file(ObservationEvent evt, std::ofstream &fout) {
-    Descriptor h;
-    h.pass_version = PASS_VERSION;
-    h.event_type = OBSERVATION_KEY;
-    append_Descriptor_to_file(h, fout);
+    append_Descriptor_to_file(evt.descriptor, fout);
     append_ObservationIdentifier_to_file(evt.id, fout);
     append_ObservationInformation_to_file(evt.info, fout);
     append_PhotonStream_to_file(evt.photon_stream, fout);
@@ -273,6 +283,7 @@ void append_ObservationEvent_to_file(ObservationEvent evt, std::ofstream &fout) 
 
 //------------------------------------------------------------------------------
 struct SimulationEvent {
+    Descriptor descriptor;
     SimulationIdentifier id;
     Pointing pointing;
     PhotonStream photon_stream;
@@ -280,6 +291,10 @@ struct SimulationEvent {
 
 SimulationEvent read_SimulationEvent_from_file(std::ifstream &fin) {
     SimulationEvent evt;
+    evt.descriptor = read_Descriptor_from_file(fin);
+    if (evt.descriptor.event_type != SIMULATION_KEY) {
+        throw std::runtime_error("Expected simulation key");
+    }
     evt.id = read_SimulationIdentifier_from_file(fin);
     evt.pointing = read_Pointing_from_file(fin);
     evt.photon_stream = read_PhotonStream_from_file(fin);
@@ -287,10 +302,7 @@ SimulationEvent read_SimulationEvent_from_file(std::ifstream &fin) {
 };
 
 void append_SimulationEvent_to_file(SimulationEvent evt, std::ofstream &fout) {
-    Descriptor h;
-    h.pass_version = PASS_VERSION;
-    h.event_type = SIMULATION_KEY;
-    append_Descriptor_to_file(h, fout);
+    append_Descriptor_to_file(evt.descriptor, fout);
     append_SimulationIdentifier_to_file(evt.id, fout);
     append_PhotonStream_to_file(evt.photon_stream, fout);
 }

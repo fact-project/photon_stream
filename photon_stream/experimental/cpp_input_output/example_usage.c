@@ -59,13 +59,13 @@ int main(int argc, char* argv[]) {
 
     printf("night    run event trigger  Az[deg] ZD[deg]  UnixTime[s]   photons\n");
     printf("------------------------------------------------------------------\n");
+    
     if (fin.is_open()) {
         while(true) {
-            ps::Descriptor desc = ps::read_Descriptor_from_file(fin);
-            if(fin.eof())
-                break;
-
             ps::ObservationEvent event = ps::read_ObservationEvent_from_file(fin);
+
+            if(!event.descriptor.is_valid())
+                break;
 
             if(args.find("--trigger")->second) {
                 if(
