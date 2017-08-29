@@ -7,20 +7,6 @@ class EventListReader:
     """
     An EventListReader() reads Events() from a file.
     The Events are sequentially loaded from the file as needed.
-
-    Example usage
-    -------------
-
-    To access the events in a run just loop over it:
-
-    reader = EventListReader('YYYYmmnn_rrr.phs.jsonl.gz')
-    for event in reader:
-        event.plot()
-        plt.show()
-
-    To just get the next event:
-
-    event = next(reader)
     """
     def __init__(self, path):
         """
