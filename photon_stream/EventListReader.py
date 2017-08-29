@@ -1,4 +1,3 @@
-from .Event import Event
 from . import io
 import gzip
 import pandas as pd
