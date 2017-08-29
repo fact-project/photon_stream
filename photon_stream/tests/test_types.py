@@ -62,11 +62,11 @@ def test_types_from_binary():
         
         run_bin_path = os.path.join(tmp, 'run.phs.gz')
 
-        ps.experimental.io.jsonl_gz_2_binary_gz(
+        ps.io.jsonl2binary(
             input_path=run_jsonl_path, 
             output_path=run_bin_path,
         )
         
-        run = ps.experimental.io.EventListReader(run_bin_path)
+        run = ps.io.binary.EventListReader(run_bin_path)
         for event in run:
             type_check(event)

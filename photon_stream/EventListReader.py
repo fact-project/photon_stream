@@ -1,5 +1,5 @@
 from .Event import Event
-from .JsonLinesReader import JsonLinesReader
+from .io.JsonLinesReader import JsonLinesReader
 import pandas as pd
 
 

@@ -21,13 +21,13 @@ def test_binary_io():
         with open(bin_run_path, 'wb') as bf:
             for evt in run:
                 run_ps.append(evt.photon_stream)
-                ps.experimental.io.append_photonstream_to_file(evt.photon_stream, bf)
+                ps.io.binary.append_photonstream_to_file(evt.photon_stream, bf)
 
         run_ps_back = []
         with open(bin_run_path, 'rb') as bf:
             while True:
                 try:
-                    phs = ps.experimental.io.read_photonstream_from_file(bf)
+                    phs = ps.io.binary.read_photonstream_from_file(bf)
                     run_ps_back.append(phs)
                 except:
                     break
@@ -67,12 +67,12 @@ def test_jsonl2binary():
 
         with gzip.open(binary_path, 'wb') as fout:
             for event in run_in:
-                ps.experimental.io.append_event_to_file(event, fout)
+                ps.io.binary.append_event_to_file(event, fout)
 
         with gzip.open(binary_path, 'rb') as fin:
             while True:
                 try:
-                    run_back.append(ps.experimental.io.read_event_from_file(fin))
+                    run_back.append(ps.io.binary.read_event_from_file(fin))
                 except StopIteration:
                     break
 
@@ -108,7 +108,7 @@ def test_pass_header_io():
 
         with gzip.open(binary_path, 'wb') as fout:
             for header in out_headers:
-                ps.experimental.io.append_header_to_file(
+                ps.io.binary.append_header_to_file(
                     fout=fout,
                     event_type=header['event_type'],
                     pass_version=header['pass_version'],
@@ -119,16 +119,16 @@ def test_pass_header_io():
         with gzip.open(binary_path, 'rb') as fin:
             for i in range(len(out_headers)):
                 in_headers.append(
-                    ps.experimental.io.read_header_from_file(fin)
+                    ps.io.binary.read_header_from_file(fin)
                 )
 
 
     for i in range(len(out_headers)):
         out_h = out_headers[i]
         in_h = in_headers[i]
-        assert in_h['magic_1'] == ps.experimental.io.MAGIC_DESCRIPTOR_1 
-        assert in_h['magic_2'] == ps.experimental.io.MAGIC_DESCRIPTOR_2
-        assert in_h['magic_3'] == ps.experimental.io.MAGIC_DESCRIPTOR_3
+        assert in_h['magic_1'] == ps.io.binary.MAGIC_DESCRIPTOR_1 
+        assert in_h['magic_2'] == ps.io.binary.MAGIC_DESCRIPTOR_2
+        assert in_h['magic_3'] == ps.io.binary.MAGIC_DESCRIPTOR_3
         assert out_h['pass_version'] == in_h['pass_version']
         assert out_h['event_type'] == in_h['event_type']
 
@@ -151,12 +151,12 @@ def test_io_simulation_events():
 
         with gzip.open(binary_path, 'wb') as fout:
             for event in run_in:
-                ps.experimental.io.append_event_to_file(event, fout)
+                ps.io.binary.append_event_to_file(event, fout)
 
         with gzip.open(binary_path, 'rb') as fin:
             while True:
                 try:
-                    run_back.append(ps.experimental.io.read_event_from_file(fin))
+                    run_back.append(ps.io.binary.read_event_from_file(fin))
                 except StopIteration:
                     break
 

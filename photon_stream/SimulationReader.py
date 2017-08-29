@@ -1,5 +1,5 @@
 from .Event import Event
-from .JsonLinesReader import JsonLinesReader
+from .io.JsonLinesReader import JsonLinesReader
 from .simulation_truth.corsika_headers import read_corsika_headers
 from .simulation_truth.corsika_headers import IDX_RUNH_RUN_NUMBER
 from .simulation_truth.corsika_headers import IDX_EVTH_EVENT_NUMBER
