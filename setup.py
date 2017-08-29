@@ -10,6 +10,7 @@ setup(
     license='MIT',
     packages=[
         'photon_stream',
+        'photon_stream.io',
         'photon_stream.production',
         'photon_stream.production.ethz',
         'photon_stream.production.isdc',
