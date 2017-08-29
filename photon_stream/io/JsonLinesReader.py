@@ -29,12 +29,16 @@ class JsonLinesReader:
         return self
 
     def __next__(self):
-        line = self.file.readline().strip().rstrip(',')
-        if not line:
-            raise StopIteration
-        return json.loads(line)
+        return read_next_dict_from_jsonl_file(self.file)
 
     def __repr__(self):
         out = '{}('.format(self.__class__.__name__)
         out += self.path+')\n'
         return out
+
+
+def read_next_dict_from_jsonl_file(fin):
+    line = fin.readline().strip().rstrip(',')
+    if not line:
+        raise StopIteration
+    return json.loads(line)
