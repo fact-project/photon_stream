@@ -3,7 +3,6 @@ import os
 import gzip
 import numpy as np
 from array import array
-from .is_gzipped_file import is_gzipped_file
 from ..PhotonStream import PhotonStream
 from ..Event import Event
 from ..ObservationInformation import ObservationInformation
