@@ -7,8 +7,8 @@ from array import array
 import numpy as np
 
 LINEBREAK = np.array([np.iinfo(np.uint8).max], dtype=np.uint8)
-OBSERVATION_TYPE_KEY = 0
-SIMULATION_TYPE_KEY = 1
+OBSERVATION_EVENT_TYPE_KEY = 0
+SIMULATION_EVENT_TYPE_KEY = 1
 
 MAGIC_DESCRIPTOR_1 = ord('p')
 MAGIC_DESCRIPTOR_2 = ord('h')
@@ -17,7 +17,7 @@ MAGIC_DESCRIPTOR_3 = ord('s')
 
 def append_header_to_file(
     fout,
-    event_type=OBSERVATION_TYPE_KEY, 
+    event_type=OBSERVATION_EVENT_TYPE_KEY, 
     pass_version=4
 ):  
     fout.write(np.uint8(MAGIC_DESCRIPTOR_1).tobytes())
@@ -193,11 +193,11 @@ def read_saturated_pixels_from_file(fin):
 
 def append_event_to_file(event, fout):
     if hasattr(event, 'observation_info'):
-        append_header_to_file(fout, event_type=OBSERVATION_TYPE_KEY)
+        append_header_to_file(fout, event_type=OBSERVATION_EVENT_TYPE_KEY)
         append_observation_id_to_file(event.observation_info, fout)
         append_observation_info_to_file(event.observation_info, fout)
     elif hasattr(event, 'simulation_truth'):
-        append_header_to_file(fout, event_type=SIMULATION_TYPE_KEY)
+        append_header_to_file(fout, event_type=SIMULATION_EVENT_TYPE_KEY)
         append_simulation_id_to_file(event.simulation_truth, fout)
     else:
         raise
@@ -210,12 +210,12 @@ def read_event_from_file(fin):
     try:
         header = read_header_from_file(fin)
         event = Event()
-        if header['event_type'] == OBSERVATION_TYPE_KEY:
+        if header['event_type'] == OBSERVATION_EVENT_TYPE_KEY:
             obs = ObservationInformation()
             read_observation_id_from_file(obs, fin)
             read_observation_info_from_file(obs, fin)
             event.observation_info = obs
-        elif header['event_type'] == SIMULATION_TYPE_KEY:
+        elif header['event_type'] == SIMULATION_EVENT_TYPE_KEY:
             sim = SimulationTruth()
             read_simulation_id_from_file(sim, fin)
             event.simulation_truth = sim
