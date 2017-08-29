@@ -1,5 +1,4 @@
 from .EventListReader import EventListReader
-from .Event import Event
 from .io import binary
 import shutil
 import gzip
