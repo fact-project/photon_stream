@@ -14,14 +14,13 @@ MAGIC_DESCRIPTOR_1 = ord('p')
 MAGIC_DESCRIPTOR_2 = ord('h')
 MAGIC_DESCRIPTOR_3 = ord('s')
 
-SINGLEPULSE_EXTRACTOR_PASS = 4
 
 class Descriptor():
     def __init__(self):
         self.magic_1 = MAGIC_DESCRIPTOR_1
         self.magic_2 = MAGIC_DESCRIPTOR_2
         self.magic_3 = MAGIC_DESCRIPTOR_3
-        self.pass_version = SINGLEPULSE_EXTRACTOR_PASS
+        self.pass_version = magic.SINGLEPULSE_EXTRACTOR_PASS
         self.event_type = OBSERVATION_EVENT_TYPE_KEY
 
     def is_valid(self):
@@ -29,7 +28,7 @@ class Descriptor():
             self.magic_1 == MAGIC_DESCRIPTOR_1 and
             self.magic_2 == MAGIC_DESCRIPTOR_2 and
             self.magic_3 == MAGIC_DESCRIPTOR_3 and
-            self.pass_version == SINGLEPULSE_EXTRACTOR_PASS
+            self.pass_version == magic.SINGLEPULSE_EXTRACTOR_PASS
         )
 
 
