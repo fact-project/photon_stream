@@ -1,5 +1,5 @@
 // compile using:
-// g++ docopt/docopt.cpp example_usage.c -o PhotonStreamTest -lm -std=gnu++11
+// g++ docopt/docopt.cpp example_usage.c -o phs.show -lm -std=gnu++11
 // 
 // gunzip the example binary run in the photon_stream/tests/resources and
 // run the executable right next tu the unzipped binary file.
