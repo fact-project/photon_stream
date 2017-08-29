@@ -1,10 +1,10 @@
-import numpy as np
 from ..PhotonStream import PhotonStream
 from ..Event import Event
 from ..ObservationInformation import ObservationInformation
 from ..simulation_truth import SimulationTruth
 from . import magic_constants as magic
 from array import array
+import numpy as np
 
 LINEBREAK = np.array([np.iinfo(np.uint8).max], dtype=np.uint8)
 OBSERVATION_TYPE_KEY = 0
