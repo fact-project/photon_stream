@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='photon_stream',
-    version='0.0.1',
+    version='0.0.2',
     description='Read, write, manipulate and plot a Photon Stream',
     url='https://github.com/fact-project/',
     author='Sebastian Achim Mueller',
