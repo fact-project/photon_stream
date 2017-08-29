@@ -1,9 +1,5 @@
 // compile using:
 // g++ docopt/docopt.cpp example_usage.c -o phs.show -lm -std=gnu++11
-// 
-// gunzip the example binary run in the photon_stream/tests/resources and
-// run the executable right next tu the unzipped binary file.
-// It will print some basic event information on the command line.
 
 #include <stdio.h>
 #include <string.h>
@@ -15,15 +11,16 @@
 namespace ps = photon_stream;
 
 static const char USAGE[] =
-R"(Show FACT event overview
+R"(Show FACT photon-stream event overview in a table on stdout. Reads in phs
+files from stdin. 
 
     Usage:
-      PhsShow [--trigger=TYPE]
+      PhsShow [--trigger=INT]
       PhsShow (-h | --help)
       PhsShow --version
 
     Options:
-      -t --trigger=TYPE   Only show certain trigger type.
+      -t --trigger=INT    Only show certain trigger type.
       -h --help           Show this screen.
       --version           Show version.
       
