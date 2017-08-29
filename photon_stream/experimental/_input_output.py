@@ -13,9 +13,9 @@ OBSERVATION_TYPE_KEY = 0
 SIMULATION_TYPE_KEY = 1
 TIME_SLICE_DURATION_S = 0.5e-9;
 
-MAGIC_DESCRIPTOR_1 = 112 # ascii for 'p'
-MAGIC_DESCRIPTOR_2 = 104 # ascii for 'h'
-MAGIC_DESCRIPTOR_3 = 115 # ascii for 's'
+MAGIC_DESCRIPTOR_1 = ord('p')
+MAGIC_DESCRIPTOR_2 = ord('h')
+MAGIC_DESCRIPTOR_3 = ord('s')
 
 
 def append_header_to_file(

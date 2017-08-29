@@ -18,9 +18,9 @@ const float TIME_SLICE_DURATION_S = 0.5e-9;
 const uint8_t OBSERVATION_EVENT_TYPE_KEY = 0;
 const uint8_t SIMULATION_EVENT_TYPE_KEY = 1;
 const uint8_t PASS_VERSION = 4;
-const uint8_t MAGIC_DESCRIPTOR_1 = 112;     // ascii for 'p'
-const uint8_t MAGIC_DESCRIPTOR_2 = 104;     // ascii for 'h'
-const uint8_t MAGIC_DESCRIPTOR_3 = 115;     // ascii for 's'
+const uint8_t MAGIC_DESCRIPTOR_1 = 'p';
+const uint8_t MAGIC_DESCRIPTOR_2 = 'h';
+const uint8_t MAGIC_DESCRIPTOR_3 = 's';
 
 
 void append_float32(float &v, std::ostream &fout) {
