@@ -7,6 +7,17 @@ import os
 import tempfile
 import subprocess
 
+
+def event(event, mask=None):
+    """
+    Creates a new figure with 3D axes to show the photon-stream of the 
+    event.
+    """
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+    add_event_2_ax(event=event, ax=ax, mask=mask)
+
+
 def add_event_2_ax(event, ax, mask=None, color='b'):
     xyt = event.photon_stream.flatten()
 

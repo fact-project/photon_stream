@@ -14,7 +14,7 @@ def test_event_can_plot_itself():
         'tests/resources/20170119_229_pass4_100events.phs.jsonl.gz')
 
     event = next(ps.EventListReader(run_path))
-    event.plot()
+    ps.plot.event(event)
 
 
 @pytest.mark.slow

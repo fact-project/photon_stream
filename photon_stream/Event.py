@@ -1,11 +1,8 @@
 import datetime as dt
 import numpy as np
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 from .PhotonStream import PhotonStream
 from .ObservationInformation import ObservationInformation
 from .simulation_truth.SimulationTruth import SimulationTruth
-from .plot import add_event_2_ax
 from math import isclose
 
 
@@ -50,16 +47,6 @@ class Event(object):
                 event_dict
             )
         return event
-
-
-    def plot(self, mask=None):
-        """
-        Creates a new figure with 3D axes to show the photon-stream of the 
-        event. Call plt.show() to see it. 
-        """
-        fig = plt.figure()
-        ax = fig.gca(projection='3d')
-        add_event_2_ax(self, ax, mask=mask)
 
 
     def to_dict(self):
