@@ -32,34 +32,6 @@ class Event(object):
     def __init__(self):
         pass
 
-    @classmethod
-    def from_event_dict(cls, event_dict):
-        event = cls()
-        event.zd = np.float32(event_dict['Zd_deg'])
-        event.az = np.float32(event_dict['Az_deg'])
-        event.photon_stream = PhotonStream.from_event_dict(event_dict)
-        if 'UnixTime_s_us' in event_dict:
-            event.observation_info = ObservationInformation.from_event_dict(
-                event_dict
-            )
-        if 'Reuse' in event_dict:
-            event.simulation_truth = SimulationTruth.from_event_dict(
-                event_dict
-            )
-        return event
-
-
-    def to_dict(self):
-        evt = {}
-        evt['Zd_deg'] = float(self.zd)
-        evt['Az_deg'] = float(self.az)
-        evt = self.photon_stream.add_to_dict(evt)
-        if hasattr(self, 'observation_info'):
-            evt = self.observation_info.add_to_dict(evt)
-        if hasattr(self, 'simulation_truth'):
-            evt = self.simulation_truth.add_to_dict(evt)
-        return evt
-
 
     def _info(self):
         out = ''

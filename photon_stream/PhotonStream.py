@@ -2,7 +2,6 @@ from math import nan
 from copy import deepcopy
 import fact
 import numpy as np
-from array import array
 
 pixels = fact.instrument.get_pixel_dataframe()
 pixels.sort_values('CHID', inplace=True)
@@ -24,26 +23,6 @@ class PhotonStream(object):
         else:
             self.time_lines = time_lines
 
-    @classmethod
-    def from_event_dict(cls, event_dict):
-        ps = cls()
-        ps.slice_duration = np.float32(0.5e-9)
-        ps.time_lines = []
-        for time_line in event_dict['PhotonArrivals_500ps']:
-            ps.time_lines.append(array('B', time_line))
-        ps.saturated_pixels = np.array(
-            event_dict['SaturatedPixels'],
-            dtype=np.uint16
-        )
-        return ps
-
-    def add_to_dict(self, event_dict):
-        time_lines = []
-        for time_line in self.time_lines:
-            time_lines.append(time_line.tolist())
-        event_dict['PhotonArrivals_500ps'] = time_lines
-        event_dict['SaturatedPixels'] = self.saturated_pixels.tolist()
-        return event_dict
 
     @property
     def photon_count(self):

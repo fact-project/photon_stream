@@ -22,7 +22,7 @@ class EventListReader:
                     self.reader = io.binary.Reader(self.file)
                 else:
                     self.file = gzip.open(path, 'rt')
-                    self.reader = io.json_lines.Reader(self.file)
+                    self.reader = io.json_line_dicts.Reader(self.file)
         else:
             with open(path, 'rb') as fin:
                 if io.binary.is_phs_binary(fin):
@@ -30,7 +30,7 @@ class EventListReader:
                     self.reader = io.binary.Reader(self.file)
                 else:
                     self.file = open(path, 'rt')
-                    self.reader = io.json_lines.Reader(self.file)
+                    self.reader = io.json_line_dicts.Reader(self.file)
           
 
     def __enter__(self):
