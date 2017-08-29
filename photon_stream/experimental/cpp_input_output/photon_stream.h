@@ -23,38 +23,38 @@ const uint8_t MAGIC_DESCRIPTOR_2 = 104;     // ascii for 'h'
 const uint8_t MAGIC_DESCRIPTOR_3 = 115;     // ascii for 's'
 
 
-void append_float32(float &v, std::ofstream &fout) {
+void append_float32(float &v, std::ostream &fout) {
     fout.write(reinterpret_cast<char*>(&v), sizeof(v));
 }
 
-float read_float32(std::ifstream &fin) {
+float read_float32(std::istream &fin) {
     float v;
     fin.read(reinterpret_cast<char*>(&v), sizeof(v));
     return v;
 }
 
-void append_uint32(uint32_t &v, std::ofstream &fout) {
+void append_uint32(uint32_t &v, std::ostream &fout) {
     fout.write(reinterpret_cast<char*>(&v), sizeof(v));
 }
-uint32_t read_uint32(std::ifstream &fin) {
+uint32_t read_uint32(std::istream &fin) {
     uint32_t v;
     fin.read(reinterpret_cast<char*>(&v), sizeof(v));
     return v;
 }
 
-void append_uint16(uint16_t &v, std::ofstream &fout) {
+void append_uint16(uint16_t &v, std::ostream &fout) {
     fout.write(reinterpret_cast<char*>(&v), sizeof(v));
 }
-uint16_t read_uint16(std::ifstream &fin) {
+uint16_t read_uint16(std::istream &fin) {
     uint16_t v;
     fin.read(reinterpret_cast<char*>(&v), sizeof(v));
     return v;
 }
 
-void append_uint8(uint8_t &v, std::ofstream &fout) {
+void append_uint8(uint8_t &v, std::ostream &fout) {
     fout.write(reinterpret_cast<char*>(&v), sizeof(v));
 }
-uint8_t read_uint8(std::ifstream &fin) {
+uint8_t read_uint8(std::istream &fin) {
     uint8_t v;
     fin.read(reinterpret_cast<char*>(&v), sizeof(v));
     return v;
@@ -77,7 +77,7 @@ struct Descriptor {
     }
 };
 
-Descriptor read_Descriptor_from_file(std::ifstream &fin) {
+Descriptor read_Descriptor_from_file(std::istream &fin) {
     Descriptor d;
     d.magic_1 = read_uint8(fin);
     d.magic_2 = read_uint8(fin);
@@ -87,7 +87,7 @@ Descriptor read_Descriptor_from_file(std::ifstream &fin) {
     return d;
 }
 
-void append_Descriptor_to_file(Descriptor &d, std::ofstream &fout) {
+void append_Descriptor_to_file(Descriptor &d, std::ostream &fout) {
     append_uint8(d.magic_1, fout);
     append_uint8(d.magic_2, fout);
     append_uint8(d.magic_3, fout);
@@ -102,7 +102,7 @@ struct ObservationIdentifier {
     uint32_t event; 
 };
 
-ObservationIdentifier read_ObservationIdentifier_from_file(std::ifstream &fin) {
+ObservationIdentifier read_ObservationIdentifier_from_file(std::istream &fin) {
     ObservationIdentifier obsid;
     obsid.night = read_uint32(fin);
     obsid.run = read_uint32(fin);
@@ -110,7 +110,7 @@ ObservationIdentifier read_ObservationIdentifier_from_file(std::ifstream &fin) {
     return obsid;
 }
 
-void append_ObservationIdentifier_to_file(ObservationIdentifier &obsid, std::ofstream &fout) {
+void append_ObservationIdentifier_to_file(ObservationIdentifier &obsid, std::ostream &fout) {
     append_uint32(obsid.night, fout);
     append_uint32(obsid.run, fout);
     append_uint32(obsid.event, fout);
@@ -123,7 +123,7 @@ struct ObservationInformation {
     uint32_t trigger_type;
 };
 
-ObservationInformation read_ObservationInformation_from_file(std::ifstream &fin) {
+ObservationInformation read_ObservationInformation_from_file(std::istream &fin) {
     ObservationInformation obsinfo;
     obsinfo.unix_time_s = read_uint32(fin);
     obsinfo.unix_time_us = read_uint32(fin);
@@ -131,7 +131,7 @@ ObservationInformation read_ObservationInformation_from_file(std::ifstream &fin)
     return obsinfo;
 }
 
-void append_ObservationInformation_to_file(ObservationInformation &obsinfo, std::ofstream &fout) {
+void append_ObservationInformation_to_file(ObservationInformation &obsinfo, std::ostream &fout) {
     append_uint32(obsinfo.unix_time_s , fout);
     append_uint32(obsinfo.unix_time_us, fout);
     append_uint32(obsinfo.trigger_type, fout);
@@ -144,7 +144,7 @@ struct SimulationIdentifier {
     uint32_t reuse;
 };
 
-SimulationIdentifier read_SimulationIdentifier_from_file(std::ifstream &fin) {
+SimulationIdentifier read_SimulationIdentifier_from_file(std::istream &fin) {
     SimulationIdentifier simid;
     simid.run = read_uint32(fin);
     simid.event = read_uint32(fin);
@@ -152,7 +152,7 @@ SimulationIdentifier read_SimulationIdentifier_from_file(std::ifstream &fin) {
     return simid;
 }
 
-void append_SimulationIdentifier_to_file(SimulationIdentifier &simid, std::ofstream &fout) {
+void append_SimulationIdentifier_to_file(SimulationIdentifier &simid, std::ostream &fout) {
     append_uint32(simid.run , fout);
     append_uint32(simid.event, fout);
     append_uint32(simid.reuse, fout);
@@ -164,14 +164,14 @@ struct Pointing {
     float az;
 };
 
-Pointing read_Pointing_from_file(std::ifstream &fin) {
+Pointing read_Pointing_from_file(std::istream &fin) {
     Pointing p;
     p.zd = read_float32(fin);
     p.az = read_float32(fin);
     return p;
 }
 
-void append_Pointing_to_file(Pointing &p, std::ofstream &fout) {
+void append_Pointing_to_file(Pointing &p, std::ostream &fout) {
     append_float32(p.zd, fout);
     append_float32(p.az, fout);
 }
@@ -214,7 +214,7 @@ struct PhotonStream {
     }
 };
 
-PhotonStream read_PhotonStream_from_file(std::ifstream &fin) {
+PhotonStream read_PhotonStream_from_file(std::istream &fin) {
     PhotonStream phs;
     uint32_t number_of_pixels_plus_number_of_photons = read_uint32(fin);
 
@@ -234,7 +234,7 @@ PhotonStream read_PhotonStream_from_file(std::ifstream &fin) {
     return phs;
 }
 
-void append_PhotonStream_to_file(PhotonStream &phs, std::ofstream &fout) {
+void append_PhotonStream_to_file(PhotonStream &phs, std::ostream &fout) {
     uint32_t number_of_pixels_plus_number_of_photons = phs.raw.size();
     append_uint32(number_of_pixels_plus_number_of_photons, fout);
     fout.write(
@@ -260,7 +260,7 @@ struct ObservationEvent {
     PhotonStream photon_stream;
 };
 
-ObservationEvent read_ObservationEvent_from_file(std::ifstream &fin) {
+ObservationEvent read_ObservationEvent_from_file(std::istream &fin) {
     ObservationEvent evt;
     evt.descriptor = read_Descriptor_from_file(fin);
     if (evt.descriptor.event_type != OBSERVATION_KEY) {
@@ -273,7 +273,7 @@ ObservationEvent read_ObservationEvent_from_file(std::ifstream &fin) {
     return evt;
 };
 
-void append_ObservationEvent_to_file(ObservationEvent evt, std::ofstream &fout) {
+void append_ObservationEvent_to_file(ObservationEvent evt, std::ostream &fout) {
     append_Descriptor_to_file(evt.descriptor, fout);
     append_ObservationIdentifier_to_file(evt.id, fout);
     append_ObservationInformation_to_file(evt.info, fout);
@@ -289,7 +289,7 @@ struct SimulationEvent {
     PhotonStream photon_stream;
 };
 
-SimulationEvent read_SimulationEvent_from_file(std::ifstream &fin) {
+SimulationEvent read_SimulationEvent_from_file(std::istream &fin) {
     SimulationEvent evt;
     evt.descriptor = read_Descriptor_from_file(fin);
     if (evt.descriptor.event_type != SIMULATION_KEY) {
@@ -301,7 +301,7 @@ SimulationEvent read_SimulationEvent_from_file(std::ifstream &fin) {
     return evt;
 };
 
-void append_SimulationEvent_to_file(SimulationEvent evt, std::ofstream &fout) {
+void append_SimulationEvent_to_file(SimulationEvent evt, std::ostream &fout) {
     append_Descriptor_to_file(evt.descriptor, fout);
     append_SimulationIdentifier_to_file(evt.id, fout);
     append_PhotonStream_to_file(evt.photon_stream, fout);
