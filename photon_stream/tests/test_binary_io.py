@@ -90,55 +90,47 @@ def test_jsonl2binary():
         assert evt_in == evt_ba
 
 
-def test_pass_header_io():
+def test_Descriptor_io():
 
-    out_headers = [
-        {
-            'pass_version': 1,
-            'event_type': 0,
-        },
-        {
-            'pass_version': 4,
-            'event_type': 1,
-        },
-        {
-            'pass_version': 4,
-            'event_type': 1,
-        },
-        {
-            'pass_version': 5,
-            'event_type': 1,
-        },   
-    ]
+    d1 = ps.io.binary.Descriptor()
+    d1.pass_version = 1
+    d1.event_type = 0
+    d2 = ps.io.binary.Descriptor()
+    d1.pass_version = 4
+    d1.event_type = 1
+    d3 = ps.io.binary.Descriptor()
+    d1.pass_version = 4
+    d1.event_type = 1
+    d4 = ps.io.binary.Descriptor()
+    d1.pass_version = 5
+    d1.event_type = 1
 
-    with tempfile.TemporaryDirectory(prefix='phs_test_header') as tmp:
-        binary_path = os.path.join(tmp, 'header.bin')
+    out_descs = [d1, d2, d3, d4]
+
+    with tempfile.TemporaryDirectory(prefix='phs_') as tmp:
+        binary_path = os.path.join(tmp, 'descs.bin')
 
         with gzip.open(binary_path, 'wb') as fout:
-            for header in out_headers:
-                ps.io.binary.append_header_to_file(
-                    fout=fout,
-                    event_type=header['event_type'],
-                    pass_version=header['pass_version'],
-                )
+            for descs in out_descs:
+                ps.io.binary.append_Descriptor_to_file(descs, fout)
 
 
-        in_headers = []
+        in_descss = []
         with gzip.open(binary_path, 'rb') as fin:
-            for i in range(len(out_headers)):
-                in_headers.append(
-                    ps.io.binary.read_header_from_file(fin)
+            for i in range(len(out_descs)):
+                in_descss.append(
+                    ps.io.binary.read_Descriptor_from_file(fin)
                 )
 
 
-    for i in range(len(out_headers)):
-        out_h = out_headers[i]
-        in_h = in_headers[i]
-        assert in_h['magic_1'] == ps.io.binary.MAGIC_DESCRIPTOR_1 
-        assert in_h['magic_2'] == ps.io.binary.MAGIC_DESCRIPTOR_2
-        assert in_h['magic_3'] == ps.io.binary.MAGIC_DESCRIPTOR_3
-        assert out_h['pass_version'] == in_h['pass_version']
-        assert out_h['event_type'] == in_h['event_type']
+    for i in range(len(out_descs)):
+        out_h = out_descs[i]
+        in_h = in_descss[i]
+        assert in_h.magic_1 == ps.io.binary.MAGIC_DESCRIPTOR_1 
+        assert in_h.magic_2 == ps.io.binary.MAGIC_DESCRIPTOR_2
+        assert in_h.magic_3 == ps.io.binary.MAGIC_DESCRIPTOR_3
+        assert out_h.pass_version == in_h.pass_version
+        assert out_h.event_type == in_h.event_type
 
 
 def test_io_simulation_events():
