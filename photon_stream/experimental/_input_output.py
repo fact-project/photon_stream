@@ -13,20 +13,31 @@ OBSERVATION_TYPE_KEY = 0
 SIMULATION_TYPE_KEY = 1
 TIME_SLICE_DURATION_S = 0.5e-9;
 
+MAGIC_DESCRIPTOR_1 = 112 # ascii for 'p'
+MAGIC_DESCRIPTOR_2 = 104 # ascii for 'h'
+MAGIC_DESCRIPTOR_3 = 115 # ascii for 's'
+
+
 def append_header_to_file(
     fout,
     event_type=OBSERVATION_TYPE_KEY, 
     pass_version=4
-):
+):  
+    fout.write(np.uint8(MAGIC_DESCRIPTOR_1).tobytes())
+    fout.write(np.uint8(MAGIC_DESCRIPTOR_2).tobytes())
+    fout.write(np.uint8(MAGIC_DESCRIPTOR_3).tobytes())
     fout.write(np.uint8(pass_version).tobytes())
     fout.write(np.uint8(event_type).tobytes())
 
 
 def read_header_from_file(fin):
-    raw_header = np.fromstring(fin.read(2), dtype=np.uint8, count=2)
+    raw_header = np.fromstring(fin.read(5), dtype=np.uint8, count=5)
     return {
-        'pass_version': raw_header[0],
-        'event_type': raw_header[1],
+        'magic_1': raw_header[0],
+        'magic_2': raw_header[1],
+        'magic_3': raw_header[2],
+        'pass_version': raw_header[3],
+        'event_type': raw_header[4],
     }
 
 

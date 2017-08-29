@@ -18,6 +18,10 @@ const float TIME_SLICE_DURATION_S = 0.5e-9;
 const uint8_t OBSERVATION_KEY = 0;
 const uint8_t SIMULATION_KEY = 1;
 const uint8_t PASS_VERSION = 4;
+const uint8_t MAGIC_DESCRIPTOR_1 = 112;     // ascii for 'p'
+const uint8_t MAGIC_DESCRIPTOR_2 = 104;     // ascii for 'h'
+const uint8_t MAGIC_DESCRIPTOR_3 = 115;     // ascii for 's'
+
 
 void append_float32(float &v, std::ofstream &fout) {
     fout.write(reinterpret_cast<char*>(&v), sizeof(v));
@@ -58,18 +62,27 @@ uint8_t read_uint8(std::ifstream &fin) {
 
 //------------------------------------------------------------------------------
 struct Descriptor {
+    uint8_t magic_1;
+    uint8_t magic_2;
+    uint8_t magic_3;
     uint8_t pass_version;
     uint8_t event_type;
 };
 
 Descriptor read_Descriptor_from_file(std::ifstream &fin) {
     Descriptor d;
+    d.magic_1 = read_uint8(fin);
+    d.magic_2 = read_uint8(fin);
+    d.magic_3 = read_uint8(fin);
     d.pass_version = read_uint8(fin);
     d.event_type = read_uint8(fin);
     return d;
 }
 
 void append_Descriptor_to_file(Descriptor &d, std::ofstream &fout) {
+    append_uint8(d.magic_1, fout);
+    append_uint8(d.magic_2, fout);
+    append_uint8(d.magic_3, fout);
     append_uint8(d.pass_version, fout);
     append_uint8(d.event_type, fout);
 }

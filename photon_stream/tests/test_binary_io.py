@@ -126,6 +126,9 @@ def test_pass_header_io():
     for i in range(len(out_headers)):
         out_h = out_headers[i]
         in_h = in_headers[i]
+        assert in_h['magic_1'] == ps.experimental.io.MAGIC_DESCRIPTOR_1 
+        assert in_h['magic_2'] == ps.experimental.io.MAGIC_DESCRIPTOR_2
+        assert in_h['magic_3'] == ps.experimental.io.MAGIC_DESCRIPTOR_3
         assert out_h['pass_version'] == in_h['pass_version']
         assert out_h['event_type'] == in_h['event_type']
 
