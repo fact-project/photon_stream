@@ -5,8 +5,6 @@ from ..ObservationInformation import ObservationInformation
 from ..simulation_truth import SimulationTruth
 from . import magic_constants as magic
 from array import array
-import os
-import gzip
 
 LINEBREAK = np.array([np.iinfo(np.uint8).max], dtype=np.uint8)
 OBSERVATION_TYPE_KEY = 0
