@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <vector>
+#include <array>
 #include <math.h>
 #include <fstream>
 #include <iostream>
@@ -184,35 +185,50 @@ struct PhotonStream {
     uint32_t number_of_photons() {
         return raw.size() - NUMBER_OF_PIXELS;
     }
-
-    void fixed_size_repr(uint16_t **image_sequence) {
-        uint32_t pixel = 0;
-        for(uint32_t i=0; i<raw.size(); i++) {
-            if(raw[i] == NEXT_PIXEL_MARKER) {
-                pixel++;
-            }else{
-                image_sequence[
-                    raw[i] - NUMBER_OF_TIME_SLICES_OFFSET_AFTER_BEGIN_OF_ROI
-                ][
-                    pixel
-                ]++;
-            }
-        }
-    };
-
-    void point_cloud_repr(const float *cx, const float *cy, float* point_cloud) {
-        uint32_t pixel = 0;
-        for(uint32_t i=0; i<raw.size(); i++) {
-            if(raw[i] == NEXT_PIXEL_MARKER) {
-                pixel++;
-            }else{
-                point_cloud[i, 0] = cx[pixel];
-                point_cloud[i, 1] = cy[pixel];
-                point_cloud[i, 2] = TIME_SLICE_DURATION_S*raw[i];
-            }            
-        }        
-    }
 };
+
+#define image_sequence std::array<std::array<uint16_t, NUMBER_OF_PIXELS>, NUMBER_OF_TIME_SLICES> 
+#define list_of_lists std::array<std::vector<uint8_t>, NUMBER_OF_PIXELS>
+#define image std::array<uint64_t, NUMBER_OF_PIXELS>
+
+list_of_lists list_of_lists_representation(PhotonStream &phs) {
+    list_of_lists list;
+    uint32_t chid = 0;
+    for(uint32_t i=0; i<phs.raw.size(); i++) {
+        if(phs.raw[i] == NEXT_PIXEL_MARKER) {
+            chid++;
+        }else{
+            list[chid].push_back(phs.raw[i]);
+        }
+    } 
+    return list;
+}
+
+image list_of_lists_integral(list_of_lists &l) {
+    image img;
+    for(uint32_t i=0; i<l.size(); i++) {
+        img[i] = l[i].size();
+    }
+    return img;  
+}
+
+image image_integral(PhotonStream &phs) {
+    list_of_lists lol = list_of_lists_representation(phs);
+    return list_of_lists_integral(lol);
+}
+
+image_sequence image_sequence_representation(PhotonStream &phs) {
+    image_sequence seq;
+    uint32_t chid = 0;
+    for(uint32_t i=0; i<phs.raw.size(); i++) {
+        if(phs.raw[i] == NEXT_PIXEL_MARKER) {
+            chid++;
+        }else{
+            seq[phs.raw[i]][chid]++;
+        }
+    }  
+    return seq;
+}
 
 PhotonStream read_PhotonStream_from_file(std::istream &fin) {
     PhotonStream phs;
