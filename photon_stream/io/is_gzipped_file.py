@@ -1,4 +1,3 @@
-import gzip
 
 
 def is_gzipped_file(path):
