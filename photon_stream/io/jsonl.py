@@ -1,13 +1,11 @@
-import ujson as json
-import os
-import gzip
-import numpy as np
-from array import array
 from ..PhotonStream import PhotonStream
 from ..Event import Event
 from ..ObservationInformation import ObservationInformation
 from ..simulation_truth import SimulationTruth
 from . import magic_constants as magic
+import ujson as json
+import numpy as np
+from array import array
 
 
 def read_event_from_dict(event_dict):
