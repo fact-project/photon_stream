@@ -19,9 +19,6 @@ class Event(object):
 
     az                  The telescope pointing azimuth in deg.
 
-    saturated_pixels    A list of pixels in CHID which have time line 
-                        saturations out of the DRS4 chips.
-
     photon_stream       The photon-stream of all photons detected by all pixels
                         in this event.
 
