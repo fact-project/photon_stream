@@ -20,7 +20,7 @@ event_dict_B = {
 
 def test_constructor():
     a = np.abs
-    obs = ps.io.json_line_dicts.read_ObservationInformation_from_dict(event_dict_A)
+    obs = ps.io.jsonl.read_ObservationInformation_from_dict(event_dict_A)
     assert obs.run == 1337
     assert obs.night == 20151224
     assert obs.event == 42
@@ -30,11 +30,11 @@ def test_constructor():
 
 
 def test_equal():
-    obs_info_1A = ps.io.json_line_dicts.read_ObservationInformation_from_dict(event_dict_A)
-    obs_info_1B = ps.io.json_line_dicts.read_ObservationInformation_from_dict(event_dict_B)
+    obs_info_1A = ps.io.jsonl.read_ObservationInformation_from_dict(event_dict_A)
+    obs_info_1B = ps.io.jsonl.read_ObservationInformation_from_dict(event_dict_B)
     
-    obs_info_2A = ps.io.json_line_dicts.read_ObservationInformation_from_dict(event_dict_A)
-    obs_info_2B = ps.io.json_line_dicts.read_ObservationInformation_from_dict(event_dict_B)
+    obs_info_2A = ps.io.jsonl.read_ObservationInformation_from_dict(event_dict_A)
+    obs_info_2B = ps.io.jsonl.read_ObservationInformation_from_dict(event_dict_B)
 
     assert obs_info_1A == obs_info_1A
     assert obs_info_1A != obs_info_1B
@@ -42,15 +42,15 @@ def test_equal():
 
 
 def test_repr():
-    sim_truth = ps.io.json_line_dicts.read_ObservationInformation_from_dict(event_dict_A)
+    sim_truth = ps.io.jsonl.read_ObservationInformation_from_dict(event_dict_A)
     print(sim_truth.__repr__())
 
 
 def test_to_dict():
-    obs_A = ps.io.json_line_dicts.read_ObservationInformation_from_dict(event_dict_A)
+    obs_A = ps.io.jsonl.read_ObservationInformation_from_dict(event_dict_A)
 
     dict_back = {'Test': True}
-    dict_back = ps.io.json_line_dicts.append_ObservationInformation_to_dict(obs_A, dict_back)
+    dict_back = ps.io.jsonl.append_ObservationInformation_to_dict(obs_A, dict_back)
 
     for key in event_dict_A:
         assert key in dict_back

@@ -16,7 +16,7 @@ def test_run_inspection():
         output_run_path = os.path.join(tmp, '20170119_229_out.phs.jsonl.gz')
         with gzip.open(output_run_path, 'wt') as fout:
             for event in in_run:
-                json.dump(ps.io.json_line_dicts.event_to_dict(event), fout)
+                json.dump(ps.io.jsonl.event_to_dict(event), fout)
                 fout.write('\n')
 
         in_run = ps.EventListReader(run_path)
