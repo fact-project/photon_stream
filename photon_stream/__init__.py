@@ -8,6 +8,7 @@ from .SimulationReader import SimulationReader
 from .PhotonCluster import PhotonStreamCluster
 from .PhotonCluster import PhotonTimeLineCluster
 from . import finger_histogram
+from .jsonl2binary import jsonl2binary
 
 from . import production
 from . import experimental

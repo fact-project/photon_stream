@@ -2,43 +2,23 @@ import ujson as json
 import os
 import gzip
 from .is_gzipped_file import is_gzipped_file
+from ..Event import Event
 
 class JsonLinesReader:
-    """
-    Sequentially reads a JSON-Lines file line by line and provides
-    dictionaries for each line. Also supports gzipped files.
-    """
-    def __init__(self, path):
-        self.path = os.path.abspath(path)
-
-        if is_gzipped_file(path):
-            self.file = gzip.open(path, 'rt')
-        else:
-            self.file = open(path, 'rt')
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        self.close()
-
-    def close(self):
-        self.file.close()
+    def __init__(self, fin):
+        self.fin = fin
 
     def __iter__(self):
         return self
 
     def __next__(self):
-        return read_next_dict_from_jsonl_file(self.file)
+        line = self.fin.readline().strip().rstrip(',')
+        if not line:
+            raise StopIteration
+        event_dict = json.loads(line)
+        return Event.from_event_dict(event_dict)
 
     def __repr__(self):
         out = '{}('.format(self.__class__.__name__)
-        out += self.path+')\n'
+        out += ')\n'
         return out
-
-
-def read_next_dict_from_jsonl_file(fin):
-    line = fin.readline().strip().rstrip(',')
-    if not line:
-        raise StopIteration
-    return json.loads(line)

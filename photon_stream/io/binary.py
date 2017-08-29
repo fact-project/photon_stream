@@ -232,24 +232,27 @@ def read_event_from_file(fin):
         raise StopIteration
 
 
-class EventListReader(object):
-    """
-    Sequentially reads a gzipped binary run and provides events.
-    """
-    def __init__(self, path):
-        self.path = os.path.abspath(path)
-        self.file = gzip.open(path, "rb")
+def is_phs_binary(fin):
+    h = read_header_from_file(fin)
+    return (
+        h['magic_1'] == ord('p') and
+        h['magic_2'] == ord('h') and
+        h['magic_3'] == ord('s') and
+        h['pass_version'] == 4
+    )
 
-    def __exit__(self):
-        self.file.close()
+
+class Reader(object):
+    def __init__(self, fin):
+        self.fin = fin
 
     def __iter__(self):
         return self
 
     def __next__(self):
-        return read_event_from_file(self.file)
+        return read_event_from_file(self.fin)
 
     def __repr__(self):
-        out = 'BinaryEventListReader('
-        out += self.path+')\n'
+        out = '{}('.format(self.__class__.__name__)
+        out += ')\n'
         return out

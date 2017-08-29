@@ -1,5 +1,6 @@
 from .Event import Event
-from .io.JsonLinesReader import JsonLinesReader
+from . import io
+import gzip
 import pandas as pd
 
 
@@ -11,30 +12,49 @@ class EventListReader:
     def __init__(self, path):
         """
         Load FACT observations from a file.
-
-        Parameters
-        ----------
-        path        The path to the observation file.
         """
-        self.reader = JsonLinesReader(path)
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        return Event.from_event_dict(next(self.reader))
-
-    def __repr__(self):
-        out = 'EventListReader('
-        out += "path '" + self.reader.path + "'"
-        out += ')\n'
-        return out
+        self.path = path
+        self.gzipped = io.is_gzipped_file(path)
+        if self.gzipped:
+            with gzip.open(path, 'rb') as fin:
+                if io.binary.is_phs_binary(fin):
+                    self.file = gzip.open(path, 'rb')
+                    self.reader = io.binary.Reader(self.file)
+                else:
+                    self.file = gzip.open(path, 'rt')
+                    self.reader = io.JsonLinesReader(self.file)
+        else:
+            with open(path, 'rb') as fin:
+                if io.binary.is_phs_binary(fin):
+                    self.file = open(path, 'rb')
+                    self.reader = io.binary.Reader(self.file)
+                else:
+                    self.file = open(path, 'rt')
+                    self.reader = io.JsonLinesReader(self.file)
+          
 
     def __enter__(self):
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        self.reader.close()
+        self.close()
+
+    def close(self):
+        self.file.close()
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        return next(self.reader)
+
+    def __repr__(self):
+        out = 'EventListReader('
+        out += "path '" + self.path + "'"
+        out += ')\n'
+        return out
+
+
 
     @staticmethod
     def inspect(path):

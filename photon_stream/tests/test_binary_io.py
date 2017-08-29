@@ -5,12 +5,20 @@ import os
 import pkg_resources
 import gzip
 
+run_path = pkg_resources.resource_filename(
+    'photon_stream',
+    'tests/resources/20170119_229_pass4_100events.phs.jsonl.gz'
+)
+
+def test_binary_check():
+    with tempfile.TemporaryDirectory(prefix='phs') as tmp:
+        path = os.path.join(tmp, 'run.phs.gz')
+        ps.jsonl2binary(run_path, path)
+        with gzip.open(path, 'rb') as fin:
+            assert ps.io.binary.is_phs_binary(fin)
+
+
 def test_binary_io():
-
-    run_path = pkg_resources.resource_filename(
-        'photon_stream',
-        'tests/resources/20170119_229_pass4_100events.phs.jsonl.gz')
-
     run = ps.EventListReader(run_path)
 
     with tempfile.TemporaryDirectory(prefix='photon_stream_test_binary') as tmp:
