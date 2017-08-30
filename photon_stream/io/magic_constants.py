@@ -41,6 +41,8 @@ slice.
 
 - output window
     The photon-stream output time window 100 slices (50ns)
+
+see also: https://github.com/fact-project/fact-tools/blob/master/src/main/java/fact/photonstream/SinglePulseExtraction.java
 """
 NUMBER_OF_TIME_SLICES = 100
 """

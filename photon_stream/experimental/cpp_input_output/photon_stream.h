@@ -23,6 +23,28 @@ const uint8_t MAGIC_DESCRIPTOR_1 = 'p';
 const uint8_t MAGIC_DESCRIPTOR_2 = 'h';
 const uint8_t MAGIC_DESCRIPTOR_3 = 's';
 
+//                         whole time series
+//  |.......................................................................|
+//  |                                                                       |
+//  |         |................ extraction window .................|        |
+//  |         | <---------- length = 225 ------------------------> |        |
+//  |         |                                                    |        |
+//  |         |       |.. output window ..|                        |        |
+//  0        20       | <- length=100 ->  |                       245      300
+//                   30                  130
+// 
+// [in 2GHz slices]
+// 
+// - whole time series
+//     The full 300 slices (150ns) Region Of Interest (ROI) of the FACT camera.
+// 
+// - extraction window
+//     The timewindow where single pulses are searched for and extracted.
+// 
+// - output window
+//     The photon-stream output time window 100 slices (50ns)
+// 
+// see also: https://github.com/fact-project/fact-tools/blob/master/src/main/java/fact/photonstream/SinglePulseExtraction.java
 
 void append_float32(float &v, std::ostream &fout) {
     fout.write(reinterpret_cast<char*>(&v), sizeof(v));
