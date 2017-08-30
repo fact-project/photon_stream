@@ -28,7 +28,7 @@ def test_production_run_collection():
 
         runinfo_path = pkg_resources.resource_filename(
             'photon_stream', 
-            'tests/resources/runinfo_2014Dec15_2015Jan15.msg')
+            'tests/resources/runinfo_2014Dec15_2015Jan15.csv')
 
         runinfo = ps.production.runinfo.read_runinfo_from_file(runinfo_path)
 

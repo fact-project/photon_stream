@@ -221,7 +221,7 @@ def add_drs_run_info_to_jobs(runinfo, jobs):
             job["drs_Run"] = drs_run_candidates.iloc[-1].fRunID
             job["drs_file_name"] = '{bsn:08d}_{rrr:03d}.drs.fits.gz'.format(
                 bsn=job['Night'],
-                rrr=job["drs_Run"])
+                rrr=int(job["drs_Run"]))
             job['drs_path'] = os.path.join(
                 job['fact_drs_dir'], 
                 job['yyyymmnn_dir'], 

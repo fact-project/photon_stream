@@ -5,12 +5,12 @@ import pkg_resources
 
 known_runs_path = pkg_resources.resource_filename(
     'photon_stream', 
-    'tests/resources/known_runs_20110101.msg'
+    'tests/resources/known_runs_20110101.csv'
 )
 
 runinfo_path = pkg_resources.resource_filename(
     'photon_stream', 
-    'tests/resources/runinfo_20120201.msg'
+    'tests/resources/runinfo_20120201.csv'
 )
 
 
