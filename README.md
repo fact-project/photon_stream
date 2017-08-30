@@ -39,7 +39,7 @@ sim_reader.event_passed_trigger
 
 ![img](example/example_event_small.gif)
 
-# The Photon-Stream File Format Rationale
+# The Photon-Stream Rationale
 As a technology demonstrater, the FACT telescope records its observations in a format which is as close to the read out hardware as possible. This was a great choice to explore the novel SIPM and DRS4 readout chain, but turns out to be tedious to do high level physics analysis as flux, spectra and light-curve investigations on astronomical sources as the raw events are rather bulky, full of artifacts and not calibrated at all. The raw events are ```1440``` pixels X  ```300``` time slices X ```16```bit dynamic range = 864kB in size. The raw events can not be analyzed independent of each other (readout artifacts) and furhter need additional calibration files, which are not straight forward to identify. Although effort was spent to compress the raw events with a dedicated format called [zfits](https://arxiv.org/pdf/1506.06045.pdf), the events from 2011 to 2017 still need 450TB of disk storage. The years passed by and FACT is not longer a demonstrater, but a part of the high energy gamma-ray astronomy community. It is time to analyse our observations in an easier way. It is time for a physics format.
 
 The photon-stream can compress events down to a size of 3.7kB for dark nights. Based on this, the idea was born to create a no compromise, physics only file format for the FACT telescope with the potential to fit all events from 2011 to 2017 on a single hard disk drive of 10TB.
@@ -47,8 +47,8 @@ The photon-stream format is already fully calibrated and does not need additiona
 
 The photon-stream format is intended and optimized to do __astronomy__. We belive, that for effective physics analysis it is crucial to have the observed events as small in storage space as any possible. We want to enable a Bachelor student to analyse years of FACT observations on her notebook! We want to enable our students to transfer a full 5min FACT observation run via email. We want to give our students something that they are familiar with, i.e. the concept of single photons instead of readout calibration and artifact foo. We want to keep as much of the air shower physics as possible and even gain additional knowledge which was not accessible with our current 'one arrival time only' policy which is still a heritage of our PMT based ancestors. Finally, we want to reveal, for the first time ever, the true potential of an SIPM based IACT. This is the FACT photon-stream.
 
-## File Format
-After evaluation of several formats (FITS, massage pack, JSON, custom binary), JSON-lines with gzip was chosen for the first official pass ```4```. It turned out, that gzipped JSON-lines has only a size overhead of ```15%``` to ```35%``` compared to the smallest possible binary format we could come up with.
+# Json-Lines format
+This human readable format is easy to understand and used as widely as the internet is wide. Fortunately gzipped Json-Lines is only ```15%``` to ```35%``` larger than the smallest custom binary format we could come up with. The read and right speed is sufficient for physics analysis (DBSCAN clustering).
 ```json
 {"Night":20170119,"Run":229,"Event":1,"UnixTime_s_us":[1484895178,532244],"Trigger":4,"Az_deg":-63.253664797474336,"Zd_deg":33.06900475126648,"PhotonArrivals_500ps":[[59,84],[102,93,103],[58],[65,79,97],[],[125,43,68],[102],[68,100,123],[52,52,79,113,61,78,112,87]],"SaturatedPixels":[]}
 ```
@@ -108,6 +108,9 @@ Since a single photon is now defined by only one sharp arrival time in contrast 
 "SaturatedPixels":[123,456]
 ```
 A list of pixels in ```CHID``` to indicate that the corresponding pixel had an saturated analog time line out of the raw DRS4 chip. The maximim number of saturated pixels is ```100```, as the event is skipped then anyhow. Usually this list is empty. Such saturations happen not only for ultra high energy air showers, but also when the DRS4 calibration was not possible or is broken elseway.
+
+# phs binary format
+
 
 ## Integration into existing air shower reconstruction software
 When the idea of the photon-stream is inverted, the amplitude time lines of an individual pixel can be reconstructed from the photon-stream events which enables FACT to use ist usual air shower reconstruction programs right ahead without modifications.  
