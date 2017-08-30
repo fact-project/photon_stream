@@ -10,12 +10,7 @@ import pkg_resources
 from .runinfo import OBSERVATION_RUN_TYPE_KEY
 from .runinfo import DRS_RUN_TYPE_KEY
 from . import tools
-
-readme_input_path = pkg_resources.resource_filename(
-    'photon_stream', 
-    'production/resources/short_readme.md'
-)  
-
+ 
 
 def make_job_list(
     out_dir,
@@ -177,8 +172,14 @@ def make_job_list(
 def prepare_directory_structure(directory_structure):
     ds = directory_structure
     print('Prepare output directory structure ...')
+    
     os.makedirs(ds['out_dir'], exist_ok=True)
+    readme_input_path = pkg_resources.resource_filename(
+        'photon_stream', 
+        'production/resources/short_readme.md'
+    ) 
     shutil.copy(readme_input_path, ds['readme_path'])
+    
     os.makedirs(ds['std_dir'], exist_ok=True)
     os.makedirs(ds['job_dir'], exist_ok=True)
     os.makedirs(ds['phs_dir'], exist_ok=True)
