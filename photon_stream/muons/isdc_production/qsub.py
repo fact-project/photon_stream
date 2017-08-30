@@ -19,7 +19,7 @@ def qsub(
     """
     input_phs_dir = os.path.abspath(input_phs_dir)
     out_muon_dir = os.path.abspath(out_muon_dir)
-    os.makedirs(out_muon_dir, exist_ok=True)
+    os.makedirs(out_muon_dir, exist_ok=True, mode=0o777)
 
     print('Start extracting muons...')
 
@@ -89,13 +89,13 @@ def qsub(
             job['base']+'.e')
 
         job_dir = os.path.split(job['job_path'])[0]
-        os.makedirs(job_dir, exist_ok=True)
+        os.makedirs(job_dir, exist_ok=True, mode=0o777)
 
         std_dir = os.path.split(job['stdout_path'])[0]
-        os.makedirs(std_dir, exist_ok=True)
+        os.makedirs(std_dir, exist_ok=True, mode=0o777)
 
         output_muon_dir = os.path.split(job['output_muon_path'])[0]
-        os.makedirs(output_muon_dir, exist_ok=True)
+        os.makedirs(output_muon_dir, exist_ok=True, mode=0o777)
 
         write_worker_node_script(
             path=job['job_path'],
