@@ -178,31 +178,25 @@ void append_Pointing_to_file(Pointing &p, std::ostream &fout) {
 }
 
 //------------------------------------------------------------------------------
-struct PhotonStream {
-    std::vector<uint8_t> raw;
-    std::vector<uint16_t> saturated_pixels;
-
-    uint32_t number_of_photons() {
-        return raw.size() - NUMBER_OF_PIXELS;
-    }
-};
-
-#define image_sequence std::array<std::array<uint16_t, NUMBER_OF_PIXELS>, NUMBER_OF_TIME_SLICES> 
-#define list_of_lists std::array<std::vector<uint8_t>, NUMBER_OF_PIXELS>
+#define raw_stream std::vector<uint8_t>
 #define image std::array<uint64_t, NUMBER_OF_PIXELS>
+#define image_sequence std::array<image, NUMBER_OF_TIME_SLICES>
+#define list_of_lists std::array<std::vector<uint8_t>, NUMBER_OF_PIXELS>
 
-list_of_lists list_of_lists_representation(PhotonStream &phs) {
-    list_of_lists list;
+
+list_of_lists list_of_lists_representation(raw_stream &raw) {
+    list_of_lists lol;
     uint32_t chid = 0;
-    for(uint32_t i=0; i<phs.raw.size(); i++) {
-        if(phs.raw[i] == NEXT_PIXEL_MARKER) {
+    for(uint32_t i=0; i<raw.size(); i++) {
+        if(raw[i] == NEXT_PIXEL_MARKER) {
             chid++;
         }else{
-            list[chid].push_back(phs.raw[i]);
+            lol[chid].push_back(raw[i]);
         }
     } 
-    return list;
+    return lol;
 }
+
 
 image list_of_lists_integral(list_of_lists &l) {
     image img;
@@ -212,23 +206,54 @@ image list_of_lists_integral(list_of_lists &l) {
     return img;  
 }
 
-image image_integral(PhotonStream &phs) {
-    list_of_lists lol = list_of_lists_representation(phs);
+
+image image_integral(raw_stream &raw) {
+    list_of_lists lol = list_of_lists_representation(raw);
     return list_of_lists_integral(lol);
 }
 
-image_sequence image_sequence_representation(PhotonStream &phs) {
+
+image_sequence image_sequence_representation(raw_stream &raw) {
     image_sequence seq;
     uint32_t chid = 0;
-    for(uint32_t i=0; i<phs.raw.size(); i++) {
-        if(phs.raw[i] == NEXT_PIXEL_MARKER) {
+    for(uint32_t i=0; i<raw.size(); i++) {
+        if(raw[i] == NEXT_PIXEL_MARKER) {
             chid++;
         }else{
-            seq[phs.raw[i]][chid]++;
+            uint8_t idx = raw[i] - NUMBER_OF_TIME_SLICES_OFFSET_AFTER_BEGIN_OF_ROI;
+            seq[idx][chid]++;
         }
     }  
     return seq;
 }
+
+
+struct PhotonStream {
+    raw_stream raw;
+    std::vector<uint16_t> saturated_pixels;
+
+    uint32_t number_of_photons() {
+        return raw.size() - NUMBER_OF_PIXELS;
+    }
+
+    bool is_adc_saturaded() {
+        return saturated_pixels.size() > 0;
+    }
+
+    bool is_single_pulse_extractor_saturated() {
+        image img = image_integral(raw);
+        for(uint32_t chid=0; chid<img.size(); chid++) {
+            if(img.at(chid) > NUMBER_OF_PHOTONS_IN_PIXEL_BEFORE_SATURATION)
+                return true;
+        }
+        return false;
+    }
+
+    bool is_saturated() {
+        return is_adc_saturaded() || is_single_pulse_extractor_saturated();
+    }
+};
+
 
 PhotonStream read_PhotonStream_from_file(std::istream &fin) {
     PhotonStream phs;

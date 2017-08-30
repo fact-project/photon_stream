@@ -1,5 +1,5 @@
 // compile using:
-// g++ docopt/docopt.cpp example_viewer.cpp -o phs.slices -std=gnu++11
+// g++ docopt/docopt.cpp example_viewer.cpp -o phs.viewer -std=gnu++11
 
 #include <stdio.h>
 #include <string.h>
@@ -205,7 +205,7 @@ Slices make_slices_from_phs_lol(phs_lol lol) {
 
 void print_event_info_line(ps::ObservationEvent &event) {
     printf(
-        "Night %5d  Run %3d  Event %6d  Trigger %6d\nAzimuth %3.2fdeg  Zenith distance %3.2fdeg\nUnixTime %10.6fs  photons %6d\n",  
+        "Night %5d  Run %3d  Event %6d  Trigger %6d\nAzimuth %3.2fdeg  Zenith distance %3.2fdeg\nUnixTime %10.6fs  photons %6d  Saturated %s\n",  
         event.id.night,
         event.id.run,
         event.id.event,
@@ -213,7 +213,8 @@ void print_event_info_line(ps::ObservationEvent &event) {
         event.pointing.az,
         event.pointing.zd,
         float(event.info.unix_time_s) + 1e-6*float(event.info.unix_time_us),
-        event.photon_stream.number_of_photons()
+        event.photon_stream.number_of_photons(),
+        event.photon_stream.is_saturated() ? "true" : "false"
     );
 };
 
@@ -310,7 +311,7 @@ int main(int argc, char* argv[]) {
 
     ps::ObservationEvent current_event = events.at(0);
     Slices current_slices = make_slices_from_phs_lol(
-        ps::list_of_lists_representation(current_event.photon_stream)
+        ps::list_of_lists_representation(current_event.photon_stream.raw)
     );
     slice_idx = current_slices.arg_max.arg;
 
@@ -359,7 +360,7 @@ int main(int argc, char* argv[]) {
         if(update_event) {
             current_event = events.at(event_idx);
             current_slices = make_slices_from_phs_lol(
-                ps::list_of_lists_representation(current_event.photon_stream)
+                ps::list_of_lists_representation(current_event.photon_stream.raw)
             );
             slice_idx = current_slices.arg_max.arg;
         }
