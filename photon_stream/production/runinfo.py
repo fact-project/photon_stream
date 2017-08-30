@@ -55,7 +55,7 @@ def read_runinfo_from_file(path='phs_runstatus.csv'):
     return pd.read_csv(path)
 
 def write_runinfo_to_file(runinfo, path='phs_runstatus.csv'):
-    runinfo.to_csv(path, index=False)
+    runinfo.to_csv(path, index=False, na_rep='nan')
 
 
 def create_fake_fact_dir(path, runinfo):
