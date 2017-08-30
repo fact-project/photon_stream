@@ -5,10 +5,17 @@ from os.path import exists
 import shutil
 import datetime as dt
 import numpy as np
+import pkg_resources
 
 from .runinfo import OBSERVATION_RUN_TYPE_KEY
 from .runinfo import DRS_RUN_TYPE_KEY
 from . import tools
+
+readme_input_path = pkg_resources.resource_filename(
+    'photon_stream', 
+    'production/resources/short_readme.md'
+)  
+
 
 def make_job_list(
     out_dir,
@@ -89,6 +96,7 @@ def make_job_list(
         'res_dir_this_processing': this_processing_resource_dir,
         'fact_tools_jar_path': fact_tools_jar_path,
         'fact_tools_xml_path': fact_tools_xml_path,
+        'readme_path': join(out_dir, 'README.md')
     }
 
     print('Find runs in night range '+str(start_night)+' to '+str(end_night)+' in runinfo database ...')
@@ -170,6 +178,7 @@ def prepare_directory_structure(directory_structure):
     ds = directory_structure
     print('Prepare output directory structure ...')
     os.makedirs(ds['out_dir'], exist_ok=True)
+    shutil.copy(readme_input_path, ds['readme_path'])
     os.makedirs(ds['std_dir'], exist_ok=True)
     os.makedirs(ds['job_dir'], exist_ok=True)
     os.makedirs(ds['phs_dir'], exist_ok=True)
