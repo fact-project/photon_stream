@@ -43,8 +43,8 @@ def qsub(
 
     for job in tqdm(jobs):
 
-        os.makedirs(job['job_yyyy_mm_nn_dir'], exist_ok=True)
-        os.makedirs(job['std_yyyy_mm_nn_dir'], exist_ok=True)
+        os.makedirs(job['job_yyyy_mm_nn_dir'], exist_ok=True, mode=0o777)
+        os.makedirs(job['std_yyyy_mm_nn_dir'], exist_ok=True, mode=0o777)
 
         write_worker_script(
             path=job['job_path'],
