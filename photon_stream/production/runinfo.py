@@ -37,11 +37,11 @@ def download_latest_runinfo():
         columns=ID_RUNINFO_KEYS + TYPE_RUNINFO_KEYS + TRIGGER_NUMBER_RUNINFO_KEYS
     )
 
-def read_runinfo_from_file(path='runinfo.msg'):
-    return pd.read_msgpack(path)
+def read_runinfo_from_file(path='phs_runstatus.csv'):
+    return pd.read_csv(path)
 
-def write_runinfo_to_file(runinfo, path='runinfo.msg'):
-    runinfo.to_msgpack(path)
+def write_runinfo_to_file(runinfo, path='phs_runstatus.csv'):
+    runinfo.to_csv(path, index=False)
 
 
 def create_fake_fact_dir(path, runinfo):
