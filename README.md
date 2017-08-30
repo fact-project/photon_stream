@@ -39,7 +39,7 @@ sim_reader.event_passed_trigger
 
 ![img](example/example_event_small.gif)
 
-# The Photon-Stream File Format Rationale
+# The Photon-Stream Rationale
 As a technology demonstrater, the FACT telescope records its observations in a format which is as close to the read out hardware as possible. This was a great choice to explore the novel SIPM and DRS4 readout chain, but turns out to be tedious to do high level physics analysis as flux, spectra and light-curve investigations on astronomical sources as the raw events are rather bulky, full of artifacts and not calibrated at all. The raw events are ```1440``` pixels X  ```300``` time slices X ```16```bit dynamic range = 864kB in size. The raw events can not be analyzed independent of each other (readout artifacts) and furhter need additional calibration files, which are not straight forward to identify. Although effort was spent to compress the raw events with a dedicated format called [zfits](https://arxiv.org/pdf/1506.06045.pdf), the events from 2011 to 2017 still need 450TB of disk storage. The years passed by and FACT is not longer a demonstrater, but a part of the high energy gamma-ray astronomy community. It is time to analyse our observations in an easier way. It is time for a physics format.
 
 The photon-stream can compress events down to a size of 3.7kB for dark nights. Based on this, the idea was born to create a no compromise, physics only file format for the FACT telescope with the potential to fit all events from 2011 to 2017 on a single hard disk drive of 10TB.
@@ -47,12 +47,12 @@ The photon-stream format is already fully calibrated and does not need additiona
 
 The photon-stream format is intended and optimized to do __astronomy__. We belive, that for effective physics analysis it is crucial to have the observed events as small in storage space as any possible. We want to enable a Bachelor student to analyse years of FACT observations on her notebook! We want to enable our students to transfer a full 5min FACT observation run via email. We want to give our students something that they are familiar with, i.e. the concept of single photons instead of readout calibration and artifact foo. We want to keep as much of the air shower physics as possible and even gain additional knowledge which was not accessible with our current 'one arrival time only' policy which is still a heritage of our PMT based ancestors. Finally, we want to reveal, for the first time ever, the true potential of an SIPM based IACT. This is the FACT photon-stream.
 
-## File Format
-After evaluation of several formats (FITS, massage pack, JSON, custom binary), JSON-lines with gzip was chosen for the first official pass ```4```. It turned out, that gzipped JSON-lines has only a size overhead of ```15%``` to ```35%``` compared to the smallest possible binary format we could come up with.
+# Json-Lines format
+This human readable format is easy to understand and used as widely as the internet is wide. Fortunately gzipped Json-Lines is only ```15%``` to ```35%``` larger than the smallest custom binary format we could come up with. The read and right speed is sufficient for physics analysis (DBSCAN clustering).
 ```json
 {"Night":20170119,"Run":229,"Event":1,"UnixTime_s_us":[1484895178,532244],"Trigger":4,"Az_deg":-63.253664797474336,"Zd_deg":33.06900475126648,"PhotonArrivals_500ps":[[59,84],[102,93,103],[58],[65,79,97],[],[125,43,68],[102],[68,100,123],[52,52,79,113,61,78,112,87]],"SaturatedPixels":[]}
 ```
-The run files are named ```YYYYmmnn_RRR.phs.jsonl.gz```. There is no run header. Each line in a ```phs.jsonl.gz``` file corresponds to one event. This way events can be concatenated and counted very easily.
+Json-Lines run files are named ```YYYYmmnn_RRR.phs.jsonl.gz```. There is no run header. Each line in a ```phs.jsonl.gz``` file corresponds to one event. This way events can be concatenated and counted very easily.
 
 ### Keys
 
@@ -108,6 +108,179 @@ Since a single photon is now defined by only one sharp arrival time in contrast 
 "SaturatedPixels":[123,456]
 ```
 A list of pixels in ```CHID``` to indicate that the corresponding pixel had an saturated analog time line out of the raw DRS4 chip. The maximim number of saturated pixels is ```100```, as the event is skipped then anyhow. Usually this list is empty. Such saturations happen not only for ultra high energy air showers, but also when the DRS4 calibration was not possible or is broken elseway.
+
+# phs binary format
+The ```phs``` format is a binary format with exactly the same content as the Json-Lines ```phs.jsonl``` format. 
+The binary format is about ```15%``` to ```35%``` smaller than the Json-Lines and allows much higher read speeds.
+There is no run header of footer. This is just a list of events. Each event hat its full ID.
+Binary run files are named ```YYYYmmnn_RRR.phs.gz```.
+
+The content of the differnt event types is as follows:
+
+## Observation Event
+    - Descriptor
+    - Observation Event Identifier
+    - Observation Information
+    - Pointing
+    - Photon-Stream
+    - Saturated Pixels
+
+
+## Simulation Event
+    - Descriptor
+    - Simulation Event Identifier
+    - Pointing
+    - Photon-Stream
+    - Saturated Pixels
+
+
+### Descriptor (5 Byte)
+    char
+    +--------+--------+--------+
+    |    p   |    h   |    s   |
+    +--------+--------+--------+
+    - A magic descriptor 'phs'
+
+    uint8
+    +--------+
+    |VERSION |
+    +--------+
+    - VERSION == 4 is pass4 
+
+    uint8
+    +--------+
+    |  Type  |
+    +--------+
+    - Type == 0 is Observation
+    - Type == 1 is Simulation
+
+
+### Observation Event Identifier (12 Byte)
+        
+    uint32
+    +--------+--------+--------+--------+
+    |              Night Id             |
+    +--------+--------+--------+--------+
+
+    uint32
+    +--------+--------+--------+--------+
+    |               Run Id              |
+    +--------+--------+--------+--------+
+    
+    uint32
+    +--------+--------+--------+--------+
+    |             Event Id              |
+    +--------+--------+--------+--------+
+    
+### Simulation Event Identifier (12 Byte)
+
+    uint32
+    +--------+--------+--------+--------+
+    |           CORSIKA RUN Id          |
+    +--------+--------+--------+--------+
+
+    uint32
+    +--------+--------+--------+--------+
+    |         CORSIKA EVENT Id          |
+    +--------+--------+--------+--------+
+
+    uint32
+    +--------+--------+--------+--------+
+    |      CORSIKA Event Reuse Id       |
+    +--------+--------+--------+--------+
+
+### Pointing (8 Byte)
+
+    float32
+    +--------+--------+--------+--------+
+    |   Pointing Zenith Distance [Deg]  |
+    +--------+--------+--------+--------+
+    
+    float32
+    +--------+--------+--------+--------+
+    |          Pointing Azimuth  [Deg]  |
+    +--------+--------+--------+--------+
+
+
+### Observation Information (12 Byte)
+
+    uint32
+    +--------+--------+--------+--------+
+    |          UNIX time [s]            |
+    +--------+--------+--------+--------+
+
+    uint32
+    +--------+--------+--------+--------+
+    |      UNIX time [us] mod. [s]      |
+    +--------+--------+--------+--------+
+    
+    uint32
+    +--------+--------+--------+--------+
+    |            Trigger type           |
+    +--------+--------+--------+--------+
+    
+    
+### Photon-Stream  (number photons + number pixel Byte)
+    
+    uint32
+    +--------+--------+--------+--------+
+    |   Number of pixels and photons    |
+    +--------+--------+--------+--------+
+    The size of the photon-stream in bytes.
+
+
+    Photon arrival times in slices 
+    EXAMPLE. The actual shape and structure depent on the specific event.
+  
+         uint8 
+         +--------+--------+--------+--------+
+       0 |     A  |     B  |     C  |   255  | <- Pixel CHID=0, 3 photons, arrival slices A, B, and C.
+         +--------+--------+--------+--------+   
+       1 |   XXX  |   XXX  |   255  |
+         +--------+--------+--------+ 
+       2 |     C  |   255  | <- Pixel CHID=2, 1 photons, arriving in slice C.
+         +--------+--------+--------+--------+--------+
+       3 |   XXX  |   XXX  |   XXX  |   XXX  |   255  |
+         +--------+--------+--------+--------+--------+--------+--------+ 
+       4 |   XXX  |   XXX  |   XXX  |   XXX  |   XXX  |   XXX  |   255  |
+         +--------+--------+--------+--------+--------+--------+--------+   
+       5 |   XXX  |   255  |
+         +--------+--------+
+       6 |   255  | <- Pixel CHID=6, 0 photons, empty.
+         +--------+--------+--------+
+       7 |   XXX  |   XXX  |   255  |
+         +--------+--------+--------+
+       .
+       .
+       .
+         +--------+--------+
+    1437 |   XXX  |   255  |
+         +--------+--------+--------+--------+--------+
+    1438 |   XXX  |   XXX  |   XXX  |   XXX  |   255  |
+         +--------+--------+--------+--------+--------+
+    1439 |     D  |     E  |   255  | <- last pixel CHID=1439, 2 photons at slices D and E.
+         +--------+--------+--------+
+    Pixel
+    CHID
+
+A list of lists of photon arrival time slices in CHID pixel order.
+The line break from one pixel to the next pixel is marked by the linebreak 
+symbol 2^8-1 = ```255```. This leaves 255 (0-254) slices to encode photon arrival times.
+
+### Saturated Pixels (2 + 2*number saturated pixel Byte)
+
+    uint16
+    +--------+--------+
+    |        N        |
+    +--------+--------+
+    Number of saturated pixels
+
+    uint16
+    +--------+--------+--------+--------+     +--------+--------+
+    |      CHID 0     |      CHID 1     | ... |      CHID N-1   |
+    +--------+--------+--------+--------+     +--------+--------+
+    A list of CHIDs of saturated pixels
+
 
 ## Integration into existing air shower reconstruction software
 When the idea of the photon-stream is inverted, the amplitude time lines of an individual pixel can be reconstructed from the photon-stream events which enables FACT to use ist usual air shower reconstruction programs right ahead without modifications.  

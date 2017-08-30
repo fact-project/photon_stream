@@ -1,44 +1,55 @@
-import numpy as np
 from ..PhotonStream import PhotonStream
 from ..Event import Event
 from ..ObservationInformation import ObservationInformation
 from ..simulation_truth import SimulationTruth
+from . import magic_constants as magic
 from array import array
-import datetime as dt
-import os
-import gzip
+import numpy as np
 
 LINEBREAK = np.array([np.iinfo(np.uint8).max], dtype=np.uint8)
-OBSERVATION_TYPE_KEY = 0
-SIMULATION_TYPE_KEY = 1
-TIME_SLICE_DURATION_S = 0.5e-9;
+OBSERVATION_EVENT_TYPE_KEY = 0
+SIMULATION_EVENT_TYPE_KEY = 1
 
 MAGIC_DESCRIPTOR_1 = ord('p')
 MAGIC_DESCRIPTOR_2 = ord('h')
 MAGIC_DESCRIPTOR_3 = ord('s')
 
 
-def append_header_to_file(
-    fout,
-    event_type=OBSERVATION_TYPE_KEY, 
-    pass_version=4
-):  
-    fout.write(np.uint8(MAGIC_DESCRIPTOR_1).tobytes())
-    fout.write(np.uint8(MAGIC_DESCRIPTOR_2).tobytes())
-    fout.write(np.uint8(MAGIC_DESCRIPTOR_3).tobytes())
-    fout.write(np.uint8(pass_version).tobytes())
-    fout.write(np.uint8(event_type).tobytes())
+class Descriptor():
+    def __init__(self):
+        self.magic_1 = MAGIC_DESCRIPTOR_1
+        self.magic_2 = MAGIC_DESCRIPTOR_2
+        self.magic_3 = MAGIC_DESCRIPTOR_3
+        self.pass_version = magic.SINGLEPULSE_EXTRACTOR_PASS
+        self.event_type = OBSERVATION_EVENT_TYPE_KEY
+
+    def is_valid(self):
+        return (
+            self.magic_1 == MAGIC_DESCRIPTOR_1 and
+            self.magic_2 == MAGIC_DESCRIPTOR_2 and
+            self.magic_3 == MAGIC_DESCRIPTOR_3 and
+            self.pass_version == magic.SINGLEPULSE_EXTRACTOR_PASS
+        )
 
 
-def read_header_from_file(fin):
+def append_Descriptor_to_file(descriptor, fout):
+    d = descriptor  
+    fout.write(np.uint8(d.magic_1).tobytes())
+    fout.write(np.uint8(d.magic_2).tobytes())
+    fout.write(np.uint8(d.magic_3).tobytes())
+    fout.write(np.uint8(d.pass_version).tobytes())
+    fout.write(np.uint8(d.event_type).tobytes())
+
+
+def read_Descriptor_from_file(fin):
     raw_header = np.fromstring(fin.read(5), dtype=np.uint8, count=5)
-    return {
-        'magic_1': raw_header[0],
-        'magic_2': raw_header[1],
-        'magic_3': raw_header[2],
-        'pass_version': raw_header[3],
-        'event_type': raw_header[4],
-    }
+    d = Descriptor()
+    d.magic_1 = raw_header[0]
+    d.magic_2 = raw_header[1]
+    d.magic_3 = raw_header[2]
+    d.pass_version = raw_header[3]
+    d.event_type = raw_header[4]
+    return d
 
 
 def append_simulation_id_to_file(simulation_truth, fout):
@@ -132,7 +143,7 @@ def append_photonstream_to_file(phs, fout):
 
 def read_photonstream_from_file(fin):
     phs = PhotonStream()
-    phs.slice_duration = np.float32(TIME_SLICE_DURATION_S)
+    phs.slice_duration = np.float32(magic.TIME_SLICE_DURATION_S)
 
     # read number of pixels and time lines
     number_of_pixels_and_photons = np.fromstring(
@@ -196,11 +207,15 @@ def read_saturated_pixels_from_file(fin):
 
 def append_event_to_file(event, fout):
     if hasattr(event, 'observation_info'):
-        append_header_to_file(fout, event_type=OBSERVATION_TYPE_KEY)
+        descriptor = Descriptor()
+        descriptor.event_type = OBSERVATION_EVENT_TYPE_KEY
+        append_Descriptor_to_file(descriptor, fout)
         append_observation_id_to_file(event.observation_info, fout)
         append_observation_info_to_file(event.observation_info, fout)
     elif hasattr(event, 'simulation_truth'):
-        append_header_to_file(fout, event_type=SIMULATION_TYPE_KEY)
+        descriptor = Descriptor()
+        descriptor.event_type = SIMULATION_EVENT_TYPE_KEY
+        append_Descriptor_to_file(descriptor, fout)
         append_simulation_id_to_file(event.simulation_truth, fout)
     else:
         raise
@@ -211,14 +226,14 @@ def append_event_to_file(event, fout):
 
 def read_event_from_file(fin):
     try:
-        header = read_header_from_file(fin)
+        descriptor = read_Descriptor_from_file(fin)
         event = Event()
-        if header['event_type'] == OBSERVATION_TYPE_KEY:
+        if descriptor.event_type == OBSERVATION_EVENT_TYPE_KEY:
             obs = ObservationInformation()
             read_observation_id_from_file(obs, fin)
             read_observation_info_from_file(obs, fin)
             event.observation_info = obs
-        elif header['event_type'] == SIMULATION_TYPE_KEY:
+        elif descriptor.event_type == SIMULATION_EVENT_TYPE_KEY:
             sim = SimulationTruth()
             read_simulation_id_from_file(sim, fin)
             event.simulation_truth = sim
@@ -232,36 +247,22 @@ def read_event_from_file(fin):
         raise StopIteration
 
 
-class EventListReader(object):
-    """
-    Sequentially reads a gzipped binary run and provides events.
-    """
-    def __init__(self, path):
-        self.path = os.path.abspath(path)
-        self.file = gzip.open(path, "rb")
+def is_phs_binary(fin):
+    d = read_Descriptor_from_file(fin)
+    return d.is_valid()
 
-    def __exit__(self):
-        self.file.close()
+
+class Reader(object):
+    def __init__(self, fin):
+        self.fin = fin
 
     def __iter__(self):
         return self
 
     def __next__(self):
-        return read_event_from_file(self.file)
+        return read_event_from_file(self.fin)
 
     def __repr__(self):
-        out = 'BinaryEventListReader('
-        out += self.path+')\n'
+        out = '{}('.format(self.__class__.__name__)
+        out += ')\n'
         return out
-
-
-from ..EventListReader import EventListReader as JsonlEventListReader
-import shutil
-def jsonl_gz_2_binary_gz(input_path, output_path):
-    run_in = JsonlEventListReader(input_path)
-    tmp_out_path = output_path+'.part'
-
-    with gzip.open(tmp_out_path, 'wb') as fout:
-        for event in run_in:
-           append_event_to_file(event, fout)
-    shutil.move(tmp_out_path, output_path)

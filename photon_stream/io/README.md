@@ -1,7 +1,7 @@
 # Binary Photon-Stream Format for FACT -- Pass4
 
 ## Observation Event
-    - Header
+    - Descriptor
     - Observation Event Identifier
     - Observation Information
     - Pointing
@@ -10,14 +10,19 @@
 
 
 ## Simulation Event
-    - Header
+    - Descriptor
     - Simulation Event Identifier
     - Pointing
     - Photon-Stream
     - Saturated Pixels
 
 
-### Header (2 Byte)
+### Descriptor (5 Byte)
+    char
+    +--------+--------+--------+
+    |    p   |    h   |    s   |
+    +--------+--------+--------+
+    - A magic descriptor 'phs'
 
     uint8
     +--------+

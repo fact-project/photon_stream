@@ -5,12 +5,20 @@ import os
 import pkg_resources
 import gzip
 
+run_path = pkg_resources.resource_filename(
+    'photon_stream',
+    'tests/resources/20170119_229_pass4_100events.phs.jsonl.gz'
+)
+
+def test_binary_check():
+    with tempfile.TemporaryDirectory(prefix='phs') as tmp:
+        path = os.path.join(tmp, 'run.phs.gz')
+        ps.jsonl2binary(run_path, path)
+        with gzip.open(path, 'rb') as fin:
+            assert ps.io.binary.is_phs_binary(fin)
+
+
 def test_binary_io():
-
-    run_path = pkg_resources.resource_filename(
-        'photon_stream',
-        'tests/resources/20170119_229_pass4_100events.phs.jsonl.gz')
-
     run = ps.EventListReader(run_path)
 
     with tempfile.TemporaryDirectory(prefix='photon_stream_test_binary') as tmp:
@@ -21,13 +29,13 @@ def test_binary_io():
         with open(bin_run_path, 'wb') as bf:
             for evt in run:
                 run_ps.append(evt.photon_stream)
-                ps.experimental.io.append_photonstream_to_file(evt.photon_stream, bf)
+                ps.io.binary.append_photonstream_to_file(evt.photon_stream, bf)
 
         run_ps_back = []
         with open(bin_run_path, 'rb') as bf:
             while True:
                 try:
-                    phs = ps.experimental.io.read_photonstream_from_file(bf)
+                    phs = ps.io.binary.read_photonstream_from_file(bf)
                     run_ps_back.append(phs)
                 except:
                     break
@@ -67,12 +75,12 @@ def test_jsonl2binary():
 
         with gzip.open(binary_path, 'wb') as fout:
             for event in run_in:
-                ps.experimental.io.append_event_to_file(event, fout)
+                ps.io.binary.append_event_to_file(event, fout)
 
         with gzip.open(binary_path, 'rb') as fin:
             while True:
                 try:
-                    run_back.append(ps.experimental.io.read_event_from_file(fin))
+                    run_back.append(ps.io.binary.read_event_from_file(fin))
                 except StopIteration:
                     break
 
@@ -82,55 +90,47 @@ def test_jsonl2binary():
         assert evt_in == evt_ba
 
 
-def test_pass_header_io():
+def test_Descriptor_io():
 
-    out_headers = [
-        {
-            'pass_version': 1,
-            'event_type': 0,
-        },
-        {
-            'pass_version': 4,
-            'event_type': 1,
-        },
-        {
-            'pass_version': 4,
-            'event_type': 1,
-        },
-        {
-            'pass_version': 5,
-            'event_type': 1,
-        },   
-    ]
+    d1 = ps.io.binary.Descriptor()
+    d1.pass_version = 1
+    d1.event_type = 0
+    d2 = ps.io.binary.Descriptor()
+    d1.pass_version = 4
+    d1.event_type = 1
+    d3 = ps.io.binary.Descriptor()
+    d1.pass_version = 4
+    d1.event_type = 1
+    d4 = ps.io.binary.Descriptor()
+    d1.pass_version = 5
+    d1.event_type = 1
 
-    with tempfile.TemporaryDirectory(prefix='phs_test_header') as tmp:
-        binary_path = os.path.join(tmp, 'header.bin')
+    out_descs = [d1, d2, d3, d4]
+
+    with tempfile.TemporaryDirectory(prefix='phs_') as tmp:
+        binary_path = os.path.join(tmp, 'descs.bin')
 
         with gzip.open(binary_path, 'wb') as fout:
-            for header in out_headers:
-                ps.experimental.io.append_header_to_file(
-                    fout=fout,
-                    event_type=header['event_type'],
-                    pass_version=header['pass_version'],
-                )
+            for descs in out_descs:
+                ps.io.binary.append_Descriptor_to_file(descs, fout)
 
 
-        in_headers = []
+        in_descss = []
         with gzip.open(binary_path, 'rb') as fin:
-            for i in range(len(out_headers)):
-                in_headers.append(
-                    ps.experimental.io.read_header_from_file(fin)
+            for i in range(len(out_descs)):
+                in_descss.append(
+                    ps.io.binary.read_Descriptor_from_file(fin)
                 )
 
 
-    for i in range(len(out_headers)):
-        out_h = out_headers[i]
-        in_h = in_headers[i]
-        assert in_h['magic_1'] == ps.experimental.io.MAGIC_DESCRIPTOR_1 
-        assert in_h['magic_2'] == ps.experimental.io.MAGIC_DESCRIPTOR_2
-        assert in_h['magic_3'] == ps.experimental.io.MAGIC_DESCRIPTOR_3
-        assert out_h['pass_version'] == in_h['pass_version']
-        assert out_h['event_type'] == in_h['event_type']
+    for i in range(len(out_descs)):
+        out_h = out_descs[i]
+        in_h = in_descss[i]
+        assert in_h.magic_1 == ps.io.binary.MAGIC_DESCRIPTOR_1 
+        assert in_h.magic_2 == ps.io.binary.MAGIC_DESCRIPTOR_2
+        assert in_h.magic_3 == ps.io.binary.MAGIC_DESCRIPTOR_3
+        assert out_h.pass_version == in_h.pass_version
+        assert out_h.event_type == in_h.event_type
 
 
 def test_io_simulation_events():
@@ -151,12 +151,12 @@ def test_io_simulation_events():
 
         with gzip.open(binary_path, 'wb') as fout:
             for event in run_in:
-                ps.experimental.io.append_event_to_file(event, fout)
+                ps.io.binary.append_event_to_file(event, fout)
 
         with gzip.open(binary_path, 'rb') as fin:
             while True:
                 try:
-                    run_back.append(ps.experimental.io.read_event_from_file(fin))
+                    run_back.append(ps.io.binary.read_event_from_file(fin))
                 except StopIteration:
                     break
 

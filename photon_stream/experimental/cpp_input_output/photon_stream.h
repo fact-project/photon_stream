@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <vector>
+#include <array>
 #include <math.h>
 #include <fstream>
 #include <iostream>
@@ -22,6 +23,28 @@ const uint8_t MAGIC_DESCRIPTOR_1 = 'p';
 const uint8_t MAGIC_DESCRIPTOR_2 = 'h';
 const uint8_t MAGIC_DESCRIPTOR_3 = 's';
 
+//                         whole time series
+//  |.......................................................................|
+//  |                                                                       |
+//  |         |................ extraction window .................|        |
+//  |         | <---------- length = 225 ------------------------> |        |
+//  |         |                                                    |        |
+//  |         |       |.. output window ..|                        |        |
+//  0        20       | <- length=100 ->  |                       245      300
+//                   30                  130
+// 
+// [in 2GHz slices]
+// 
+// - whole time series
+//     The full 300 slices (150ns) Region Of Interest (ROI) of the FACT camera.
+// 
+// - extraction window
+//     The timewindow where single pulses are searched for and extracted.
+// 
+// - output window
+//     The photon-stream output time window 100 slices (50ns)
+// 
+// see also: https://github.com/fact-project/fact-tools/blob/master/src/main/java/fact/photonstream/SinglePulseExtraction.java
 
 void append_float32(float &v, std::ostream &fout) {
     fout.write(reinterpret_cast<char*>(&v), sizeof(v));
@@ -177,42 +200,82 @@ void append_Pointing_to_file(Pointing &p, std::ostream &fout) {
 }
 
 //------------------------------------------------------------------------------
+#define raw_stream std::vector<uint8_t>
+#define image std::array<uint64_t, NUMBER_OF_PIXELS>
+#define image_sequence std::array<image, NUMBER_OF_TIME_SLICES>
+#define list_of_lists std::array<std::vector<uint8_t>, NUMBER_OF_PIXELS>
+
+
+list_of_lists list_of_lists_representation(raw_stream &raw) {
+    list_of_lists lol;
+    uint32_t chid = 0;
+    for(uint32_t i=0; i<raw.size(); i++) {
+        if(raw[i] == NEXT_PIXEL_MARKER) {
+            chid++;
+        }else{
+            lol[chid].push_back(raw[i]);
+        }
+    } 
+    return lol;
+}
+
+
+image list_of_lists_integral(list_of_lists &l) {
+    image img;
+    for(uint32_t i=0; i<l.size(); i++) {
+        img[i] = l[i].size();
+    }
+    return img;  
+}
+
+
+image image_integral(raw_stream &raw) {
+    list_of_lists lol = list_of_lists_representation(raw);
+    return list_of_lists_integral(lol);
+}
+
+
+image_sequence image_sequence_representation(raw_stream &raw) {
+    image_sequence seq;
+    uint32_t chid = 0;
+    for(uint32_t i=0; i<raw.size(); i++) {
+        if(raw[i] == NEXT_PIXEL_MARKER) {
+            chid++;
+        }else{
+            uint8_t idx = raw[i] - NUMBER_OF_TIME_SLICES_OFFSET_AFTER_BEGIN_OF_ROI;
+            seq[idx][chid]++;
+        }
+    }  
+    return seq;
+}
+
+
 struct PhotonStream {
-    std::vector<uint8_t> raw;
+    raw_stream raw;
     std::vector<uint16_t> saturated_pixels;
 
     uint32_t number_of_photons() {
         return raw.size() - NUMBER_OF_PIXELS;
     }
 
-    void fixed_size_repr(uint16_t **image_sequence) {
-        uint32_t pixel = 0;
-        for(uint32_t i=0; i<raw.size(); i++) {
-            if(raw[i] == NEXT_PIXEL_MARKER) {
-                pixel++;
-            }else{
-                image_sequence[
-                    raw[i] - NUMBER_OF_TIME_SLICES_OFFSET_AFTER_BEGIN_OF_ROI
-                ][
-                    pixel
-                ]++;
-            }
-        }
-    };
+    bool is_adc_saturaded() {
+        return saturated_pixels.size() > 0;
+    }
 
-    void point_cloud_repr(const float *cx, const float *cy, float* point_cloud) {
-        uint32_t pixel = 0;
-        for(uint32_t i=0; i<raw.size(); i++) {
-            if(raw[i] == NEXT_PIXEL_MARKER) {
-                pixel++;
-            }else{
-                point_cloud[i, 0] = cx[pixel];
-                point_cloud[i, 1] = cy[pixel];
-                point_cloud[i, 2] = TIME_SLICE_DURATION_S*raw[i];
-            }            
-        }        
+    bool is_single_pulse_extractor_saturated() {
+        image img = image_integral(raw);
+        for(uint32_t chid=0; chid<img.size(); chid++) {
+            if(img.at(chid) > NUMBER_OF_PHOTONS_IN_PIXEL_BEFORE_SATURATION)
+                return true;
+        }
+        return false;
+    }
+
+    bool is_saturated() {
+        return is_adc_saturaded() || is_single_pulse_extractor_saturated();
     }
 };
+
 
 PhotonStream read_PhotonStream_from_file(std::istream &fin) {
     PhotonStream phs;

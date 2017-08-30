@@ -37,43 +37,12 @@ class ObservationInformation(object):
     """
 
 
-    @classmethod
-    def from_event_dict(cls, event_dict):
-
-        obs = cls()
-        # identification
-        obs.run = np.uint32(event_dict['Run'])
-        obs.night = np.uint32(event_dict['Night'])
-        obs.event = np.uint32(event_dict['Event'])
-
-        obs.set_time_unix(
-            time_unix_s=event_dict['UnixTime_s_us'][0],
-            time_unix_us=event_dict['UnixTime_s_us'][1]
-        )
-
-        obs.trigger_type = np.uint32(event_dict['Trigger'])
-        return obs    
-
-
     def set_time_unix(self, time_unix_s, time_unix_us):
         self._time_unix_s = np.uint32(time_unix_s)
         self._time_unix_us = np.uint32(time_unix_us)
         self.time = dt.datetime.utcfromtimestamp(
             self._time_unix_s + self._time_unix_us/1e6
         )
-
-
-    def add_to_dict(self, event_dict):
-        ed = event_dict
-        ed['Night'] = int(self.night)
-        ed['Run'] = int(self.run)
-        ed['Event'] = int(self.event)
-        ed['UnixTime_s_us'] = [
-            int(self._time_unix_s),
-            int(self._time_unix_us),
-        ]
-        ed['Trigger'] = int(self.trigger_type)
-        return ed
 
 
     def __eq__(self, other):

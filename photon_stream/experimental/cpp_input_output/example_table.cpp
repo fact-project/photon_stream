@@ -1,8 +1,9 @@
 // compile using:
-// g++ docopt/docopt.cpp example_usage.c -o phs.show -lm -std=gnu++11
+// g++ docopt/docopt.cpp example_table.cpp -o phs.table -std=gnu++11
 
 #include <stdio.h>
 #include <string.h>
+#include <array>
 #include "photon_stream.h"
 #include "docopt/docopt.h"
 #include <fstream>
@@ -15,9 +16,9 @@ R"(Show FACT photon-stream event overview in a table on stdout. Reads in phs
 files from stdin. 
 
     Usage:
-      PhsShow [--trigger=INT]
-      PhsShow (-h | --help)
-      PhsShow --version
+      phs.table [--trigger=INT]
+      phs.table  (-h | --help)
+      phs.table  --version
 
     Options:
       -t --trigger=INT    Only show certain trigger type.
@@ -25,7 +26,6 @@ files from stdin.
       --version           Show version.
       
 )";
-
 
 void print_event_info_line(ps::ObservationEvent &event) {
     printf(

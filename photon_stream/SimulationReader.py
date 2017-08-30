@@ -1,5 +1,5 @@
 from .Event import Event
-from .JsonLinesReader import JsonLinesReader
+from .EventListReader import EventListReader
 from .simulation_truth.corsika_headers import read_corsika_headers
 from .simulation_truth.corsika_headers import IDX_RUNH_RUN_NUMBER
 from .simulation_truth.corsika_headers import IDX_EVTH_EVENT_NUMBER
@@ -15,7 +15,7 @@ class SimulationReader(object):
     headers. Returns merged events with full and raw CORSIKA simulation truth.
     '''
     def __init__(self, photon_stream_path, mmcs_corsika_path):
-        self.reader = JsonLinesReader(photon_stream_path)
+        self.reader = EventListReader(photon_stream_path)
         self.mmcs_corsika_path = mmcs_corsika_path
         mmcs_corsika_headers = read_corsika_headers(mmcs_corsika_path)
         self.run_header = mmcs_corsika_headers['run_header']
@@ -32,9 +32,8 @@ class SimulationReader(object):
         return self
 
     def __next__(self):
-        event = Event.from_event_dict(next(self.reader))
+        event = next(self.reader)
         assert event.simulation_truth.run == self.run_header[IDX_RUNH_RUN_NUMBER]
-
         idx = self.id_to_index[(event.simulation_truth.event, event.simulation_truth.reuse)]
 
         assert event.simulation_truth.run == self.event_headers[idx][IDX_EVTH_RUN_NUMBER]
