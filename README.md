@@ -52,7 +52,7 @@ This human readable format is easy to understand and used as widely as the inter
 ```json
 {"Night":20170119,"Run":229,"Event":1,"UnixTime_s_us":[1484895178,532244],"Trigger":4,"Az_deg":-63.253664797474336,"Zd_deg":33.06900475126648,"PhotonArrivals_500ps":[[59,84],[102,93,103],[58],[65,79,97],[],[125,43,68],[102],[68,100,123],[52,52,79,113,61,78,112,87]],"SaturatedPixels":[]}
 ```
-The run files are named ```YYYYmmnn_RRR.phs.jsonl.gz```. There is no run header. Each line in a ```phs.jsonl.gz``` file corresponds to one event. This way events can be concatenated and counted very easily.
+Json-Lines run files are named ```YYYYmmnn_RRR.phs.jsonl.gz```. There is no run header. Each line in a ```phs.jsonl.gz``` file corresponds to one event. This way events can be concatenated and counted very easily.
 
 ### Keys
 
@@ -110,7 +110,10 @@ Since a single photon is now defined by only one sharp arrival time in contrast 
 A list of pixels in ```CHID``` to indicate that the corresponding pixel had an saturated analog time line out of the raw DRS4 chip. The maximim number of saturated pixels is ```100```, as the event is skipped then anyhow. Usually this list is empty. Such saturations happen not only for ultra high energy air showers, but also when the DRS4 calibration was not possible or is broken elseway.
 
 # phs binary format
-The ```phs``` format is binary format with exactly the same content as the Json-Lines ```phs.jsonl``` format. There is no run header of footer. This is just a list of events. Each event hat its full ID.
+The ```phs``` format is a binary format with exactly the same content as the Json-Lines ```phs.jsonl``` format. 
+The binary format is about ```15%``` to ```35%``` smaller than the Json-Lines and allows much higher read speeds.
+There is no run header of footer. This is just a list of events. Each event hat its full ID.
+Binary run files are named ```YYYYmmnn_RRR.phs.gz```.
 
 The content of the differnt event types is as follows:
 
