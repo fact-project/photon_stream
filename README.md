@@ -226,8 +226,9 @@ The content of the differnt event types is as follows:
     The size of the photon-stream in bytes.
 
 
-         Photon arrival times in slices 
-         (EXAMPLE. The actual shape and structure depent on the specific event)
+    Photon arrival times in slices 
+    EXAMPLE. The actual shape and structure depent on the specific event.
+  
          uint8 
          +--------+--------+--------+--------+
        0 |   XXX  |   XXX  |   XXX  |   255  |
@@ -259,11 +260,11 @@ The content of the differnt event types is as follows:
     Pixel
     CHID
 
-A list of lists of photon arrival time slices.
-The line break from one pixel to the next one is marked by the linebreak 
-symbol 2^8-1 = 255. This leaves 255 (0-254) slices to encode photon arrival times.
+A list of lists of photon arrival time slices in CHID pixel order.
+The line break from one pixel to the next pixel is marked by the linebreak 
+symbol 2^8-1 = ```255```. This leaves 255 (0-254) slices to encode photon arrival times.
 
-### Saturated Pixels (2 + 2 * num. saturated pixel Byte)
+### Saturated Pixels (2 + 2*number saturated pixel Byte)
 
     uint16
     +--------+--------+
@@ -275,7 +276,7 @@ symbol 2^8-1 = 255. This leaves 255 (0-254) slices to encode photon arrival time
     +--------+--------+--------+--------+     +--------+--------+
     |      CHID 0     |      CHID 1     | ... |      CHID N-1   |
     +--------+--------+--------+--------+     +--------+--------+
-    A list of CHIDS of saturated pixels
+    A list of CHIDs of saturated pixels
 
 
 ## Integration into existing air shower reconstruction software
