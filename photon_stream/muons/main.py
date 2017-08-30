@@ -16,7 +16,7 @@ from os.path import exists
 
 def extract_single_run(cfg):
 
-    os.makedirs(cfg['output_dir'], exist_ok=True)
+    os.makedirs(cfg['output_dir'], exist_ok=True, mode=0o777)
     output_run_path = join(
         cfg['output_dir'], cfg['output_base']+'_muons.phs.jsonl.gz')
     output_run_header_path = join(
