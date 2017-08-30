@@ -127,7 +127,7 @@ class PhotonStream(object):
 
 
     def __repr__(self):
-        info = 'PhotonStream('
+        out = '{}('.format(self.__class__.__name__)
         info += self._info()
         info += ')'
         return info

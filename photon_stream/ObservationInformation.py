@@ -70,7 +70,7 @@ class ObservationInformation(object):
 
 
     def __repr__(self):
-        out = 'ObservationInformation('
+        out = '{}('.format(self.__class__.__name__)
         out += self._info()
         out += ')\n'
         return out

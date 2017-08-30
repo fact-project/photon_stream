@@ -22,7 +22,7 @@ class PhotonStreamCluster(object):
         self.number = len(set(self.labels)) - (1 if -1 in self.labels else 0)
 
     def __repr__(self):
-        out = 'PhotonStreamCluster('
+        out = '{}('.format(self.__class__.__name__)
         out += 'number of clusters '+str(self.number)
         out += ')\n'
         return out
@@ -47,7 +47,7 @@ class PhotonTimeLineCluster(object):
         self.number = len(set(self.labels)) - (1 if -1 in self.labels else 0)
 
     def __repr__(self):
-        out = 'PhotonTimeLineCluster('
+        out = '{}('.format(self.__class__.__name__)
         out += 'number of clusters '+str(self.number)
         out += ')\n'
         return out

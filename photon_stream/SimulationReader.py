@@ -49,7 +49,7 @@ class SimulationReader(object):
         return event
 
     def __repr__(self):
-        out = 'SimulationsReader('
+        out = '{}('.format(self.__class__.__name__)
         out += "photon-stream '" + self.reader.path + "', "
         out += "CORSIKA '" + self.mmcs_corsika_path + "'"
         out += ')\n'

@@ -48,7 +48,7 @@ class EventListReader:
         return next(self.reader)
 
     def __repr__(self):
-        out = 'EventListReader('
+        out = '{}('.format(self.__class__.__name__)
         out += "path '" + self.path + "'"
         out += ')\n'
         return out

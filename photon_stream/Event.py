@@ -40,7 +40,7 @@ class Event(object):
 
 
     def __repr__(self):
-        out = 'Event('
+        out = '{}('.format(self.__class__.__name__)
         out += self._info() + ', '
         out += 'photon-stream ' + self.photon_stream._info()
         out += ')\n'

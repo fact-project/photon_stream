@@ -39,7 +39,7 @@ class SimulationTruth(object):
 
 
     def __repr__(self):
-        out = 'SimulationTruth('
+        out = '{}('.format(self.__class__.__name__)
         out += self._info()
         out += ')\n'
         return out
