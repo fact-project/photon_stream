@@ -234,11 +234,11 @@ The content of the differnt event types is as follows:
   
          uint8 
          +--------+--------+--------+--------+
-       0 |   XXX  |   XXX  |   XXX  |   255  |
+       0 |     A  |     B  |     C  |   255  | <- Pixel CHID=0, 3 photons, arrival slices A, B, and C.
          +--------+--------+--------+--------+   
        1 |   XXX  |   XXX  |   255  |
          +--------+--------+--------+ 
-       2 |   XXX  |   255  |
+       2 |     C  |   255  | <- Pixel CHID=2, 1 photons, arriving in slice C.
          +--------+--------+--------+--------+--------+
        3 |   XXX  |   XXX  |   XXX  |   XXX  |   255  |
          +--------+--------+--------+--------+--------+--------+--------+ 
@@ -246,7 +246,7 @@ The content of the differnt event types is as follows:
          +--------+--------+--------+--------+--------+--------+--------+   
        5 |   XXX  |   255  |
          +--------+--------+
-       6 |   255  |
+       6 |   255  | <- Pixel CHID=6, 0 photons, empty.
          +--------+--------+--------+
        7 |   XXX  |   XXX  |   255  |
          +--------+--------+--------+
@@ -258,7 +258,7 @@ The content of the differnt event types is as follows:
          +--------+--------+--------+--------+--------+
     1438 |   XXX  |   XXX  |   XXX  |   XXX  |   255  |
          +--------+--------+--------+--------+--------+
-    1439 |   XXX  |   XXX  |   255  |
+    1439 |     D  |     E  |   255  | <- last pixel CHID=1439, 2 photons at slices D and E.
          +--------+--------+--------+
     Pixel
     CHID
