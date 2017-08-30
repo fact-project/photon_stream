@@ -10,7 +10,6 @@ from .PhotonCluster import PhotonTimeLineCluster
 from .jsonl2binary import jsonl2binary
 
 from . import production
-from . import experimental
 from . import muons
 from . import plot
 from . import io
