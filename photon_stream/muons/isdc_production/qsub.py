@@ -13,7 +13,7 @@ fact_queues = ['fact_long', 'fact_medium', 'fact_short']
 def qsub(
     input_phs_dir,
     out_muon_dir, 
-    email='sebmuell@phys.ethz.ch'):
+):
     """
     Run the Muon extraction on all photon-stream runs in the 'phs' directory.
     """
@@ -106,8 +106,6 @@ def qsub(
                 '-q', fact_queues[np.random.randint(3)],
                 '-o', job['stdout_path'],
                 '-e', job['stderr_path'],
-                '-m', 'ae', # send email in case of (e)nd or (a)bort
-                '-M', email,
                 job['job_path']]
    
         qsub_return_code = sp.call(cmd)

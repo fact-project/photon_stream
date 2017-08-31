@@ -8,14 +8,6 @@ import pkg_resources
 import glob
 
 
-def test_number_of_events_in_run():
-    run_path = pkg_resources.resource_filename(
-        'photon_stream', 
-        os.path.join('tests','resources','20170119_229_pass4_100events.phs.jsonl.gz')
-    )
-    assert ps.production.status.number_of_events_in_run(run_path) == 100
-
-
 def test_production_write_worker_script():
     with tempfile.TemporaryDirectory(prefix='photon_stream_test_production') as tmp:
         worker_script_path = join(tmp, 'worker.sh')
@@ -61,7 +53,6 @@ def test_production_run_collection():
             fact_tools_xml_path=my_fact_tools_xml_path,
             tmp_dir_base_name='fact_photon_stream_JOB_ID_',
             queue='fact_medium', 
-            email='sebmuell@phys.ethz.ch',
             use_dummy_qsub=True,
             runinfo=runinfo,
         )
@@ -93,7 +84,6 @@ def test_production_run_collection():
             fact_tools_xml_path=my_fact_tools_xml_path,
             tmp_dir_base_name='fact_photon_stream_JOB_ID_',
             queue='fact_medium', 
-            email='sebmuell@phys.ethz.ch',
             use_dummy_qsub=True,
             runinfo=runinfo,
         )

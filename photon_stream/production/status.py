@@ -2,20 +2,18 @@ import os
 from tqdm import tqdm
 import pandas as pd
 import numpy as np
-import subprocess
 
 from . import runinfo
 from . import tools
+from ..EventListReader import EventListReader
 
 
-def number_of_events_in_run(run_path):
-    """
-    Returns the number of lines inside a gzipped text file.
-    """
-    ps = subprocess.Popen(['zcat', run_path], stdout=subprocess.PIPE)
-    wc_out = subprocess.check_output(('wc', '-l'), stdin=ps.stdout)
-    ps.wait()
-    return int(wc_out)
+def number_of_events_in_event_list_file(path):
+    reader = EventListReader(path)
+    number_of_events = 0
+    for event in reader:
+        number_of_events += 1
+    return number_of_events
 
 
 def status(photon_stream_dir, known_runs_database='known_runs.msg'):
@@ -64,7 +62,7 @@ def status(photon_stream_dir, known_runs_database='known_runs.msg'):
                     info.set_value(
                         index, 
                         'PhotonStreamNumEvents', 
-                        number_of_events_in_run(run_path)
+                        number_of_events_in_event_list_file(run_path)
                     )
                     print(
                         'New run '+str(night)+' '+str(run)+' '+
