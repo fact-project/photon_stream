@@ -16,7 +16,7 @@ runinfo_path = pkg_resources.resource_filename(
 
 
 def test_known_runs_20110101_has_correct_keys():
-    known_runs = ps.production.runinfo.read_runinfo_from_file(known_runs_path)
+    known_runs = ps.production.runinfo.read(known_runs_path)
     for key in known_runs.keys():
         assert key in (
             ps.production.runinfo.ID_RUNINFO_KEYS + 
@@ -27,7 +27,7 @@ def test_known_runs_20110101_has_correct_keys():
 
 
 def test_runinfo_20120201_has_correct_keys():
-    runinfo = ps.production.runinfo.read_runinfo_from_file(runinfo_path)
+    runinfo = ps.production.runinfo.read(runinfo_path)
     for key in runinfo.keys():
         assert key in (
             ps.production.runinfo.ID_RUNINFO_KEYS + 
@@ -37,8 +37,8 @@ def test_runinfo_20120201_has_correct_keys():
 
 
 def test_append_runinfo():
-    known_runs = ps.production.runinfo.read_runinfo_from_file(known_runs_path)
-    runinfo = ps.production.runinfo.read_runinfo_from_file(runinfo_path)
+    known_runs = ps.production.runinfo.read(known_runs_path)
+    runinfo = ps.production.runinfo.read(runinfo_path)
 
     new_known_runs = ps.production.runinfo.append_runinfo_to_known_runs(
         runinfo=runinfo,
@@ -67,7 +67,7 @@ def test_append_runinfo():
 
 
 def test_expected_number_of_triggers():
-    known_runs = ps.production.runinfo.read_runinfo_from_file(known_runs_path)
+    known_runs = ps.production.runinfo.read(known_runs_path)
 
     num_expected_phs_trigger = ps.production.runinfo.number_expected_phs_events(
         known_runs

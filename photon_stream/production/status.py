@@ -26,9 +26,9 @@ def status(photon_stream_dir, known_runs_database='known_runs.msg'):
     info_path = os.path.abspath(
 	os.path.join(photon_stream_dir, known_runs_database))
     try:
-        info = runinfo.read_runinfo_from_file(info_path)
+        info = runinfo.read(info_path)
     except:
-        info = runinfo.download_latest_runinfo()
+        info = runinfo.download_latest()
 
     if 'PhotonStreamNumEvents' not in info:
         info['PhotonStreamNumEvents'] = pd.Series(
@@ -70,7 +70,7 @@ def status(photon_stream_dir, known_runs_database='known_runs.msg'):
                         ' trigger.'
                     )
 
-    runinfo.write_runinfo_to_file(info, info_path)
+    runinfo.write(info, info_path)
 
 
 def runs_in_range_str(info, start_night, end_night, max_trigger_rate=200):

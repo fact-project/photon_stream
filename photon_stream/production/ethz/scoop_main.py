@@ -72,12 +72,12 @@ def main():
         arguments = docopt.docopt(__doc__)
 
         if arguments['--run_info_path']:
-            runinfo = ps.production.runinfo.read_runinfo_from_file(
+            runinfo = ps.production.runinfo.read(
                 arguments['--run_info_path']
             )
         else:
             os.environ["FACT_PASSWORD"] = arguments['--fact_password']
-            runinfo = ps.production.runinfo.download_latest_runinfo()
+            runinfo = ps.production.runinfo.download_latest()
 
         job_structure = ps.production.prepare.make_job_list(
             out_dir=arguments['--out_dir'],

@@ -42,7 +42,7 @@ RUNSTATUS_KEYS = (
 )
 
 
-def download_latest_runinfo():
+def download_latest():
     factdb = credentials.create_factdb_engine()
     print("Reading fresh RunInfo table, takes about 1min.")
     return pd.read_sql_table(
@@ -51,10 +51,10 @@ def download_latest_runinfo():
         columns=RUNINFO_KEYS
     )
 
-def read_runinfo_from_file(path='phs_runstatus.csv'):
+def read(path='phs_runstatus.csv'):
     return pd.read_csv(path)
 
-def write_runinfo_to_file(runinfo, path='phs_runstatus.csv'):
+def write(runinfo, path='phs_runstatus.csv'):
     runinfo.to_csv(path, index=False, na_rep='nan')
 
 

@@ -24,7 +24,7 @@ def test_production_run_collection():
             os.path.join('tests','resources','runinfo_2014Dec15_2015Jan15.csv')
         )
 
-        runinfo = ps.production.runinfo.read_runinfo_from_file(runinfo_path)
+        runinfo = ps.production.runinfo.read(runinfo_path)
 
         fact_dir = join(tmp, 'fact')
         ps.production.runinfo.create_fake_fact_dir(fact_dir, runinfo)
