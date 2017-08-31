@@ -59,7 +59,6 @@ def test_production_run_collection():
             fact_tools_xml_path=my_fact_tools_xml_path,
             tmp_dir_base_name='fact_photon_stream_JOB_ID_',
             queue='fact_medium', 
-            email='sebmuell@phys.ethz.ch',
             use_dummy_qsub=True,
             runinfo=runinfo,
         )
@@ -91,7 +90,6 @@ def test_production_run_collection():
             fact_tools_xml_path=my_fact_tools_xml_path,
             tmp_dir_base_name='fact_photon_stream_JOB_ID_',
             queue='fact_medium', 
-            email='sebmuell@phys.ethz.ch',
             use_dummy_qsub=True,
             runinfo=runinfo,
         )

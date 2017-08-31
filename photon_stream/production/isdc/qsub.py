@@ -20,7 +20,6 @@ def qsub(
     tmp_dir_base_name='fact_photon_stream_JOB_ID_',
     runinfo=None,
     queue='fact_medium', 
-    email='sebmuell@phys.ethz.ch',
     use_dummy_qsub=False,
 ):
     job_structure = prepare.make_job_list(
@@ -64,8 +63,6 @@ def qsub(
             '-q', queue,
             '-o', job['std_out_path'],
             '-e', job['std_err_path'],
-            '-m', 'ae', # send email in case of (e)nd or (a)bort
-            '-M', email,
             job['job_path']
         ]
    
