@@ -1,4 +1,5 @@
 import datetime as dt
+import os
 
 
 def night_id_2_yyyy(night):
@@ -15,3 +16,12 @@ def night_id_2_nn(night):
 
 def time_stamp_utcnow_for_valid_path():
 	return dt.datetime.utcnow().strftime('%Y%m%d_%Hh%Mm%Ss_%fus_UTC')
+
+
+def local_backup_path_with_timestamp(path, hidden=True):
+    time_stamp = time_stamp_utcnow_for_valid_path()
+    basename = os.path.basename(path)
+    dirname = os.path.dirname(path)
+    if hidden:
+    	basename = '.' + basename
+    return os.path.join(dirname, basename+'.'+time_stamp)

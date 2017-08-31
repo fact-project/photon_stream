@@ -107,7 +107,8 @@ def test_runinfo_backup():
         files = files_and_hidden_files_dir(tmp)
         assert len(files) == 1
 
-        ps.production.runinfo.backup_file(tmp_runinfo_path)
+        backup_path = ps.production.tools.local_backup_path_with_timestamp(tmp_runinfo_path)
+        shutil.copy(tmp_runinfo_path, backup_path)
 
         files = files_and_hidden_files_dir(tmp)
         assert len(files) == 2
@@ -115,7 +116,7 @@ def test_runinfo_backup():
         assert tmp_runinfo_path in files
         files.remove(tmp_runinfo_path)
         assert len(files) == 1
-        backup_path = files[0]
-        backup_basename = os.path.basename(backup_path)
-        assert len(backup_basename) > 0
-        assert backup_basename[0] == '.'
+        _backup_path = files[0]
+        _backup_basename = os.path.basename(_backup_path)
+        assert len(_backup_basename) > 0
+        assert _backup_basename[0] == '.'

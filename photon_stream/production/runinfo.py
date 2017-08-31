@@ -2,7 +2,6 @@ import os
 from fact import credentials
 import pandas as pd
 import numpy as np
-import shutil
 from . import tools
 
 
@@ -113,15 +112,3 @@ def number_expected_phs_events(runinfo):
         count += np.int64(np.round(runinfo[key]))
     count[np.isnan(count)] = 0.0
     return (np.round(count)).astype(np.int64)
-
-
-def backup_file(path):
-    """
-    Makes a backup copy of path next to path but hidden '.' and 
-    with a time stamp extension.
-    """
-    time_stamp = tools.time_stamp_utcnow_for_valid_path()
-    basename = os.path.basename(path)
-    dirname = os.path.dirname(path)
-    backup_path = os.path.join(dirname, '.'+basename+'.'+time_stamp)
-    shutil.copy(path, backup_path )
