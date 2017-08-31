@@ -2,6 +2,9 @@ import numpy as np
 import photon_stream as ps
 import pkg_resources
 import os
+import shutil
+from glob import glob
+import tempfile
 
 
 known_runs_path = pkg_resources.resource_filename(
@@ -89,3 +92,30 @@ def test_expected_number_of_triggers():
                 assert num_expected_phs_trigger[i] == 0
             else:
                 assert num_expected_phs_trigger[i] == manual_expected
+
+
+def test_runinfo_backup():
+    with tempfile.TemporaryDirectory(prefix='phs_') as tmp:
+        tmp_runinfo_path = os.path.join(tmp, os.path.basename(runinfo_path))
+
+        shutil.copy(runinfo_path, tmp_runinfo_path)
+        assert os.path.exists(tmp_runinfo_path)
+
+        def files_and_hidden_files_dir(d):
+            return glob(os.path.join(d, '*')) + glob(os.path.join(d, '.*'))
+
+        files = files_and_hidden_files_dir(tmp)
+        assert len(files) == 1
+
+        ps.production.runinfo.backup_file(tmp_runinfo_path)
+
+        files = files_and_hidden_files_dir(tmp)
+        assert len(files) == 2
+
+        assert tmp_runinfo_path in files
+        files.remove(tmp_runinfo_path)
+        assert len(files) == 1
+        backup_path = files[0]
+        backup_basename = os.path.basename(backup_path)
+        assert len(backup_basename) > 0
+        assert backup_basename[0] == '.'
