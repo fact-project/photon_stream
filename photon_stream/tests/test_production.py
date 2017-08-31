@@ -132,3 +132,43 @@ def test_qsub_job_id_parser():
     assert qsub_str2id('Your job 6174794 ("exec.sh") has been submitted') == 6174794
     assert qsub_str2id('Your job 0 ("exec.sh") has been submitted') == 0
     assert qsub_str2id('Your job 123456789123456789123456789 ("exec.sh") has been submitted') == 123456789123456789123456789
+
+
+def test_qstat():
+    qstat_stdout_path = pkg_resources.resource_filename(
+        'photon_stream', 
+        os.path.join('tests','resources','qstat_example.stdout')
+    )
+
+    with open(qstat_stdout_path, 'rt') as fin:
+        qstat_stdout = fin.read()
+
+    qstat = ps.production.isdc.qsub_tools._qstat_stdout_2_dataframe(qstat_stdout)
+
+    assert 'job-ID' in qstat
+    assert 'prior' in qstat
+    assert 'name' in qstat
+    assert 'user' in qstat
+    assert 'state' in qstat
+    assert len(qstat) == 13
+
+    job_ids = np.array([
+        5074985,
+        5074992,
+        5075009,
+        6174799,
+        6174800,
+        6174801,
+        6174802,
+        6174803,
+        6174804,
+        6174805,
+        6174806,
+        6174807,
+        6174808,
+    ])
+
+    np.testing.assert_equal(
+        qstat['job-ID'].values,
+        job_ids
+    )
