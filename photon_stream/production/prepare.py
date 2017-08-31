@@ -3,7 +3,6 @@ from os.path import abspath
 from os.path import join
 from os.path import exists
 import shutil
-import datetime as dt
 import numpy as np
 import pkg_resources
 
@@ -76,7 +75,7 @@ def make_job_list(
     res_dir = join(out_dir, 'resources')
     this_processing_resource_dir = join(
         res_dir, 
-        dt.datetime.utcnow().strftime('%Y%m%d_%Hh%Mm%Ss_%fus_UTC')
+        tools.time_stamp_utcnow_for_valid_path()
     )
     std_dir = join(out_dir, 'std')
     job_dir = join(out_dir, 'job')

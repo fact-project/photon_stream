@@ -1,3 +1,4 @@
+import datetime as dt
 
 
 def night_id_2_yyyy(night):
@@ -10,3 +11,7 @@ def night_id_2_mm(night):
 
 def night_id_2_nn(night):
     return night % 100
+
+
+def time_stamp_utcnow_for_valid_path():
+	return dt.datetime.utcnow().strftime('%Y%m%d_%Hh%Mm%Ss_%fus_UTC')
