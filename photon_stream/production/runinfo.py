@@ -67,7 +67,7 @@ def create_fake_fact_dir(path, runinfo):
         yyyy = '{yyyy:04d}'.format(yyyy=tools.night_id_2_yyyy(night_id))
         mm = '{mm:02d}'.format(mm=tools.night_id_2_mm(night_id))
         nn = '{nn:02d}'.format(nn=tools.night_id_2_nn(night_id))
-        os.makedirs(os.path.join(path, 'raw', yyyy, mm, nn), exist_ok=True, mode=0o777)
+        os.makedirs(os.path.join(path, 'raw', yyyy, mm, nn), exist_ok=True, mode=0o755)
         
         if run_type_key == DRS_RUN_TYPE_KEY:
             rrr = '{rrr:03d}'.format(rrr=run_id)

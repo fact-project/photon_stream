@@ -173,17 +173,17 @@ def prepare_directory_structure(directory_structure):
     ds = directory_structure
     print('Prepare output directory structure ...')
     
-    os.makedirs(ds['out_dir'], exist_ok=True, mode=0o777)
+    os.makedirs(ds['out_dir'], exist_ok=True, mode=0o755)
     readme_input_path = pkg_resources.resource_filename(
         'photon_stream', 
         join('production','resources','short_readme.md')
     ) 
     shutil.copy(readme_input_path, ds['readme_path'])
     
-    os.makedirs(ds['std_dir'], exist_ok=True, mode=0o777)
-    os.makedirs(ds['job_dir'], exist_ok=True, mode=0o777)
-    os.makedirs(ds['phs_dir'], exist_ok=True, mode=0o777)
-    os.makedirs(ds['res_dir'], exist_ok=True, mode=0o777)
+    os.makedirs(ds['std_dir'], exist_ok=True, mode=0o755)
+    os.makedirs(ds['job_dir'], exist_ok=True, mode=0o755)
+    os.makedirs(ds['phs_dir'], exist_ok=True, mode=0o755)
+    os.makedirs(ds['res_dir'], exist_ok=True, mode=0o755)
 
 
 def copy_resources(directory_structure):
