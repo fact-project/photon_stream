@@ -23,18 +23,13 @@ def dummy_qsub(command):
     stdout_path = command[4]
     assert command[5] == '-e'
     stderr_path = command[6]
-    assert command[7] == '-m'
-    assert command[8] == 'ae'
-    assert command[9] == '-M'
-    email = command[10]
-    job_path = command[11]
+    job_path = command[7]
     assert os.path.exists(os.path.split(stdout_path)[0])
 
     with open(stdout_path, 'w') as stdout:
         stdout.write('Dummy qsub:\n')
         stdout.write('stdout path: '+stdout_path+'\n')
         stdout.write('stderr path: '+stderr_path+'\n')
-        stdout.write('email: '+email+'\n')
         stdout.write('job path: '+job_path+'\n')
 
     with open(stderr_path, 'w') as stderr:
