@@ -6,7 +6,8 @@ import os
 
 mmcs_corsika_path = pkg_resources.resource_filename(
     'photon_stream',
-    'tests/resources/cer011014')
+    os.path.join('tests','resources','cer011014')
+)
 
 def test_read_MMCS_CORSIKA_headers():
     headers = ps.simulation_truth.corsika_headers.read_corsika_headers(
@@ -41,7 +42,8 @@ def test_read_and_write_MMCS_CORSIKA_headers():
 def test_read_in_full_CORSIKA_simulation_truth():
     photon_stream_path = pkg_resources.resource_filename(
         'photon_stream',
-        'tests/resources/cer011014.phs.jsonl.gz')
+        os.path.join('tests','resources','cer011014.phs.jsonl.gz')
+    )
 
     simread = ps.SimulationReader(
         photon_stream_path=photon_stream_path, 

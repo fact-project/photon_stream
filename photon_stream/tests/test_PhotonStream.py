@@ -1,10 +1,13 @@
 import photon_stream as ps
 import pkg_resources
+import os
+
 
 def test_properties():
     run_path = pkg_resources.resource_filename(
         'photon_stream',
-        'tests/resources/20170119_229_pass4_100events.phs.jsonl.gz')
+        os.path.join('tests','resources','20170119_229_pass4_100events.phs.jsonl.gz')
+    )
 
     event = next(ps.EventListReader(run_path))
 
@@ -17,7 +20,8 @@ def test_properties():
 def test_can_truncate_itself():
     run_path = pkg_resources.resource_filename(
         'photon_stream',
-        'tests/resources/20170119_229_pass4_100events.phs.jsonl.gz')
+        os.path.join('tests','resources','20170119_229_pass4_100events.phs.jsonl.gz')
+    )
 
     event = next(ps.EventListReader(run_path))
     event.photon_stream.truncated_time_lines(30e-9, 130e-9)

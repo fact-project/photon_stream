@@ -7,7 +7,7 @@ import gzip
 
 run_path = pkg_resources.resource_filename(
     'photon_stream',
-    'tests/resources/20170119_229_pass4_100events.phs.jsonl.gz'
+    os.path.join('tests','resources','20170119_229_pass4_100events.phs.jsonl.gz')
 )
 
 def test_binary_check():
@@ -61,7 +61,8 @@ def test_jsonl2binary():
 
     run_path = pkg_resources.resource_filename(
         'photon_stream',
-        'tests/resources/20170119_229_pass4_100events.phs.jsonl.gz')
+        os.path.join('tests','resources','20170119_229_pass4_100events.phs.jsonl.gz')
+    )
 
     run = ps.EventListReader(run_path)
     run_in = []
@@ -136,7 +137,7 @@ def test_Descriptor_io():
 def test_io_simulation_events():
     photon_stream_path = pkg_resources.resource_filename(
         'photon_stream',
-        'tests/resources/cer011014.phs.jsonl.gz'
+        os.path.join('tests','resources','cer011014.phs.jsonl.gz')
     )
 
     run = ps.EventListReader(photon_stream_path)

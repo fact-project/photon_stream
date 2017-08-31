@@ -6,10 +6,12 @@ import pkg_resources
 import gzip
 import json
 
+
 def test_run_inspection():
     run_path = pkg_resources.resource_filename(
         'photon_stream', 
-        'tests/resources/20170119_229_pass4_100events.phs.jsonl.gz')
+        os.path.join('tests','resources','20170119_229_pass4_100events.phs.jsonl.gz')
+    )
 
     with tempfile.TemporaryDirectory(prefix='photon_stream_test_json') as tmp:
         in_run = ps.EventListReader(run_path)
