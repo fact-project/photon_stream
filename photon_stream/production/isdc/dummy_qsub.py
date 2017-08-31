@@ -38,7 +38,7 @@ def dummy_qsub(command):
         pass
 
     out_dir, out_base_name = extract_out_path_from_worker_job(job_path)
-    os.makedirs(out_dir, exist_ok=True, mode=0o777)
+    os.makedirs(out_dir, exist_ok=True, mode=0o755)
     out_path = os.path.join(out_dir, out_base_name)
 
     with gzip.open(out_path+'.phs.jsonl.gz', 'wt') as out:

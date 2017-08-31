@@ -57,7 +57,7 @@ def main():
 
         out_dir = split(out_path)[0]
         if out_dir:
-            os.makedirs(out_dir, exist_ok=True, mode=0o777)
+            os.makedirs(out_dir, exist_ok=True, mode=0o755)
             print(tdi.info('Output directory was created.'))
         
         with tempfile.TemporaryDirectory(prefix='relleums_fact_') as tmp:
