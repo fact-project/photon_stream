@@ -4,6 +4,8 @@ import json
 import subprocess
 import gzip
 
+dummy_job_id = 0
+
 def dummy_qsub(command):
     """
     Simulates a qsub service to enable unit testing of a qsub submitter.
@@ -41,6 +43,10 @@ def dummy_qsub(command):
 
     with gzip.open(out_path+'.phs.jsonl.gz', 'wt') as out:
         out.write('I am a dummy output photon stream\n')
+
+    global dummy_job_id
+    dummy_job_id += 1
+    return dummy_job_id
 
 
 def extract_out_path_from_worker_job(job_path):

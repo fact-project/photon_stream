@@ -40,7 +40,7 @@ def test_production_run_collection():
         out_dir = join(tmp, 'passX')
 
         # FIRST CHUNK
-        ps.production.isdc.qsub(
+        qsub2run_1 = ps.production.isdc.qsub(
             out_dir=out_dir, 
             start_night=20141215, 
             end_night=20141229,
@@ -63,6 +63,11 @@ def test_production_run_collection():
         current_res_dir = all_dirs_in_resources[0]
         assert exists(join(tmp, 'passX', 'resources', current_res_dir, 'observations_passX.xml'))
         assert exists(join(tmp, 'passX', 'resources', current_res_dir, 'my_fact_tools.jar'))
+        assert qsub2run_1.shape[0] <= runinfo.shape[0]
+        assert qsub2run_1.shape[1] == 3
+        assert 'fNight' in qsub2run_1
+        assert 'fRunID' in qsub2run_1
+        assert 'QsubID' in qsub2run_1
 
         #input('Take a look into '+tmp+' or press any key to continue')
 
@@ -71,7 +76,7 @@ def test_production_run_collection():
             fftools.write('Hi, I am another fact tools dummy java jar!')    
 
         # SECOND CHUNK with 2nd fact-tools.jar
-        ps.production.isdc.qsub(
+        qsub2run_2 = ps.production.isdc.qsub(
             out_dir=out_dir, 
             start_night=20141229, 
             end_night=20150103,
@@ -94,6 +99,11 @@ def test_production_run_collection():
         current_res_dir = all_dirs_in_resources[1]
         assert exists(join(tmp, 'passX', 'resources', current_res_dir, 'observations_passX.xml'))
         assert exists(join(tmp, 'passX', 'resources', current_res_dir, 'my_2nd_fact_tools.jar'))
+        assert qsub2run_2.shape[0] <= runinfo.shape[0]
+        assert qsub2run_2.shape[1] == 3
+        assert 'fNight' in qsub2run_2
+        assert 'fRunID' in qsub2run_2
+        assert 'QsubID' in qsub2run_2
 
         #input('Take a look into '+tmp+' or press any key to continue')
 

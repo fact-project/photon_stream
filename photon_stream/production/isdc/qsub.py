@@ -4,6 +4,7 @@ import subprocess as sp
 from .dummy_qsub import dummy_qsub
 from .. import prepare
 from .write_worker_script import write_worker_script
+import pandas as pd
 
 
 def qsub(
@@ -40,6 +41,8 @@ def qsub(
     prepare.prepare_directory_structure(job_structure['directory_structure'])
     prepare.copy_resources(job_structure['directory_structure'])
 
+    qsub2run = []
+
     for job in tqdm(jobs):
 
         os.makedirs(job['job_yyyy_mm_nn_dir'], exist_ok=True, mode=0o777)
@@ -67,11 +70,32 @@ def qsub(
         ]
    
         if use_dummy_qsub:
-            dummy_qsub(cmd)
+            qsub_job_id = dummy_qsub(cmd)
         else:
             try:
-                sp.check_output(cmd, stderr=sp.STDOUT)
+                out = sp.check_output(cmd, stderr=sp.STDOUT)
+                qsub_job_id = qsub_job_id_from_qsub_stdout(out)
             except sp.CalledProcessError as e:
                 print('returncode', e.returncode)
                 print('output', e.output)
                 raise
+
+        qsub2run.append(
+            {
+                'QsubID': qsub_job_id,
+                'fNight': job['Night'],
+                'fRunID': job['Run'],
+            }
+        )
+
+    return pd.DataFrame(qsub2run)
+
+
+def qsub_job_id_from_qsub_stdout(out):
+    words = out.split(' ')
+    assert word[0] == 'Your'
+    assert word[1] == 'job'
+    assert word[4] == 'has'
+    assert word[5] == 'been'
+    assert word[6] == 'submitted'
+    return int(word[2])
