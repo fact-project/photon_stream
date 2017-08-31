@@ -2,6 +2,7 @@ from tqdm import tqdm
 import os
 import subprocess as sp
 from .dummy_qsub import dummy_qsub
+from .qsub_tools import qsub_job_id_from_qsub_stdout
 from .. import prepare
 from .write_worker_script import write_worker_script
 import pandas as pd
@@ -89,13 +90,3 @@ def qsub(
         )
 
     return pd.DataFrame(qsub2run)
-
-
-def qsub_job_id_from_qsub_stdout(out):
-    words = out.split(' ')
-    assert word[0] == 'Your'
-    assert word[1] == 'job'
-    assert word[4] == 'has'
-    assert word[5] == 'been'
-    assert word[6] == 'submitted'
-    return int(word[2])

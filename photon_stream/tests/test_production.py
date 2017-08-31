@@ -123,3 +123,12 @@ def test_status_bar_string():
     progress_bar_str = ps.production.status.progress(ratio=100.0, length=50)
     assert len(progress_bar_str) > 50    
     assert len(progress_bar_str) < 62 
+
+
+
+def test_qsub_job_id_parser():
+    qsub_str2id = ps.production.isdc.qsub_tools.qsub_job_id_from_qsub_stdout
+
+    assert qsub_str2id('Your job 6174794 ("exec.sh") has been submitted') == 6174794
+    assert qsub_str2id('Your job 0 ("exec.sh") has been submitted') == 0
+    assert qsub_str2id('Your job 123456789123456789123456789 ("exec.sh") has been submitted') == 123456789123456789123456789
