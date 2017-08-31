@@ -176,7 +176,7 @@ def prepare_directory_structure(directory_structure):
     os.makedirs(ds['out_dir'], exist_ok=True, mode=0o777)
     readme_input_path = pkg_resources.resource_filename(
         'photon_stream', 
-        'production/resources/short_readme.md'
+        join('production','resources','short_readme.md')
     ) 
     shutil.copy(readme_input_path, ds['readme_path'])
     

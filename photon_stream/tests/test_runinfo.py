@@ -1,16 +1,17 @@
 import numpy as np
 import photon_stream as ps
 import pkg_resources
+import os
 
 
 known_runs_path = pkg_resources.resource_filename(
     'photon_stream', 
-    'tests/resources/known_runs_20110101.csv'
+    os.path.join('tests','resources','known_runs_20110101.csv')
 )
 
 runinfo_path = pkg_resources.resource_filename(
     'photon_stream', 
-    'tests/resources/runinfo_20120201.csv'
+    os.path.join('tests','resources','runinfo_20120201.csv')
 )
 
 
