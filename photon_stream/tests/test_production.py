@@ -81,6 +81,14 @@ def test_production_run_collection():
             start_new=True,
         )
 
+        assert os.path.exists(phs_dir)
+        assert os.path.exists(join(phs_dir,'obs'))
+        assert os.path.exists(join(phs_dir,'obs','runstatus.csv'))
+        assert os.path.exists(join(phs_dir,'obs','.lock'))
+        assert os.path.exists(join(phs_dir,'.obs.std'))
+        assert os.path.exists(join(phs_dir,'.obs.job'))
+
+
         #input('Take a look into '+tmp+' or press any key to continue')
 
         my_2nd_fact_tools_jar_path = join(tmp, 'my_2nd_fact_tools.jar')
