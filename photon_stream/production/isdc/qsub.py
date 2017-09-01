@@ -32,6 +32,7 @@ from .. import prepare
 from .write_worker_script import write_worker_script
 from .. import runinfo
 from .. import status
+from .. import tools
 import pandas as pd
 
 def qsub(
@@ -54,7 +55,7 @@ def qsub(
     start_new=False,
     max_jobs_in_qsub=128,
 ):  
-    lock_path = join(phs_dir,'obs','.lock')
+    runstatus_lock_path = join(phs_dir,'obs','.lock.runstatus.csv')
     runstatus_path = join(phs_dir,'obs','runstatus.csv')
 
     if start_new:        
@@ -68,12 +69,9 @@ def qsub(
                 obs_dir=obs_dir,
                 runstatus_path=runstatus_path,
             )
-        with open(lock_path, 'a') as out:
-            os.utime(lock_path)
+        tools.touch(runstatus_lock_path)
 
-
-
-    lock = filelock.FileLock(lock_path)
+    lock = filelock.FileLock(runstatus_lock_path)
     
     try:
         with lock.acquire(timeout=1):

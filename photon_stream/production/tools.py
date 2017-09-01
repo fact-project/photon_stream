@@ -24,3 +24,8 @@ def local_backup_path_with_timestamp(path):
     basename = os.path.basename(path)
     dirname = os.path.dirname(path)
     return os.path.join(dirname, '.'+basename+'.'+time_stamp)
+
+
+def touch(path):
+    with open(lock_path, 'a') as out:
+        os.utime(lock_path)
