@@ -16,17 +16,18 @@ def number_of_events_in_event_list_file(path):
     return number_of_events
 
 
-def status(photon_stream_dir, known_runs_database='known_runs.msg'):
+def status(obs_dir, runstatus_path=None):
     """
     Estimates the avaiability status of FACT events in a 'phs' directory using 
     the FACT run-info-database as a reference.
     Writes a FACT run-info-database to disk with additional columns for the
     number of events found in each run in the 'phs' directory.
     """
-    info_path = os.path.abspath(
-	os.path.join(photon_stream_dir, known_runs_database))
+    if runstatus_path is None:
+        runstatus_path = os.path.abspath(os.path.join(obs_dir, 'runstatus.csv'))
+
     try:
-        info = runinfo.read(info_path)
+        info = runinfo.read(runstatus_path)
     except:
         info = runinfo.download_latest()
 
@@ -51,7 +52,7 @@ def status(photon_stream_dir, known_runs_database='known_runs.msg'):
                 )
 
                 run_path = os.path.join(
-                    photon_stream_dir, 
+                    obs_dir, 
                     '{yyyy:04d}'.format(yyyy=tools.night_id_2_yyyy(night)), 
                     '{mm:02d}'.format(mm=tools.night_id_2_mm(night)), 
                     '{nn:02d}'.format(nn=tools.night_id_2_nn(night)), 
@@ -70,7 +71,7 @@ def status(photon_stream_dir, known_runs_database='known_runs.msg'):
                         ' trigger.'
                     )
 
-    runinfo.write(info, info_path)
+    runinfo.write(info, runstatus_path)
 
 
 def runs_in_range_str(info, start_night, end_night, max_trigger_rate=200):

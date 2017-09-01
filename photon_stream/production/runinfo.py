@@ -90,20 +90,20 @@ def runinfo_only_with_keys(runinfo, desired_keys):
     return ri_out
 
 
-def append_runinfo_to_known_runs(runinfo, known_runs):
+def append_runinfo_to_runstatus(runinfo, runstatus):
     phs_info = runinfo_only_with_keys(
-        runinfo=known_runs,
+        runinfo=runstatus,
         desired_keys=ID_RUNINFO_KEYS + PHS_RUNINFO_KEYS,
     )
-    new_known_runs = runinfo.merge(phs_info, how='left', on=ID_RUNINFO_KEYS)
+    new_runstatus = runinfo.merge(phs_info, how='left', on=ID_RUNINFO_KEYS)
     # Pandas BUG casts int64 to float64,
     # https://github.com/pandas-dev/pandas/issues/9958
     for phs_key in PHS_RUNINFO_KEYS:
-        series = new_known_runs[phs_key]
+        series = new_runstatus[phs_key]
         is_nan = np.isnan(series.values)
         series.values[is_nan] = 0
-        new_known_runs[phs_key] = series.astype(np.int32)
-    return new_known_runs
+        new_runstatus[phs_key] = series.astype(np.int32)
+    return new_runstatus
 
 
 def number_expected_phs_events(runinfo):

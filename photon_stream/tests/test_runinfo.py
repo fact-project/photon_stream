@@ -7,9 +7,9 @@ from glob import glob
 import tempfile
 
 
-known_runs_path = pkg_resources.resource_filename(
+runstatus_path = pkg_resources.resource_filename(
     'photon_stream', 
-    os.path.join('tests','resources','known_runs_20110101.csv')
+    os.path.join('tests','resources','runstatus_20110101.csv')
 )
 
 runinfo_path = pkg_resources.resource_filename(
@@ -18,9 +18,9 @@ runinfo_path = pkg_resources.resource_filename(
 )
 
 
-def test_known_runs_20110101_has_correct_keys():
-    known_runs = ps.production.runinfo.read(known_runs_path)
-    for key in known_runs.keys():
+def test_runstatus_20110101_has_correct_keys():
+    runstatus = ps.production.runinfo.read(runstatus_path)
+    for key in runstatus.keys():
         assert key in (
             ps.production.runinfo.ID_RUNINFO_KEYS + 
             ps.production.runinfo.TYPE_RUNINFO_KEYS +
@@ -40,45 +40,45 @@ def test_runinfo_20120201_has_correct_keys():
 
 
 def test_append_runinfo():
-    known_runs = ps.production.runinfo.read(known_runs_path)
+    runstatus = ps.production.runinfo.read(runstatus_path)
     runinfo = ps.production.runinfo.read(runinfo_path)
 
-    new_known_runs = ps.production.runinfo.append_runinfo_to_known_runs(
+    new_runstatus = ps.production.runinfo.append_runinfo_to_runstatus(
         runinfo=runinfo,
-        known_runs=known_runs,
+        runstatus=runstatus,
     )
 
     runs_in_fresh_runinfo = runinfo.shape[0]
-    columns_in_known_runs = known_runs.shape[1]
+    columns_in_runstatus = runstatus.shape[1]
 
-    assert new_known_runs.shape[0] == runs_in_fresh_runinfo
-    assert new_known_runs.shape[1] == columns_in_known_runs
+    assert new_runstatus.shape[0] == runs_in_fresh_runinfo
+    assert new_runstatus.shape[1] == columns_in_runstatus
 
-    for i, row in new_known_runs.iterrows():
-        if i < known_runs.shape[0]:
+    for i, row in new_runstatus.iterrows():
+        if i < runstatus.shape[0]:
             for id_key in ps.production.runinfo.ID_RUNINFO_KEYS:
-                assert new_known_runs[id_key][i] == known_runs[id_key][i]
+                assert new_runstatus[id_key][i] == runstatus[id_key][i]
 
             for type_key in ps.production.runinfo.TYPE_RUNINFO_KEYS:
-                assert new_known_runs[type_key][i] == known_runs[type_key][i]
+                assert new_runstatus[type_key][i] == runstatus[type_key][i]
 
             for phs_key in ps.production.runinfo.PHS_RUNINFO_KEYS:
-                assert new_known_runs[phs_key][i] == known_runs[phs_key][i]
+                assert new_runstatus[phs_key][i] == runstatus[phs_key][i]
         else:
             for phs_key in ps.production.runinfo.PHS_RUNINFO_KEYS:
-                assert new_known_runs[phs_key][i] == 0
+                assert new_runstatus[phs_key][i] == 0
 
 
 def test_expected_number_of_triggers():
-    known_runs = ps.production.runinfo.read(known_runs_path)
+    runstatus = ps.production.runinfo.read(runstatus_path)
 
     num_expected_phs_trigger = ps.production.runinfo.number_expected_phs_events(
-        known_runs
+        runstatus
     )
 
-    num_actual_phs_trigger = known_runs['PhotonStreamNumEvents'].values
+    num_actual_phs_trigger = runstatus['PhotonStreamNumEvents'].values
 
-    for i, row in known_runs.iterrows():
+    for i, row in runstatus.iterrows():
 
         if row['fRunTypeKey'] == ps.production.runinfo.OBSERVATION_RUN_TYPE_KEY:
             manual_expected = (
