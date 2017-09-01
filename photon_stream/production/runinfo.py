@@ -112,3 +112,26 @@ def number_expected_phs_events(runinfo):
         count += np.int64(np.round(runinfo[key]))
     count[np.isnan(count)] = 0.0
     return (np.round(count)).astype(np.int64)
+
+
+def obs_runs_not_in_qstat(all_runjobs, runqstat):
+    m = pd.merge(
+        all_runjobs,
+        runqstat, 
+        how='outer', 
+        indicator=True,
+        on=ID_RUNINFO_KEYS,
+    )
+    result = m[m['_merge'] == 'left_only'].copy()
+    result.drop('_merge', axis=1, inplace=True)
+    return result
+
+
+def remove_all_obs_runs_from_runinfo_not_in_runjobs(runinfo, runjobs):
+    r = pd.merge(runjobs, runinfo, how='outer', indicator=True)
+    isobs = r.fRunTypeKey == OBSERVATION_RUN_TYPE_KEY   
+    ro = r._merge=='right_only'
+    result = r[np.invert(ro & isobs)].copy()
+    result.sort_values(ID_RUNINFO_KEYS, inplace=True)
+    result.drop('_merge', axis=1, inplace=True)
+    return result

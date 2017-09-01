@@ -1,17 +1,18 @@
 import datetime as dt
 import os
+import numpy as np
 
 
 def night_id_2_yyyy(night):
-    return night // 10000
+    return np.int(np.round(night)) // 10000
 
 
 def night_id_2_mm(night):
-    return (night // 100) % 100
+    return (np.int(np.round(night)) // 100) % 100
 
 
 def night_id_2_nn(night):
-    return night % 100
+    return np.int(np.round(night)) % 100
 
 
 def time_stamp_utcnow_for_valid_path():

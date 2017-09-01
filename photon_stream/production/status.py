@@ -26,10 +26,7 @@ def status(obs_dir, runstatus_path=None):
     if runstatus_path is None:
         runstatus_path = os.path.abspath(os.path.join(obs_dir, 'runstatus.csv'))
 
-    try:
-        info = runinfo.read(runstatus_path)
-    except:
-        info = runinfo.download_latest()
+    info = runinfo.read(runstatus_path)
 
     if 'PhotonStreamNumEvents' not in info:
         info['PhotonStreamNumEvents'] = pd.Series(

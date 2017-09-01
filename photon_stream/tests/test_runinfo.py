@@ -5,6 +5,7 @@ import os
 import shutil
 from glob import glob
 import tempfile
+import pandas as pd
 
 
 runstatus_path = pkg_resources.resource_filename(
@@ -120,3 +121,94 @@ def test_runinfo_backup():
         _backup_basename = os.path.basename(_backup_path)
         assert len(_backup_basename) > 0
         assert _backup_basename[0] == '.'
+
+
+def test_obs_runs_not_in_qstat():
+
+    all_runjobs = pd.DataFrame(
+        [
+            {'fNight':100,'fRunID':1,'ffoo':1},
+            {'fNight':100,'fRunID':2,'ffoo':2},
+            {'fNight':100,'fRunID':3,'ffoo':3},
+            {'fNight':101,'fRunID':1,'ffoo':4}, #out
+            {'fNight':101,'fRunID':2,'ffoo':5}, 
+            {'fNight':101,'fRunID':3,'ffoo':6}, #out
+            {'fNight':102,'fRunID':1,'ffoo':7}, 
+            {'fNight':102,'fRunID':2,'ffoo':8}, #out
+            {'fNight':102,'fRunID':3,'ffoo':9},
+        ]
+    )
+
+    runqstat = pd.DataFrame(
+        [
+            {'fNight':101,'fRunID':1,'state':'a'},
+            {'fNight':101,'fRunID':3,'state':'b'},
+            {'fNight':102,'fRunID':2,'state':'c'},
+        ]
+    )
+
+    r = ps.production.runinfo.obs_runs_not_in_qstat(
+        all_runjobs=all_runjobs, 
+        runqstat=runqstat
+    )
+
+    assert 'fNight' in r
+    assert 'fRunID' in r
+    assert 'ffoo' in r
+
+    mask = np.array([1,1,1,0,1,0,1,0,1], dtype=np.bool)
+    expected = all_runjobs[mask]
+
+    print('result\n',r)
+    print('expected\n',expected)
+
+    assert len(expected) == len(r)
+    for i in range(len(r)):
+        assert r['fNight'].values[i] == expected['fNight'].values[i]
+        assert r['fRunID'].values[i] == expected['fRunID'].values[i]
+    
+def test_remove_all_obs_runs_from_runinfo_not_in_runjobs():
+
+    runi = pd.DataFrame(
+        [
+            {'fNight':100,'fRunID':1,'fRunTypeKey':2}, #keep DRS
+            {'fNight':100,'fRunID':2,'fRunTypeKey':1}, #keep
+            {'fNight':100,'fRunID':3,'fRunTypeKey':1}, #keep
+            {'fNight':101,'fRunID':1,'fRunTypeKey':2}, #keep DRS
+            {'fNight':101,'fRunID':2,'fRunTypeKey':1}, #keep
+            {'fNight':101,'fRunID':3,'fRunTypeKey':1},
+            {'fNight':102,'fRunID':1,'fRunTypeKey':2}, #keep DRS
+            {'fNight':102,'fRunID':2,'fRunTypeKey':1},
+            {'fNight':102,'fRunID':3,'fRunTypeKey':1}, #keep
+        ]
+    )
+
+    runjobs = pd.DataFrame(
+        [
+            {'fNight':100,'fRunID':2,'fRunTypeKey':1},
+            {'fNight':100,'fRunID':3,'fRunTypeKey':1},
+            {'fNight':101,'fRunID':2,'fRunTypeKey':1},
+            {'fNight':102,'fRunID':3,'fRunTypeKey':1},
+        ]
+    )
+
+    r = ps.production.runinfo.remove_all_obs_runs_from_runinfo_not_in_runjobs(
+        runinfo=runi, 
+        runjobs=runjobs
+    )
+
+    assert len(r) == len(runi) - 2
+    assert 'fNight' in r
+    assert 'fRunID' in r
+    assert 'fRunTypeKey' in r
+
+    mask = np.array([1,1,1,1,1,0,1,0,1], dtype=np.bool)
+    expected = runi[mask]
+
+    print('result\n',r)
+    print('expected\n',expected)
+
+    assert len(expected) == len(r)
+    for i in range(len(r)):
+        assert r['fNight'].values[i] == expected['fNight'].values[i]
+        assert r['fRunID'].values[i] == expected['fRunID'].values[i]

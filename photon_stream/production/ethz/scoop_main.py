@@ -62,8 +62,8 @@ def run_job(job):
 
             for intermediate_file_path in glob.glob(join(tmp, '*')):
                 if os.path.isfile(intermediate_file_path):
-                    os.makedirs(job['phs_yyyy_mm_nn_dir'], exist_ok=True, mode=0o755)
-                    shutil.copy(intermediate_file_path, job['phs_yyyy_mm_nn_dir'])
+                    os.makedirs(job['obs_yyyy_mm_nn_dir'], exist_ok=True, mode=0o755)
+                    shutil.copy(intermediate_file_path, job['obs_yyyy_mm_nn_dir'])
     return rc
 
 
@@ -94,9 +94,7 @@ def main():
             runinfo=runinfo,
         )
         jobs = job_structure['jobs']
-        ps.production.prepare.prepare_directory_structure(job_structure['directory_structure'])
-        ps.production.prepare.copy_resources(job_structure['directory_structure'])
-
+        ps.production.prepare.prepare_output_tree(job_structure['tree'])
         job_return_codes = list(scoop.futures.map(run_job, jobs))
 
     except docopt.DocoptExit as e:

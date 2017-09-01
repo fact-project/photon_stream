@@ -8,6 +8,21 @@ import pkg_resources
 import glob
 
 
+runinfo_path = pkg_resources.resource_filename(
+    'photon_stream', 
+    join('tests','resources','runinfo_2014Dec15_2015Jan15.csv')
+)
+
+qstat_xml_path = pkg_resources.resource_filename(
+    'photon_stream', 
+    os.path.join('tests','resources','qstat.xml')
+)
+with open(qstat_xml_path, 'rt') as fin:
+    qstat_xml = fin.read()
+    runqstat = ps.production.isdc.qstat.jobs_2_run_ids(
+        ps.production.isdc.qstat.jobs_in_qstatxml(qstat_xml)
+    )
+
 def test_number_of_events_in_run():
     run_path = pkg_resources.resource_filename(
         'photon_stream', 
@@ -26,11 +41,10 @@ def test_production_write_worker_script():
 
 def test_production_run_collection():
     with tempfile.TemporaryDirectory(prefix='photon_stream_run_collection') as tmp:
+    #with open(runinfo_path, 'rb') as lalala:
+        #tmp = '/home/sebastian/Desktop/phs_production'
+        #os.makedirs(tmp, exist_ok=True)
 
-        runinfo_path = pkg_resources.resource_filename(
-            'photon_stream', 
-            join('tests','resources','runinfo_2014Dec15_2015Jan15.csv')
-        )
 
         runinfo = ps.production.runinfo.read(runinfo_path)
 
@@ -49,7 +63,7 @@ def test_production_run_collection():
 
         # FIRST CHUNK
         ps.production.isdc.qsub(
-            out_dir=out_dir, 
+            phs_dir=out_dir, 
             start_night=20141215, 
             end_night=20141229,
             only_a_fraction=1.0,
@@ -62,15 +76,10 @@ def test_production_run_collection():
             tmp_dir_base_name='fact_photon_stream_JOB_ID_',
             queue='fact_medium', 
             use_dummy_qsub=True,
-            runinfo=runinfo,
+            qstat_dummy=runqstat,
+            job_runinfo=runinfo,
+            start_new=True,
         )
-
-        assert exists(join(tmp, 'passX', 'resources'))
-        all_dirs_in_resources = glob.glob(join(tmp, 'passX', 'resources', '*'))
-        assert len(all_dirs_in_resources) == 1
-        current_res_dir = all_dirs_in_resources[0]
-        assert exists(join(tmp, 'passX', 'resources', current_res_dir, 'observations_passX.xml'))
-        assert exists(join(tmp, 'passX', 'resources', current_res_dir, 'my_fact_tools.jar'))
 
         #input('Take a look into '+tmp+' or press any key to continue')
 
@@ -80,7 +89,7 @@ def test_production_run_collection():
 
         # SECOND CHUNK with 2nd fact-tools.jar
         ps.production.isdc.qsub(
-            out_dir=out_dir, 
+            phs_dir=out_dir, 
             start_night=20141229, 
             end_night=20150103,
             only_a_fraction=1.0,
@@ -93,15 +102,10 @@ def test_production_run_collection():
             tmp_dir_base_name='fact_photon_stream_JOB_ID_',
             queue='fact_medium', 
             use_dummy_qsub=True,
-            runinfo=runinfo,
+            qstat_dummy=runqstat,
+            job_runinfo=runinfo,
+            start_new=False,
         )
-
-        all_dirs_in_resources = glob.glob(join(tmp, 'passX', 'resources', '*'))
-        assert len(all_dirs_in_resources) == 2
-        all_dirs_in_resources.sort()
-        current_res_dir = all_dirs_in_resources[1]
-        assert exists(join(tmp, 'passX', 'resources', current_res_dir, 'observations_passX.xml'))
-        assert exists(join(tmp, 'passX', 'resources', current_res_dir, 'my_2nd_fact_tools.jar'))
 
         #input('Take a look into '+tmp+' or press any key to continue')
 

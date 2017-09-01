@@ -12,10 +12,10 @@ from . import tools
  
 
 def make_job_list(
-    out_dir,
     runinfo,
-    start_night=20110101,
-    end_night=20501231,
+    phs_dir='/gpfs0/fact/processing/public/phs',
+    start_night=0,
+    end_night=99999999,
     only_a_fraction=1.0,
     fact_raw_dir='/fact/raw',
     fact_drs_dir='/fact/raw',
@@ -26,23 +26,27 @@ def make_job_list(
     tmp_dir_base_name='fact_photon_stream_JOB_ID_',
 ):
     """
-    Returns a list of job dicts which contain all relevant paths to convert a
+    Returns a list of job dicts which contain all relevant p to convert a
     raw FACT run into the photon-stream representation.
 
     Parameters
     ----------
 
-    out_dir             The path to the output directory where the photon-stream
-                        is collected. The out_dir is created if not existing.
+    phs_dir             Output directory of the photon-stream. In there is the
+                        observations directory ./obs and simulations directory
+                        ./sim
     
     runinfo             A pandas DataFrame() of the FACT run-info-database which
                         is used as a reference for the runs to be processed.
+                        All observation runs are taken into account. If you want
+                        to process specific runs, remove the other runs from
+                        runinfo.
 
     start_night         The start night integer 'YYYYmmnn', processes only runs 
-                        after this night. (default 20110101)
+                        after this night. (default 0)
 
     end_night           The end night integer 'YYYYmmnn', process only runs
-                        until this night. (default 20501231)
+                        until this night. (default 99999999)
 
     only_a_fraction     A ratio between 0.0 and 1.0 to only process a 
                         random fraction of the runs. Usefull for debugging over 
@@ -65,33 +69,25 @@ def make_job_list(
                         worker nodes. (default 'fact_photon_stream_JOB_ID_')
     """
     
-    print('Make raw -> photon-stream conversion job list ...')
+    print('Make raw->phs job list ...')
 
-    out_dir = abspath(out_dir)
+    phs_dir = abspath(phs_dir)
     fact_raw_dir = abspath(fact_raw_dir)
     fact_drs_dir = abspath(fact_drs_dir)
     fact_aux_dir = abspath(fact_aux_dir)
-    
-    res_dir = join(out_dir, 'resources')
-    this_processing_resource_dir = join(
-        res_dir, 
-        tools.time_stamp_utcnow_for_valid_path()
-    )
-    std_dir = join(out_dir, 'std')
-    job_dir = join(out_dir, 'job')
-    phs_dir = join(out_dir, 'phs')
+    java_path = abspath(java_path)
+    fact_tools_jar_path = abspath(fact_tools_jar_path)
+    fact_tools_xml_path = abspath(fact_tools_xml_path)
 
-    directory_structure = {
-        'out_dir': out_dir,
-        'std_dir': std_dir,
-        'job_dir': job_dir,
-        'res_dir': res_dir,
-        'phs_dir': phs_dir,
-        'res_dir_this_processing': this_processing_resource_dir,
-        'fact_tools_jar_path': fact_tools_jar_path,
-        'fact_tools_xml_path': fact_tools_xml_path,
-        'readme_path': join(out_dir, 'README.md')
-    }
+    p = {'phs_dir': phs_dir}
+    p['obs_dir'] = join(p['phs_dir'], 'obs')
+    p['std_dir'] = join(p['phs_dir'], '.obs.std')
+    p['job_dir'] = join(p['phs_dir'], '.obs.job')
+
+    p['fact_tools_jar_path'] = fact_tools_jar_path
+    p['fact_tools_xml_path'] = fact_tools_xml_path
+
+    p['phs_readme_path'] = join(p['phs_dir'], 'README.md')
 
     print('Find runs in night range '+str(start_night)+' to '+str(end_night)+' in runinfo database ...')
     
@@ -117,9 +113,9 @@ def make_job_list(
             m=job['mm'],
             n=job['nn']
         )
-        job['base_name'] = '{bsn:08d}_{rrr:03d}'.format(
-            bsn=job['Night'],
-            rrr=job['Run']
+        job['base_name'] = '{Night:08d}_{Run:03d}'.format(
+            Night=job['Night'],
+            Run=job['Run']
         )
         job['raw_file_name'] = job['base_name']+'.fits.fz'
         job['raw_path'] = join(
@@ -143,12 +139,12 @@ def make_job_list(
     print('Found '+str(len(jobs))+' with accesible drs files.')
 
     for job in jobs: 
-        job['std_dir'] = std_dir
+        job['std_dir'] = p['std_dir']
         job['std_yyyy_mm_nn_dir'] = join(job['std_dir'], job['yyyymmnn_dir'])
         job['std_out_path'] = join(job['std_yyyy_mm_nn_dir'], job['base_name']+'.o')
         job['std_err_path'] = join(job['std_yyyy_mm_nn_dir'], job['base_name']+'.e')
 
-        job['job_dir'] = job_dir
+        job['job_dir'] = p['job_dir']
         job['job_yyyy_mm_nn_dir'] = join(job['job_dir'], job['yyyymmnn_dir'])    
         job['job_path'] = join(job['job_yyyy_mm_nn_dir'], job['base_name']+'.sh')
         job['worker_tmp_dir_base_name'] = tmp_dir_base_name
@@ -157,52 +153,43 @@ def make_job_list(
         job['fact_tools_jar_path'] = fact_tools_jar_path
         job['fact_tools_xml_path'] = fact_tools_xml_path
 
-        job['phs_dir'] = phs_dir
-        job['phs_yyyy_mm_nn_dir'] = join(job['phs_dir'], job['yyyymmnn_dir'])
+        job['obs_dir'] = p['obs_dir']
+        job['obs_yyyy_mm_nn_dir'] = join(job['obs_dir'], job['yyyymmnn_dir'])
     print('Done.')
 
     return {
         'jobs': jobs,
-        'directory_structure': directory_structure
+        'tree': p
     }
 
 
 
-def prepare_directory_structure(directory_structure):
-    ds = directory_structure
-    print('Prepare output directory structure ...')
+def prepare_output_tree(tree):
+    print('Prepare output directory tree ...')
     
-    os.makedirs(ds['out_dir'], exist_ok=True, mode=0o755)
+    os.makedirs(tree['phs_dir'], exist_ok=True, mode=0o755)
     readme_input_path = pkg_resources.resource_filename(
         'photon_stream', 
         join('production','resources','short_readme.md')
     ) 
-    shutil.copy(readme_input_path, ds['readme_path'])
-    
-    os.makedirs(ds['std_dir'], exist_ok=True, mode=0o755)
-    os.makedirs(ds['job_dir'], exist_ok=True, mode=0o755)
-    os.makedirs(ds['phs_dir'], exist_ok=True, mode=0o755)
-    os.makedirs(ds['res_dir'], exist_ok=True, mode=0o755)
+    shutil.copy(readme_input_path, tree['phs_readme_path'])
 
+    os.makedirs(tree['obs_dir'], exist_ok=True, mode=0o755)
+    os.makedirs(tree['std_dir'], exist_ok=True, mode=0o755)
+    os.makedirs(tree['job_dir'], exist_ok=True, mode=0o755)
 
-def copy_resources(directory_structure):
-    ds = directory_structure
-    print('Copy resources ...')
-    os.makedirs(ds['res_dir_this_processing'], exist_ok=False)
-    shutil.copy(ds['fact_tools_jar_path'], ds['res_dir_this_processing'])
-    shutil.copy(ds['fact_tools_xml_path'], ds['res_dir_this_processing'])
 
 
 def observation_runs_in_runinfo_in_night_range(
     runinfo, 
-    start_night=20110101, 
-    end_night=20171231,
+    start_night=0, 
+    end_night=99999999,
     only_a_fraction=1.0
 ):
     past_start = (runinfo['fNight'] >= start_night).as_matrix()
     before_end = (runinfo['fNight'] < end_night).as_matrix()
-    is_observation_run = (runinfo['fRunTypeKey'] == OBSERVATION_RUN_TYPE_KEY).as_matrix()
-    valid = past_start*before_end*is_observation_run
+    is_obs = (runinfo['fRunTypeKey'] == OBSERVATION_RUN_TYPE_KEY).as_matrix()
+    valid = past_start*before_end*is_obs
 
     fraction = np.random.uniform(size=len(valid)) < only_a_fraction
     
@@ -212,9 +199,12 @@ def observation_runs_in_runinfo_in_night_range(
     jobs = []
 
     for i, run_id in enumerate(run_ids):
-        jobs.append({
-            'Night': night_ids.iloc[i],
-            'Run': run_id})
+        jobs.append(
+            {
+                'Night': np.int(np.round(night_ids.iloc[i])),
+                'Run': np.int(np.round(run_id))
+            }
+        )
     return jobs
 
 
@@ -224,17 +214,20 @@ def add_drs_run_info_to_jobs(runinfo, jobs):
             (runinfo.fNight == job["Night"])&
             (runinfo.fDrsStep == 2)&
             (runinfo.fRunTypeKey == 2)&
-            (runinfo.fRunID < job["Run"])]
+            (runinfo.fRunID < job["Run"])
+        ]
         
         if len(drs_run_candidates) >= 1:
             job["drs_Run"] = drs_run_candidates.iloc[-1].fRunID
-            job["drs_file_name"] = '{bsn:08d}_{rrr:03d}.drs.fits.gz'.format(
-                bsn=job['Night'],
-                rrr=int(job["drs_Run"]))
+            job["drs_file_name"] = '{Night:08d}_{Run:03d}.drs.fits.gz'.format(
+                Night=job['Night'],
+                Run=int(job["drs_Run"])
+            )
             job['drs_path'] = os.path.join(
                 job['fact_drs_dir'], 
                 job['yyyymmnn_dir'], 
-                job['drs_file_name'])
+                job['drs_file_name']
+            )
         else:
             job["drs_Run"] = None
             job['drs_path'] = 'nope.sorry'
