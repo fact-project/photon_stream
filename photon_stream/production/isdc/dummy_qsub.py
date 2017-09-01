@@ -4,8 +4,6 @@ import json
 import subprocess
 import gzip
 
-dummy_job_id = 0
-
 def dummy_qsub(command):
     """
     Simulates a qsub service to enable unit testing of a qsub submitter.
@@ -25,11 +23,14 @@ def dummy_qsub(command):
     stdout_path = command[4]
     assert command[5] == '-e'
     stderr_path = command[6]
-    job_path = command[7]
+    assert command[7] == '-N'
+    job_name = command[8]
+    job_path = command[9]
     assert os.path.exists(os.path.split(stdout_path)[0])
 
     with open(stdout_path, 'w') as stdout:
         stdout.write('Dummy qsub:\n')
+        stdout.write('job_name: '+job_name+'\n')
         stdout.write('stdout path: '+stdout_path+'\n')
         stdout.write('stderr path: '+stderr_path+'\n')
         stdout.write('job path: '+job_path+'\n')
@@ -38,15 +39,11 @@ def dummy_qsub(command):
         pass
 
     out_dir, out_base_name = extract_out_path_from_worker_job(job_path)
-    os.makedirs(out_dir, exist_ok=True, mode=0o755)
+    os.makedirs(out_dir, exist_ok=True, mode=0o777)
     out_path = os.path.join(out_dir, out_base_name)
 
     with gzip.open(out_path+'.phs.jsonl.gz', 'wt') as out:
         out.write('I am a dummy output photon stream\n')
-
-    global dummy_job_id
-    dummy_job_id += 1
-    return dummy_job_id
 
 
 def extract_out_path_from_worker_job(job_path):

@@ -8,6 +8,14 @@ import pkg_resources
 import glob
 
 
+def test_number_of_events_in_run():
+    run_path = pkg_resources.resource_filename(
+        'photon_stream', 
+        join('tests','resources','20170119_229_pass4_100events.phs.jsonl.gz')
+    )    
+    assert ps.production.status.number_of_events_in_event_list_file(run_path) == 100
+
+
 def test_production_write_worker_script():
     with tempfile.TemporaryDirectory(prefix='photon_stream_test_production') as tmp:
         worker_script_path = join(tmp, 'worker.sh')
@@ -21,7 +29,7 @@ def test_production_run_collection():
 
         runinfo_path = pkg_resources.resource_filename(
             'photon_stream', 
-            os.path.join('tests','resources','runinfo_2014Dec15_2015Jan15.csv')
+            join('tests','resources','runinfo_2014Dec15_2015Jan15.csv')
         )
 
         runinfo = ps.production.runinfo.read(runinfo_path)
@@ -40,7 +48,7 @@ def test_production_run_collection():
         out_dir = join(tmp, 'passX')
 
         # FIRST CHUNK
-        qsub2run_1 = ps.production.isdc.qsub(
+        ps.production.isdc.qsub(
             out_dir=out_dir, 
             start_night=20141215, 
             end_night=20141229,
@@ -63,11 +71,6 @@ def test_production_run_collection():
         current_res_dir = all_dirs_in_resources[0]
         assert exists(join(tmp, 'passX', 'resources', current_res_dir, 'observations_passX.xml'))
         assert exists(join(tmp, 'passX', 'resources', current_res_dir, 'my_fact_tools.jar'))
-        assert qsub2run_1.shape[0] <= runinfo.shape[0]
-        assert qsub2run_1.shape[1] == 3
-        assert 'fNight' in qsub2run_1
-        assert 'fRunID' in qsub2run_1
-        assert 'QsubID' in qsub2run_1
 
         #input('Take a look into '+tmp+' or press any key to continue')
 
@@ -76,7 +79,7 @@ def test_production_run_collection():
             fftools.write('Hi, I am another fact tools dummy java jar!')    
 
         # SECOND CHUNK with 2nd fact-tools.jar
-        qsub2run_2 = ps.production.isdc.qsub(
+        ps.production.isdc.qsub(
             out_dir=out_dir, 
             start_night=20141229, 
             end_night=20150103,
@@ -99,11 +102,6 @@ def test_production_run_collection():
         current_res_dir = all_dirs_in_resources[1]
         assert exists(join(tmp, 'passX', 'resources', current_res_dir, 'observations_passX.xml'))
         assert exists(join(tmp, 'passX', 'resources', current_res_dir, 'my_2nd_fact_tools.jar'))
-        assert qsub2run_2.shape[0] <= runinfo.shape[0]
-        assert qsub2run_2.shape[1] == 3
-        assert 'fNight' in qsub2run_2
-        assert 'fRunID' in qsub2run_2
-        assert 'QsubID' in qsub2run_2
 
         #input('Take a look into '+tmp+' or press any key to continue')
 
@@ -123,52 +121,3 @@ def test_status_bar_string():
     progress_bar_str = ps.production.status.progress(ratio=100.0, length=50)
     assert len(progress_bar_str) > 50    
     assert len(progress_bar_str) < 62 
-
-
-
-def test_qsub_job_id_parser():
-    qsub_str2id = ps.production.isdc.qsub_tools.qsub_job_id_from_qsub_stdout
-
-    assert qsub_str2id('Your job 6174794 ("exec.sh") has been submitted') == 6174794
-    assert qsub_str2id('Your job 0 ("exec.sh") has been submitted') == 0
-    assert qsub_str2id('Your job 123456789123456789123456789 ("exec.sh") has been submitted') == 123456789123456789123456789
-
-
-def test_qstat():
-    qstat_stdout_path = pkg_resources.resource_filename(
-        'photon_stream', 
-        os.path.join('tests','resources','qstat_example.stdout')
-    )
-
-    with open(qstat_stdout_path, 'rt') as fin:
-        qstat_stdout = fin.read()
-
-    qstat = ps.production.isdc.qsub_tools._qstat_stdout_2_dataframe(qstat_stdout)
-
-    assert 'job-ID' in qstat
-    assert 'prior' in qstat
-    assert 'name' in qstat
-    assert 'user' in qstat
-    assert 'state' in qstat
-    assert len(qstat) == 13
-
-    job_ids = np.array([
-        5074985,
-        5074992,
-        5075009,
-        6174799,
-        6174800,
-        6174801,
-        6174802,
-        6174803,
-        6174804,
-        6174805,
-        6174806,
-        6174807,
-        6174808,
-    ])
-
-    np.testing.assert_equal(
-        qstat['job-ID'].values,
-        job_ids
-    )

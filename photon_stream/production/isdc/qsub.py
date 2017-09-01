@@ -2,10 +2,8 @@ from tqdm import tqdm
 import os
 import subprocess as sp
 from .dummy_qsub import dummy_qsub
-from .qsub_tools import qsub_job_id_from_qsub_stdout
 from .. import prepare
 from .write_worker_script import write_worker_script
-import pandas as pd
 
 
 def qsub(
@@ -42,12 +40,10 @@ def qsub(
     prepare.prepare_directory_structure(job_structure['directory_structure'])
     prepare.copy_resources(job_structure['directory_structure'])
 
-    qsub2run = []
-
     for job in tqdm(jobs):
 
-        os.makedirs(job['job_yyyy_mm_nn_dir'], exist_ok=True, mode=0o755)
-        os.makedirs(job['std_yyyy_mm_nn_dir'], exist_ok=True, mode=0o755)
+        os.makedirs(job['job_yyyy_mm_nn_dir'], exist_ok=True, mode=0o777)
+        os.makedirs(job['std_yyyy_mm_nn_dir'], exist_ok=True, mode=0o777)
 
         write_worker_script(
             path=job['job_path'],
@@ -67,26 +63,20 @@ def qsub(
             '-q', queue,
             '-o', job['std_out_path'],
             '-e', job['std_err_path'],
+            '-N', 
+            'phs_obs_{yyyymmnn:08d}_{rrr:03d}'.format(
+                yyyymmnn=job['Night'],
+                rrr=job['Run']
+            ),
             job['job_path']
         ]
    
         if use_dummy_qsub:
-            qsub_job_id = dummy_qsub(cmd)
+            dummy_qsub(cmd)
         else:
             try:
-                out = sp.check_output(cmd, stderr=sp.STDOUT)
-                qsub_job_id = qsub_job_id_from_qsub_stdout(out)
+                sp.check_output(cmd, stderr=sp.STDOUT)
             except sp.CalledProcessError as e:
                 print('returncode', e.returncode)
                 print('output', e.output)
                 raise
-
-        qsub2run.append(
-            {
-                'QsubID': qsub_job_id,
-                'fNight': job['Night'],
-                'fRunID': job['Run'],
-            }
-        )
-
-    return pd.DataFrame(qsub2run)
