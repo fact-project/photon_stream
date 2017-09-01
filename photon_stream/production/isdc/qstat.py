@@ -7,10 +7,10 @@ import xml.etree.ElementTree as XmlEt
 import re
 
 
-def qstat(marker='phs_obs'):
+def qstat(name='phs_obs'):
     xml = qstat_xml()
     jobs = jobs_in_qstatxml(xml)
-    return jobs_2_run_ids(all_jobs=jobs, marker=marker)
+    return jobs_2_run_ids(all_jobs=jobs, name=name)
 
 
 def qstat_xml():
@@ -62,7 +62,7 @@ def job_name_2_obs_run_id(job_name, regex='\d+'):
     return {'fNight': int(digits[0]), 'fRunID': int(digits[1])}
 
 
-def jobs_2_run_ids(all_jobs, marker='phs_obs'):
+def jobs_2_run_ids(all_jobs, name='phs_obs'):
     """
     Returns DataFrame with fNight, fRunID, and qsub state.
     The run ids are parsed from the qsub name. Only names which have the marker 
@@ -70,12 +70,12 @@ def jobs_2_run_ids(all_jobs, marker='phs_obs'):
    
     Example
     -------
-    qsub name: 'phs_obs_20170101_001' has the marker 'phs_obs' in it and 
+    qsub name: 'phs_obs_20170101_001' has the name 'phs_obs' in it and 
     yields fNight=20170101, and fRunID = 1.
     """
     obs_runs = []
     for job in all_jobs:
-        if marker in job['name']:
+        if name in job['name']:
             run = job_name_2_obs_run_id(job['name'])
             run['state'] = job['state']
             obs_runs.append(run)
