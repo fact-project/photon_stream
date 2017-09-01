@@ -40,10 +40,10 @@ def test_production_write_worker_script():
 
 
 def test_production_run_collection():
-    with tempfile.TemporaryDirectory(prefix='photon_stream_run_collection') as tmp:
-    #with open(runinfo_path, 'rb') as lalala:
-        #tmp = '/home/sebastian/Desktop/phs_production'
-        #os.makedirs(tmp, exist_ok=True)
+    #with tempfile.TemporaryDirectory(prefix='photon_stream_run_collection') as tmp:
+    with open(runinfo_path, 'rb') as lalala:
+        tmp = '/home/sebastian/Desktop/phs_production'
+        os.makedirs(tmp, exist_ok=True)
 
 
         runinfo = ps.production.runinfo.read(runinfo_path)
@@ -59,11 +59,11 @@ def test_production_run_collection():
         with open(my_fact_tools_xml_path, 'w') as fxml:
             fxml.write('Hi, I am a fact tools xml steering dummy!')
 
-        out_dir = join(tmp, 'passX')
+        phs_dir = join(tmp, 'phs')
 
         # FIRST CHUNK
         ps.production.isdc.qsub(
-            phs_dir=out_dir, 
+            phs_dir=phs_dir, 
             start_night=20141215, 
             end_night=20141229,
             only_a_fraction=1.0,
@@ -89,7 +89,7 @@ def test_production_run_collection():
 
         # SECOND CHUNK with 2nd fact-tools.jar
         ps.production.isdc.qsub(
-            phs_dir=out_dir, 
+            phs_dir=phs_dir, 
             start_night=20141229, 
             end_night=20150103,
             only_a_fraction=1.0,
