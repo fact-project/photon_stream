@@ -32,7 +32,7 @@ def test_jobs_2_run_ids():
     with open(qstat_xml_path, 'rt') as fin:
         qstat_xml = fin.read()
     all_jobs = ps.production.isdc.qstat.jobs_in_qstatxml(qstat_xml)
-    ids = ps.production.isdc.qstat.jobs_2_run_ids(all_jobs, marker='phs_obs')
+    ids = ps.production.isdc.qstat.jobs_2_run_ids(all_jobs, name='phs_obs')
     assert 'fNight' in ids
     assert 'fRunID' in ids
     assert 'state' in ids
@@ -41,7 +41,7 @@ def test_jobs_2_run_ids():
 
 def test_empty_jobs_2_run_ids():
     all_jobs = []
-    ids = ps.production.isdc.qstat.jobs_2_run_ids(all_jobs, marker='phs_obs')
+    ids = ps.production.isdc.qstat.jobs_2_run_ids(all_jobs, name='phs_obs')
     assert 'fNight' in ids
     assert 'fRunID' in ids
     assert 'state' in ids
