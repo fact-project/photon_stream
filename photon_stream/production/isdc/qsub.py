@@ -46,7 +46,7 @@ def qsub(
     java_path='/home/guest/relleums/java8/jdk1.8.0_111',
     fact_tools_jar_path='/home/guest/relleums/fact_photon_stream/fact-tools/target/fact-tools-0.18.0.jar',
     fact_tools_xml_path='/home/guest/relleums/fact_photon_stream/photon_stream/photon_stream/production/resources/observations_pass4.xml',
-    tmp_dir_base_name='fact_photon_stream_JOB_ID_',
+    tmp_dir_base_name='phs_obs_',
     queue='fact_medium', 
     use_dummy_qsub=False,
     qstat_dummy=None,

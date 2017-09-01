@@ -23,7 +23,7 @@ def make_job_list(
     java_path='/home/guest/relleums/java8/jdk1.8.0_111',
     fact_tools_jar_path='/home/guest/relleums/fact_photon_stream/fact-tools/target/fact-tools-0.18.0.jar',
     fact_tools_xml_path='/home/guest/relleums/fact_photon_stream/photon_stream/photon_stream/production/resources/observations_pass4.xml',
-    tmp_dir_base_name='fact_photon_stream_JOB_ID_',
+    tmp_dir_base_name='phs_obs_',
 ):
     """
     Returns a list of job dicts which contain all relevant p to convert a
@@ -170,7 +170,7 @@ def prepare_output_tree(tree):
     os.makedirs(tree['phs_dir'], exist_ok=True, mode=0o755)
     readme_input_path = pkg_resources.resource_filename(
         'photon_stream', 
-        join('production','resources','short_readme.md')
+        join('production','resources','phs_readme.md')
     ) 
     shutil.copy(readme_input_path, tree['phs_readme_path'])
 
