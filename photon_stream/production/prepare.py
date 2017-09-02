@@ -8,6 +8,7 @@ import pkg_resources
 
 from .runinfo import OBSERVATION_RUN_TYPE_KEY
 from .runinfo import DRS_RUN_TYPE_KEY
+from .runinfo import DRS_STEP_KEY
 from . import tools
  
 
@@ -212,8 +213,8 @@ def add_drs_run_info_to_jobs(runinfo, jobs):
     for job in jobs:   
         drs_run_candidates = runinfo[
             (runinfo.fNight == job["Night"])&
-            (runinfo.fDrsStep == 2)&
-            (runinfo.fRunTypeKey == 2)&
+            (runinfo.fDrsStep == DRS_STEP_KEY)&
+            (runinfo.fRunTypeKey == DRS_RUN_TYPE_KEY)&
             (runinfo.fRunID < job["Run"])
         ]
         

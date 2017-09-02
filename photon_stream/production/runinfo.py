@@ -6,6 +6,7 @@ from . import tools
 
 
 DRS_RUN_TYPE_KEY = 2
+DRS_STEP_KEY = 2
 
 OBSERVATION_RUN_TYPE_KEY = 1
 
