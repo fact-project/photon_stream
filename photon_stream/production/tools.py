@@ -27,5 +27,5 @@ def local_backup_path_with_timestamp(path):
 
 
 def touch(path):
-    with open(lock_path, 'a') as out:
-        os.utime(lock_path)
+    with open(path, 'a') as out:
+        os.utime(path)

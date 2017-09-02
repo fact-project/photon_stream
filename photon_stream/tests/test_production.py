@@ -19,9 +19,7 @@ qstat_xml_path = pkg_resources.resource_filename(
 )
 with open(qstat_xml_path, 'rt') as fin:
     qstat_xml = fin.read()
-    runqstat = ps.production.isdc.qstat.jobs_2_run_ids(
-        ps.production.isdc.qstat.jobs_in_qstatxml(qstat_xml)
-    )
+    runqstat = ps.production.isdc.qstat.qstat(xml=qstat_xml)
 
 def test_number_of_events_in_run():
     run_path = pkg_resources.resource_filename(
@@ -76,7 +74,7 @@ def test_production_run_collection():
             tmp_dir_base_name='fact_photon_stream_JOB_ID_',
             queue='fact_medium', 
             use_dummy_qsub=True,
-            qstat_dummy=runqstat,
+            runqstat_dummy=runqstat,
             job_runinfo=runinfo,
             start_new=True,
         )
@@ -84,7 +82,7 @@ def test_production_run_collection():
         assert os.path.exists(phs_dir)
         assert os.path.exists(join(phs_dir,'obs'))
         assert os.path.exists(join(phs_dir,'obs','runstatus.csv'))
-        assert os.path.exists(join(phs_dir,'obs','.lock'))
+        assert os.path.exists(join(phs_dir,'obs','.lock.runstatus.csv'))
         assert os.path.exists(join(phs_dir,'.obs.std'))
         assert os.path.exists(join(phs_dir,'.obs.job'))
 
@@ -110,7 +108,7 @@ def test_production_run_collection():
             tmp_dir_base_name='fact_photon_stream_JOB_ID_',
             queue='fact_medium', 
             use_dummy_qsub=True,
-            qstat_dummy=runqstat,
+            runqstat_dummy=runqstat,
             job_runinfo=runinfo,
             start_new=False,
         )

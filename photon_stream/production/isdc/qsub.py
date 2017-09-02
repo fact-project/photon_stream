@@ -50,7 +50,7 @@ def qsub(
     tmp_dir_base_name='phs_obs_',
     queue='fact_medium', 
     use_dummy_qsub=False,
-    qstat_dummy=None,
+    runqstat_dummy=None,
     job_runinfo=None,
     start_new=False,
     max_jobs_in_qsub=128,
@@ -89,10 +89,10 @@ def qsub(
             phs_deficit = expected_phs - actual_phs
             all_runjobs = obs_runstatus[phs_deficit > 0]
 
-            if qstat_dummy is None:
+            if runqstat_dummy is None:
                 runqstat = ps.production.isdc.qstat.qstat(name='phs_obs')
             else:
-                runqstat = qstat_dummy
+                runqstat = runqstat_dummy
 
             if len(runqstat) > max_jobs_in_qsub:
                 print('Stop. Qsub is busy.')
