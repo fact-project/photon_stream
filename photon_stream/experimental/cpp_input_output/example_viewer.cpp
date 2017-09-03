@@ -234,8 +234,8 @@ void print_time_slice_bar(int slice) {
 
 
 std::vector<ps::ObservationEvent> read_in_event_list(std::string path) {
-	std::vector<ps::ObservationEvent> events;
-	std::ifstream fin(path.c_str(), std::ios::binary);
+    std::vector<ps::ObservationEvent> events;
+    std::ifstream fin(path.c_str(), std::ios::binary);
     while(true) {
         ps::ObservationEvent event = ps::read_ObservationEvent_from_file(fin);
         if(!event.descriptor.is_valid())
@@ -280,17 +280,34 @@ void go_to_event_id(int event_id) {
 }
 
 void print_help() {
-    std::cout << "Help\n";
-    std::cout << "----\n";
-    std::cout << "  [h]  print this help\n";
-    std::cout << "\n";
-    std::cout << "  [d]  next event\n";
-    std::cout << "  [a]  previous event\n";
-    std::cout << "\n";   
-    std::cout << "  [g]  go to event ID if existing\n";
-    std::cout << "\n";
-    std::cout << "  [w]  next time slice integral\n";
-    std::cout << "  [s]  previous time slice integral\n";
+    std::cout << std::string(120, '\n');
+    std::stringstream o;
+    o << "  FACT - Photon-Stream Event Viewer  \n";
+    o << "-------------------------------------\n";
+    o << "\n";
+    o << "    Press [return] key after each input\n";
+    o << "\n";
+    o << "    [h]    Print this help\n";
+    o << "\n";
+    o << "    [d]    Next event\n";
+    o << "    [a]    Previous event\n";
+    o << "\n";   
+    o << "    [g]    Go to event ID if existing\n";
+    o << "\n";
+    o << "    [w]    Next time slice integral\n";
+    o << "    [s]    Previous time slice integral\n";
+    o << "           (Time slices are 5ns integrals here)\n";
+    o << "\n";
+    o << "    [ESC]  Quit\n";
+    o << "\n";
+    o << "\n";    
+    o << "Requieres\n";
+    o << "---------\n";
+    o << "    Your terminal must support:\n";
+    o << "    American National Standards Institute (ANSI) escape sequences\n";
+    o << "\n";
+    o << "To blame: Sebastian A. Mueller, ETH Zurich 2017, sebmuell@phys.ethz.ch\n";
+    std::cout << o.str();
 }
 
 
