@@ -8,122 +8,67 @@ import tempfile
 import pandas as pd
 
 
-runstatus_path = pkg_resources.resource_filename(
+old_runstatus_path = pkg_resources.resource_filename(
     'photon_stream', 
-    os.path.join('tests','resources','runstatus_20110101.csv')
+    os.path.join('tests','resources','runstatus_20161115_to_20161231.csv')
+)
+
+new_runstatus_path = pkg_resources.resource_filename(
+    'photon_stream', 
+    os.path.join('tests','resources','runstatus_20161115_to_20170103.csv')
 )
 
 runinfo_path = pkg_resources.resource_filename(
     'photon_stream', 
-    os.path.join('tests','resources','runinfo_20120201.csv')
+    os.path.join('tests','resources','runinfo_20161115_to_20170103.csv')
 )
 
 
-def test_runstatus_20110101_has_correct_keys():
-    runstatus = ps.production.runinfo.read(runstatus_path)
-    for key in runstatus.keys():
-        assert key in (
-            ps.production.runinfo.ID_RUNINFO_KEYS + 
-            ps.production.runinfo.TYPE_RUNINFO_KEYS +
-            ps.production.runinfo.TRIGGER_NUMBER_RUNINFO_KEYS + 
-            ps.production.runinfo.PHS_RUNINFO_KEYS
-        )
+def test_old_runstatus_has_correct_keys():
+    rs = ps.production.runinfo.read(old_runstatus_path)
+    for key in rs.keys():
+        assert key in ps.production.runinfo.RUNSTATUS_KEYS
 
 
-def test_runinfo_20120201_has_correct_keys():
-    runinfo = ps.production.runinfo.read(runinfo_path)
-    for key in runinfo.keys():
-        assert key in (
-            ps.production.runinfo.ID_RUNINFO_KEYS + 
-            ps.production.runinfo.TYPE_RUNINFO_KEYS +
-            ps.production.runinfo.TRIGGER_NUMBER_RUNINFO_KEYS
-        )
+def test_new_runstatus_has_correct_keys():
+    rs = ps.production.runinfo.read(new_runstatus_path)
+    for key in rs.keys():
+        assert key in ps.production.runinfo.RUNSTATUS_KEYS
 
 
-def test_append_runinfo():
-    runstatus = ps.production.runinfo.read(runstatus_path)
-    runinfo = ps.production.runinfo.read(runinfo_path)
+def test_append_runstatus():
+    old_rs = ps.production.runinfo.read(old_runstatus_path)
+    new_rs = ps.production.runinfo.read(new_runstatus_path)
 
-    new_runstatus = ps.production.runinfo.append_runinfo_to_runstatus(
-        runinfo=runinfo,
-        runstatus=runstatus,
+    assert new_rs.shape[0] > old_rs.shape[0]
+
+    mer_rs = ps.production.runinfo.append_new_runstatus(
+        old_runstatus=old_rs,
+        new_runstatus=new_rs,
     )
 
-    runs_in_fresh_runinfo = runinfo.shape[0]
-    columns_in_runstatus = runstatus.shape[1]
+    runs_in_new = new_rs.shape[0]
+    cols_in_old = old_rs.shape[1]
 
-    assert new_runstatus.shape[0] == runs_in_fresh_runinfo
-    assert new_runstatus.shape[1] == columns_in_runstatus
+    assert mer_rs.shape[0] == runs_in_new
+    assert mer_rs.shape[1] == cols_in_old
 
-    for i, row in new_runstatus.iterrows():
-        if i < runstatus.shape[0]:
-            for id_key in ps.production.runinfo.ID_RUNINFO_KEYS:
-                assert new_runstatus[id_key][i] == runstatus[id_key][i]
-
-            for type_key in ps.production.runinfo.TYPE_RUNINFO_KEYS:
-                assert new_runstatus[type_key][i] == runstatus[type_key][i]
-
-            for phs_key in ps.production.runinfo.PHS_RUNINFO_KEYS:
-                assert new_runstatus[phs_key][i] == runstatus[phs_key][i]
+    for i, row in mer_rs.iterrows():
+        if i < old_rs.shape[0]:
+            for key in ps.production.runinfo.RUNSTATUS_KEYS:
+                if np.isnan(mer_rs[key][i]):
+                    assert np.isnan(old_rs[key][i])
+                else:
+                    assert mer_rs[key][i] == old_rs[key][i]
         else:
-            for phs_key in ps.production.runinfo.PHS_RUNINFO_KEYS:
-                assert new_runstatus[phs_key][i] == 0
+            for key in ps.production.runinfo.RUNSTATUS_KEYS:
+                if np.isnan(mer_rs[key][i]):
+                    assert np.isnan(new_rs[key][i])
+                else:
+                    assert mer_rs[key][i] == new_rs[key][i]
 
 
-def test_expected_number_of_triggers():
-    runstatus = ps.production.runinfo.read(runstatus_path)
-
-    num_expected_phs_trigger = ps.production.runinfo.number_expected_phs_events(
-        runstatus
-    )
-
-    num_actual_phs_trigger = runstatus['PhotonStreamNumEvents'].values
-
-    for i, row in runstatus.iterrows():
-
-        if row['fRunTypeKey'] == ps.production.runinfo.OBSERVATION_RUN_TYPE_KEY:
-            manual_expected = (
-                row['fNumExt1Trigger'] + 
-                row['fNumExt2Trigger'] +
-                row['fNumPhysicsTrigger'] +
-                row['fNumPedestalTrigger']
-            )
-
-            if np.isnan(manual_expected):
-                assert num_expected_phs_trigger[i] == 0
-            else:
-                assert num_expected_phs_trigger[i] == manual_expected
-
-
-def test_runinfo_backup():
-    with tempfile.TemporaryDirectory(prefix='phs_') as tmp:
-        tmp_runinfo_path = os.path.join(tmp, os.path.basename(runinfo_path))
-
-        shutil.copy(runinfo_path, tmp_runinfo_path)
-        assert os.path.exists(tmp_runinfo_path)
-
-        def files_and_hidden_files_dir(d):
-            return glob(os.path.join(d, '*')) + glob(os.path.join(d, '.*'))
-
-        files = files_and_hidden_files_dir(tmp)
-        assert len(files) == 1
-
-        backup_path = ps.production.tools.local_backup_path_with_timestamp(tmp_runinfo_path)
-        shutil.copy(tmp_runinfo_path, backup_path)
-
-        files = files_and_hidden_files_dir(tmp)
-        assert len(files) == 2
-
-        assert tmp_runinfo_path in files
-        files.remove(tmp_runinfo_path)
-        assert len(files) == 1
-        _backup_path = files[0]
-        _backup_basename = os.path.basename(_backup_path)
-        assert len(_backup_basename) > 0
-        assert _backup_basename[0] == '.'
-
-
-def test_obs_runs_not_in_qstat():
+def test_remove_from_first_when_also_in_second():
 
     all_runjobs = pd.DataFrame(
         [
@@ -147,9 +92,9 @@ def test_obs_runs_not_in_qstat():
         ]
     )
 
-    r = ps.production.runinfo.obs_runs_not_in_qstat(
-        all_runjobs=all_runjobs, 
-        runqstat=runqstat
+    r = ps.production.runinfo.remove_from_first_when_also_in_second(
+        first=all_runjobs, 
+        second=runqstat
     )
 
     assert 'fNight' in r
@@ -167,48 +112,25 @@ def test_obs_runs_not_in_qstat():
         assert r['fNight'].values[i] == expected['fNight'].values[i]
         assert r['fRunID'].values[i] == expected['fRunID'].values[i]
     
-def test_remove_all_obs_runs_from_runinfo_not_in_runjobs():
 
-    runi = pd.DataFrame(
-        [
-            {'fNight':100,'fRunID':1,'fRunTypeKey':2}, #keep DRS
-            {'fNight':100,'fRunID':2,'fRunTypeKey':1}, #keep
-            {'fNight':100,'fRunID':3,'fRunTypeKey':1}, #keep
-            {'fNight':101,'fRunID':1,'fRunTypeKey':2}, #keep DRS
-            {'fNight':101,'fRunID':2,'fRunTypeKey':1}, #keep
-            {'fNight':101,'fRunID':3,'fRunTypeKey':1},
-            {'fNight':102,'fRunID':1,'fRunTypeKey':2}, #keep DRS
-            {'fNight':102,'fRunID':2,'fRunTypeKey':1},
-            {'fNight':102,'fRunID':3,'fRunTypeKey':1}, #keep
-        ]
-    )
+def test_drs_run_assignment():
 
-    runjobs = pd.DataFrame(
-        [
-            {'fNight':100,'fRunID':2,'fRunTypeKey':1},
-            {'fNight':100,'fRunID':3,'fRunTypeKey':1},
-            {'fNight':101,'fRunID':2,'fRunTypeKey':1},
-            {'fNight':102,'fRunID':3,'fRunTypeKey':1},
-        ]
-    )
+    ri = ps.production.runinfo.read(runinfo_path)
+    ro = ps.production.runinfo.assign_drs_runs(ri)
 
-    r = ps.production.runinfo.remove_all_obs_runs_from_runinfo_not_in_runjobs(
-        runinfo=runi, 
-        runjobs=runjobs
-    )
+    for i, row in ri.iterrows():
+        assert row.fNight == ro.loc[i, 'fNight']
+        assert row.fRunID == ro.loc[i, 'fRunID']
 
-    assert len(r) == len(runi) - 2
-    assert 'fNight' in r
-    assert 'fRunID' in r
-    assert 'fRunTypeKey' in r
+        if row.fRunTypeKey == ps.production.runinfo.OBSERVATION_RUN_TYPE_KEY:
 
-    mask = np.array([1,1,1,1,1,0,1,0,1], dtype=np.bool)
-    expected = runi[mask]
-
-    print('result\n',r)
-    print('expected\n',expected)
-
-    assert len(expected) == len(r)
-    for i in range(len(r)):
-        assert r['fNight'].values[i] == expected['fNight'].values[i]
-        assert r['fRunID'].values[i] == expected['fRunID'].values[i]
+            first_method_drs_run_id = ps.production.runinfo._drs_fRunID_for_obs_run(
+                runinfo=ri, fNight=row.fNight, fRunID=row.fRunID
+            )
+            second_method_drs_run_id = ro.loc[i, 'DrsRunID']
+                
+            #print(row.fNight, row.fRunID, 'old', first_method_drs_run_id, 'new', second_method_drs_run_id)
+            if np.isnan(first_method_drs_run_id):
+                assert np.isnan(second_method_drs_run_id)
+            else:
+                assert first_method_drs_run_id == second_method_drs_run_id

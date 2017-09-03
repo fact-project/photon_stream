@@ -2,20 +2,20 @@ import os
 from fact import credentials
 import pandas as pd
 import numpy as np
-from . import tools
+import fact
+import warnings
+import shutil
 
-
-DRS_RUN_TYPE_KEY = 2
-DRS_STEP_KEY = 2
 
 OBSERVATION_RUN_TYPE_KEY = 1
+DRS_RUN_TYPE_KEY = 2
+
+DRS_STEP_KEY = 2
 
 ID_RUNINFO_KEYS = [
     'fNight',
     'fRunID',
 ]
-
-TYPE_RUNINFO_KEYS = ['fRunTypeKey']
 
 TRIGGER_NUMBER_RUNINFO_KEYS = [
     'fNumExt1Trigger',
@@ -24,101 +24,109 @@ TRIGGER_NUMBER_RUNINFO_KEYS = [
     'fNumPedestalTrigger',
 ]
 
-DRS_TYPE_RUNINFO_KEYS = ['fDrsStep']
-
-PHS_RUNINFO_KEYS = [
-    'PhotonStreamNumEvents',
+PHS_KEYS = [
+    'NumExpectedPhsEvents',
+    'NumActualPhsEvents',
+    'StdOutSize',
+    'StdErrorSize',
+    'IsOk',
 ]
 
 RUNINFO_KEYS = (
     ID_RUNINFO_KEYS +
-    TYPE_RUNINFO_KEYS +
-    TRIGGER_NUMBER_RUNINFO_KEYS +
-    DRS_TYPE_RUNINFO_KEYS
+    ['fRunTypeKey'] +
+    ['fDrsStep'] +
+    TRIGGER_NUMBER_RUNINFO_KEYS
 )
 
 RUNSTATUS_KEYS = (
     ID_RUNINFO_KEYS +
-    PHS_RUNINFO_KEYS
+    ['DrsRunID'] +
+    PHS_KEYS
 )
 
 
-def download_latest():
+def read(path='runstatus.csv'):
+    return pd.read_csv(path)
+
+
+def write(runinfo, path='runstatus.csv'):
+    runinfo.to_csv(path+'.part', index=False, na_rep='nan')
+    shutil.move(path+'.part', path)
+
+
+def latest_runinfo():
     factdb = credentials.create_factdb_engine()
-    print("Reading fresh RunInfo table, takes about 1min.")
     return pd.read_sql_table(
         table_name="RunInfo",
         con=factdb,
         columns=RUNINFO_KEYS
     )
 
-def read(path='phs_runstatus.csv'):
-    return pd.read_csv(path)
 
-def write(runinfo, path='phs_runstatus.csv'):
-    runinfo.to_csv(path, index=False, na_rep='nan')
-
-
-def create_fake_fact_dir(path, runinfo):
-    for index, row in runinfo.iterrows():
-        night_id = runinfo['fNight'][index]
-        run_id = runinfo['fRunID'][index]
-        run_type_key = runinfo['fRunTypeKey'][index]
-
-        yyyy = '{yyyy:04d}'.format(yyyy=tools.night_id_2_yyyy(night_id))
-        mm = '{mm:02d}'.format(mm=tools.night_id_2_mm(night_id))
-        nn = '{nn:02d}'.format(nn=tools.night_id_2_nn(night_id))
-        os.makedirs(os.path.join(path, 'raw', yyyy, mm, nn), exist_ok=True, mode=0o755)
-        
-        if run_type_key == DRS_RUN_TYPE_KEY:
-            rrr = '{rrr:03d}'.format(rrr=run_id)
-            fake_drs_path = os.path.join(path, 'raw', yyyy, mm, nn, yyyy+mm+nn+'_'+rrr+'.drs.fits.gz')
-            with open(fake_drs_path, 'w') as drs_file:
-                drs_file.write('I am a fake FACT drs file.')
-
-        if run_type_key == OBSERVATION_RUN_TYPE_KEY:
-            rrr = '{rrr:03d}'.format(rrr=run_id)
-            fake_run_path = os.path.join(path, 'raw', yyyy, mm, nn, yyyy+mm+nn+'_'+rrr+'.fits.fz')
-            with open(fake_run_path, 'w') as raw_file:
-                raw_file.write('I am a fake FACT raw observation file.')
+def latest_runstatus():
+    """
+    Returns only a part of the FACT runinfo database relevant for the 
+    photon-stream.
+    """
+    ri = latest_runinfo()
+    ri = assign_drs_runs(ri)
+    ri = drop_not_obs_runs(ri)
+    ri = add_expected_phs_event_column(ri)
+    ri = add_empty_runstatus_columns(ri)
+    return drop_not_matching_keys(ri, RUNSTATUS_KEYS)
 
 
-def runinfo_only_with_keys(runinfo, desired_keys):
-    ri_out = runinfo.copy()
-    for key in ri_out.keys():
+def drop_not_matching_keys(runinfo, desired_keys):
+    riout = runinfo.copy()
+    for key in riout.keys():
         if key not in desired_keys:
-            ri_out.drop(key, axis=1, inplace=True)
-    return ri_out
+            riout.drop(key, axis=1, inplace=True)
+    return riout
 
 
-def append_runinfo_to_runstatus(runinfo, runstatus):
-    phs_info = runinfo_only_with_keys(
-        runinfo=runstatus,
-        desired_keys=ID_RUNINFO_KEYS + PHS_RUNINFO_KEYS,
+def drop_not_obs_runs(runinfo):
+    return runinfo[
+        runinfo.fRunTypeKey==OBSERVATION_RUN_TYPE_KEY
+    ].copy()
+
+
+def add_expected_phs_event_column(runinfo):
+    riout = runinfo.copy()
+    riout['NumExpectedPhsEvents'] = pd.Series(
+        number_expected_phs_events(riout), 
+        index=riout.index
     )
-    new_runstatus = runinfo.merge(phs_info, how='left', on=ID_RUNINFO_KEYS)
-    # Pandas BUG casts int64 to float64,
-    # https://github.com/pandas-dev/pandas/issues/9958
-    for phs_key in PHS_RUNINFO_KEYS:
-        series = new_runstatus[phs_key]
-        is_nan = np.isnan(series.values)
-        series.values[is_nan] = 0
-        new_runstatus[phs_key] = series.astype(np.int32)
-    return new_runstatus
+    return riout
+
+
+def add_empty_runstatus_columns(runinfo):
+    riout = runinfo.copy()
+    for phs_key in RUNSTATUS_KEYS:
+        if phs_key not in riout:
+            riout[phs_key] = pd.Series(np.nan, index=riout.index)
+    return riout
+
+
+def append_new_runstatus(old_runstatus, new_runstatus):
+    rsi1 = old_runstatus.set_index(ID_RUNINFO_KEYS)
+    rsi2 = new_runstatus.set_index(ID_RUNINFO_KEYS)
+    rsi2.loc[rsi1.index] = rsi1
+    return rsi2.reset_index()
 
 
 def number_expected_phs_events(runinfo):
-    count = np.zeros(runinfo.shape[0], dtype=np.int64)
+    count = np.zeros(runinfo.shape[0])
     for key in TRIGGER_NUMBER_RUNINFO_KEYS:
-        count += np.int64(np.round(runinfo[key]))
-    count[np.isnan(count)] = 0.0
-    return (np.round(count)).astype(np.int64)
+        count += runinfo[key]
+    count[runinfo['fRunTypeKey'] != OBSERVATION_RUN_TYPE_KEY] = np.nan
+    return count
 
 
-def obs_runs_not_in_qstat(all_runjobs, runqstat):
+def remove_from_first_when_also_in_second(first, second):
     m = pd.merge(
-        all_runjobs,
-        runqstat, 
+        first,
+        second, 
         how='outer', 
         indicator=True,
         on=ID_RUNINFO_KEYS,
@@ -128,11 +136,66 @@ def obs_runs_not_in_qstat(all_runjobs, runqstat):
     return result
 
 
-def remove_all_obs_runs_from_runinfo_not_in_runjobs(runinfo, runjobs):
-    r = pd.merge(runjobs, runinfo, how='outer', indicator=True)
-    isobs = r.fRunTypeKey == OBSERVATION_RUN_TYPE_KEY   
-    ro = r._merge=='right_only'
-    result = r[np.invert(ro & isobs)].copy()
-    result.sort_values(ID_RUNINFO_KEYS, inplace=True)
-    result.drop('_merge', axis=1, inplace=True)
-    return result
+def _drs_fRunID_for_obs_run(runinfo, fNight, fRunID):
+    warnings.warn(
+        'This drs run locater function was replaced with "assign_drs_runs()"'
+        'This function is still kept for unit testing the new one.', 
+        DeprecationWarning
+    )
+
+    ri = runinfo
+    drs_candidates = ri[
+        (ri.fNight == fNight)&
+        (ri.fDrsStep == DRS_STEP_KEY)&
+        (ri.fRunTypeKey == DRS_RUN_TYPE_KEY)&
+        (ri.fRunID < fRunID)
+    ]
+    if len(drs_candidates) >= 1:
+        return drs_candidates.iloc[-1].fRunID
+    else:
+        return np.nan
+
+
+def assign_drs_runs(runinfo):
+    ri = runinfo.copy()
+    ri.sort_values(inplace=True, ascending=True, by=ID_RUNINFO_KEYS)
+
+    ri.insert(loc=2, column='DrsRunID', value=pd.Series(np.nan, index=ri.index))
+    raw = ri.as_matrix()
+    k = {}
+    for c, key in enumerate(ri.keys()):
+        k[key] = c
+    current_drs_fRunID = np.nan
+    current_drs_fNight = np.nan
+    for i in range(raw.shape[0]):
+        if (
+            raw[i,k['fRunTypeKey']]==DRS_RUN_TYPE_KEY and 
+            raw[i,k['fDrsStep']]==DRS_STEP_KEY
+        ):
+            current_drs_fRunID = raw[i,k['fRunID']]
+            current_drs_fNight = raw[i,k['fNight']]
+        else:
+            if current_drs_fNight == raw[i,k['fNight']]:
+                raw[i,k['DrsRunID']] = current_drs_fRunID
+    ri = pd.DataFrame(raw, columns=ri.keys().tolist())
+    return ri
+
+
+def create_fake_fact_dir(path, runinfo):
+    fact_raw = os.path.join(path, 'raw')
+    for index, row in runinfo.iterrows():
+        Night = runinfo['fNight'][index]
+        Run = runinfo['fRunID'][index]
+        run_type = runinfo['fRunTypeKey'][index]
+
+        if run_type == DRS_RUN_TYPE_KEY:
+            drs_path = fact.path.tree_path(Night, Run, prefix=fact_raw, suffix='.drs.fits.gz')
+            os.makedirs(os.path.dirname(drs_path), exist_ok=True, mode=0o755)
+            with open(drs_path, 'w') as drs_file:
+                drs_file.write('I am a fake FACT drs file.')
+
+        if run_type == OBSERVATION_RUN_TYPE_KEY:
+            run_path = fact.path.tree_path(Night, Run, prefix=fact_raw, suffix='.fits.fz')
+            os.makedirs(os.path.dirname(run_path), exist_ok=True, mode=0o755)
+            with open(run_path, 'w') as raw_file:
+                raw_file.write('I am a fake FACT raw observation file.')

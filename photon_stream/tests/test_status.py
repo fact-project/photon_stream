@@ -13,5 +13,5 @@ run_path = pkg_resources.resource_filename(
 )
 
 
-def test_number_of_events_in_event_list_file():
-    assert ps.production.status.number_of_events_in_event_list_file(run_path) == 100
+def test_number_of_events_in_file():
+    assert ps.production.status.number_of_events_in_file(run_path) == 100
