@@ -3,7 +3,7 @@ import re
 import qstat as qstat2dict
 
 
-def qstat(name='phs_obs', xml=None):
+def qstat(is_in_JB_name='phs_obs', xml=None):
     """
     Returns DataFrame(columns=['fNight','fRunID']) of all jobs in qstat
     which contain 'name' in their qstat JB_name. fNight and fRunID are parsed 
@@ -21,7 +21,7 @@ def qstat(name='phs_obs', xml=None):
         q_jobs = qstat2dict.qstat()
     else:
         q_jobs = qstat2dict._tools.xml2job_infos(xml)
-    return q_jobs_2_runqstat(q_jobs, name)
+    return q_jobs_2_runqstat(q_jobs, is_in_JB_name)
 
 
 def JB_name_2_run_ids(JB_name, regex='\d+'):
@@ -35,10 +35,10 @@ def JB_name_2_run_ids(JB_name, regex='\d+'):
     return {'fNight': int(digits[0]), 'fRunID': int(digits[1])}
 
 
-def q_jobs_2_runqstat(q_jobs, name):
+def q_jobs_2_runqstat(q_jobs, is_in_JB_name):
     jobs = []
     for q_job in q_jobs:
-        if name in q_job['JB_name']:
+        if is_in_JB_name in q_job['JB_name']:
             jobs.append(JB_name_2_run_ids(q_job['JB_name']))
     if len(jobs) > 0:
         return pd.DataFrame(jobs)
