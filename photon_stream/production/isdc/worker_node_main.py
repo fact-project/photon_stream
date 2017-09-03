@@ -10,7 +10,7 @@ Options:
     --drs_path=PATH             [default: /fact/raw/2017/09/01/20170901_129.drs.fits.gz]
     --aux_dir=PATH              [default: /fact/aux/2017/09/01/]
     --out_dir=PATH              [default: /gpfs0/fact/processing/public/phs/obs/2017/09/01/]
-    --out_basename=PATH         [default: test.20170901_139']
+    --out_basename=PATH         [default: /home/guest/relleums/test_qsub.20170901_139']
     --tmp_dir_basename=NAME     [default: phs_obs_]
 """
 import os
