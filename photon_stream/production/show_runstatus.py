@@ -4,7 +4,12 @@ import numpy as np
 import fact
 
 
-def runs_in_range_str(runstatus, start_night, end_night, max_trigger_rate=200):
+def runs_in_range_str(
+    runstatus, 
+    start_night=0, 
+    end_night=99999999, 
+    max_trigger_rate=200
+):
     """
     Returns an overview string with a table of all runs in the range between the
     start_night and the end_night.
@@ -34,8 +39,10 @@ def runs_in_range_str(runstatus, start_night, end_night, max_trigger_rate=200):
         has_at_least_one_expected_trigger
     )
 
-    night_ids = info['fNight'][valid]
-    run_ids = info['fRunID'][valid]
+    print(past_start.sum(), before_end.sum(), rate_below_max_trigger_rate.sum(), has_at_least_one_expected_trigger.sum())
+
+    night_ids = rs['fNight'][valid]
+    run_ids = rs['fRunID'][valid]
     expected_triggers = rs['NumExpectedPhsEvents'][valid]
     actual_triggers = rs['NumActualPhsEvents'][valid]
     completation_ratios = actual_triggers/expected_triggers
@@ -49,10 +56,14 @@ def runs_in_range_str(runstatus, start_night, end_night, max_trigger_rate=200):
             run_ids.iloc[i], 
             '{Y}   {M}   {D}   {R} '
         )
-        out += table_row_str(
-            expected_events=int(expected_triggers.iloc[i]),
-            actual_events=int(actual_triggers.iloc[i])
-        )
+
+        if np.isnan(expected_triggers.iloc[i]) or np.isnan(actual_triggers.iloc[i]):
+            out += 'nan\n'
+        else:
+            out += table_row_str(
+                expected_events=int(expected_triggers.iloc[i]),
+                actual_events=int(actual_triggers.iloc[i])
+            )
     return out
 
 
@@ -126,7 +137,7 @@ def overview_str(runstatus, max_trigger_rate=120):
 def table_header_str():
     #       0        1         2         3         4          5         6         7    
     #       12345678901234567890123456789012345678901234567898012345678901234567890
-    out =  'photon-stream events [#]  recorded events [#]  ratio [%]\n'
+    out =  'phs-events           [#]  raw-events      [#]  ratio [%]\n'
     return out 
 
 
