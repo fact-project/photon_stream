@@ -15,7 +15,7 @@ from .runinfo2runstatus import runinfo2runstatus
 
 
 def download_latest():
-    return runinfo2runstatus(ri.latest())
+    return runinfo2runstatus(ri.download_latest())
 
 
 def read(path='runstatus.csv'):
