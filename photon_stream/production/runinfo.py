@@ -2,7 +2,6 @@ import os
 from fact import credentials
 import pandas as pd
 import numpy as np
-import warnings
 import shutil
 
 
@@ -133,48 +132,3 @@ def remove_from_first_when_also_in_second(first, second):
     result = m[m['_merge'] == 'left_only'].copy()
     result.drop('_merge', axis=1, inplace=True)
     return result
-
-
-def _drs_fRunID_for_obs_run(runinfo, fNight, fRunID):
-    warnings.warn(
-        'This drs run locater function was replaced with "assign_drs_runs()"'
-        'This function is still kept for unit testing the new one.', 
-        DeprecationWarning
-    )
-
-    ri = runinfo
-    drs_candidates = ri[
-        (ri.fNight == fNight)&
-        (ri.fDrsStep == DRS_STEP_KEY)&
-        (ri.fRunTypeKey == DRS_RUN_TYPE_KEY)&
-        (ri.fRunID < fRunID)
-    ]
-    if len(drs_candidates) >= 1:
-        return drs_candidates.iloc[-1].fRunID
-    else:
-        return np.nan
-
-
-def assign_drs_runs(runinfo):
-    ri = runinfo.copy()
-    ri.sort_values(inplace=True, ascending=True, by=ID_RUNINFO_KEYS)
-
-    ri.insert(loc=2, column='DrsRunID', value=pd.Series(np.nan, index=ri.index))
-    raw = ri.as_matrix()
-    k = {}
-    for c, key in enumerate(ri.keys()):
-        k[key] = c
-    current_drs_fRunID = np.nan
-    current_drs_fNight = np.nan
-    for i in range(raw.shape[0]):
-        if (
-            raw[i,k['fRunTypeKey']]==DRS_RUN_TYPE_KEY and 
-            raw[i,k['fDrsStep']]==DRS_STEP_KEY
-        ):
-            current_drs_fRunID = raw[i,k['fRunID']]
-            current_drs_fNight = raw[i,k['fNight']]
-        else:
-            if current_drs_fNight == raw[i,k['fNight']]:
-                raw[i,k['DrsRunID']] = current_drs_fRunID
-    ri = pd.DataFrame(raw, columns=ri.keys().tolist())
-    return ri

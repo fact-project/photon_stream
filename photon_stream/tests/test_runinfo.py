@@ -2,9 +2,6 @@ import numpy as np
 import photon_stream as ps
 import pkg_resources
 import os
-import shutil
-from glob import glob
-import tempfile
 import pandas as pd
 
 
@@ -111,26 +108,3 @@ def test_remove_from_first_when_also_in_second():
     for i in range(len(r)):
         assert r['fNight'].values[i] == expected['fNight'].values[i]
         assert r['fRunID'].values[i] == expected['fRunID'].values[i]
-    
-
-def test_drs_run_assignment():
-
-    ri = ps.production.runinfo.read(runinfo_path)
-    ro = ps.production.runinfo.assign_drs_runs(ri)
-
-    for i, row in ri.iterrows():
-        assert row.fNight == ro.loc[i, 'fNight']
-        assert row.fRunID == ro.loc[i, 'fRunID']
-
-        if row.fRunTypeKey == ps.production.runinfo.OBSERVATION_RUN_TYPE_KEY:
-
-            first_method_drs_run_id = ps.production.runinfo._drs_fRunID_for_obs_run(
-                runinfo=ri, fNight=row.fNight, fRunID=row.fRunID
-            )
-            second_method_drs_run_id = ro.loc[i, 'DrsRunID']
-                
-            #print(row.fNight, row.fRunID, 'old', first_method_drs_run_id, 'new', second_method_drs_run_id)
-            if np.isnan(first_method_drs_run_id):
-                assert np.isnan(second_method_drs_run_id)
-            else:
-                assert first_method_drs_run_id == second_method_drs_run_id
