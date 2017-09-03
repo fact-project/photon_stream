@@ -284,8 +284,8 @@ void print_help() {
     std::cout << "----\n";
     std::cout << "  [h]  print this help\n";
     std::cout << "\n";
-    std::cout << "  [a]  next event\n";
-    std::cout << "  [p]  previous event\n";
+    std::cout << "  [d]  next event\n";
+    std::cout << "  [a]  previous event\n";
     std::cout << "\n";   
     std::cout << "  [g]  go to event ID if existing\n";
     std::cout << "\n";
