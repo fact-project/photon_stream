@@ -2,6 +2,8 @@ from .drs_run import assign_drs_runs
 from .runinfo import RUNSTATUS_KEYS
 from .runinfo import OBSERVATION_RUN_TYPE_KEY
 from .runinfo import TRIGGER_NUMBER_RUNINFO_KEYS
+import pandas as pd
+import numpy as np
 
 
 def runinfo2runstatus(runinfo):
