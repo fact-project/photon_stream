@@ -37,7 +37,7 @@ def run_production_scenario(out_dir):
     fact_dir = join(out_dir, 'fact')
 
     ri = ps.production.runinfo.read(runinfo_path)
-    ps.production.runinfo.create_fake_fact_dir(fact_dir, ri)
+    ps.production.tools.create_fake_fact_dir(fact_dir, ri)
 
     rs1 = ps.production.runinfo.read(old_runstatus_path)
     my_fact_tools_jar_path = join(out_dir, 'my_fact_tools.jar')
