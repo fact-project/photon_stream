@@ -193,12 +193,12 @@ The content of the differnt event types is as follows:
 
     float32
     +--------+--------+--------+--------+
-    |   Pointing Zenith Distance [Deg]  |
+    |       Zenith Distance [Deg]       |
     +--------+--------+--------+--------+
     
     float32
     +--------+--------+--------+--------+
-    |          Pointing Azimuth  [Deg]  |
+    |         Azimuth  [Deg]            |
     +--------+--------+--------+--------+
 
 
@@ -224,7 +224,7 @@ The content of the differnt event types is as follows:
     
     uint32
     +--------+--------+--------+--------+
-    |   Number of pixels and photons    |
+    |  Number of pixels plus photons    |
     +--------+--------+--------+--------+
     The size of the photon-stream in bytes.
 
