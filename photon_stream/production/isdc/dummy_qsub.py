@@ -46,7 +46,6 @@ def dummy_qsub(command):
         if '--out_basename' in key:
             out_basename = command[i+1]
 
-    print(command)
     assert len(out_dir) > 0
     assert len(out_basename) > 0
 
