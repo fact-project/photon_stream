@@ -1,6 +1,7 @@
 from . import tools
 from . import prepare
 from . import runinfo
+from . import runinfo2runstatus
 from . import runstatus
 from . import ethz
 from . import isdc

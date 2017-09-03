@@ -65,7 +65,7 @@ def run_production_scenario(out_dir):
         use_dummy_qsub=True,
         runqstat_dummy=runqstat,
         latest_runstatus=rs1,
-        start_new=True,
+        init=True,
     )
 
     assert os.path.exists(phs_dir)
@@ -73,6 +73,9 @@ def run_production_scenario(out_dir):
     assert os.path.exists(join(phs_dir,'obs','runstatus.csv'))
     assert os.path.exists(join(phs_dir,'obs','.lock.runstatus.csv'))
     assert os.path.exists(join(phs_dir,'obs.std'))
+
+
+    ps.production.runstatus.update_phs_status(obs_dir=join(phs_dir,'obs'))
 
 
     #input('Take a look into '+out_dir+' or press any key to continue')
@@ -97,10 +100,11 @@ def run_production_scenario(out_dir):
         use_dummy_qsub=True,
         runqstat_dummy=runqstat,
         latest_runstatus=rs2,
-        start_new=False,
+        init=False,
     )
 
     #input('Take a look into '+out_dir+' or press any key to continue')
+    ps.production.runstatus.update_phs_status(obs_dir=join(phs_dir,'obs'))
 
 
 def test_production_scenario(out_dir):
@@ -111,20 +115,3 @@ def test_production_scenario(out_dir):
     else:
         os.makedirs(out_dir, exist_ok=True)
         run_production_scenario(out_dir=out_dir)
-
-
-def test_status_bar_string():
-    progress_bar_str = ps.production.status.progress(ratio=0.0, length=50)
-    assert len(progress_bar_str) < 50
-
-    progress_bar_str = ps.production.status.progress(ratio=1.0, length=50)
-    assert len(progress_bar_str) > 50    
-    assert len(progress_bar_str) < 60    
-
-    progress_bar_str = ps.production.status.progress(ratio=10.0, length=50)
-    assert len(progress_bar_str) > 50    
-    assert len(progress_bar_str) < 61  
-
-    progress_bar_str = ps.production.status.progress(ratio=100.0, length=50)
-    assert len(progress_bar_str) > 50    
-    assert len(progress_bar_str) < 62 

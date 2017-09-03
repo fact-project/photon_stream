@@ -8,57 +8,67 @@ import numpy as np
 import fact
 import filelock
 
-from . import runinfo
+from . import runinfo as ri
+from .runinfo import ID_RUNINFO_KEYS
 from . import tools
+from .runinfo2runstatus import runinfo2runstatus
 
 
-def read(obs_dir):
-    runstatus_path = join(obs_dir, 'runstatus.csv')
-    return runinfo.read(runstatus_path)
+def download_latest():
+    return runinfo2runstatus(ri.latest())
 
 
-def init_runstatus(obs_dir, latest_runstatus=None):
+def read(path='runstatus.csv'):
+    return ri.read(path)
+
+
+def init(obs_dir, latest_runstatus=None):
     runstatus_lock_path = join(obs_dir, '.lock.runstatus.csv')
     runstatus_path = join(obs_dir, 'runstatus.csv')
-
     assert not exists(runstatus_lock_path)
     if not os.path.exists(runstatus_path):
         os.makedirs(obs_dir, exist_ok=True, mode=0o777)
         if latest_runstatus is None:
-            latest_runstatus = runinfo.latest_runstatus()
-        runinfo.write(latest_runstatus, runstatus_path)
+            latest_runstatus = download_latest()
+        ri.write(latest_runstatus, runstatus_path)
     tools.touch(runstatus_lock_path)
 
 
 def update_to_latest(obs_dir, latest_runstatus=None):
     runstatus_path = join(obs_dir, 'runstatus.csv')
     if latest_runstatus is None:
-        latest_runstatus = runinfo.latest_runstatus()
+        latest_runstatus = download_latest()
 
     lock = filelock.FileLock(join(obs_dir, '.lock.runstatus.csv'))
     with lock.acquire(timeout=1):
-        runstatus = runinfo.read(runstatus_path)
-        new_runstatus = runinfo.append_new_runstatus(runstatus, latest_runstatus)
-        runinfo.write(new_runstatus, runstatus_path)
+        runstatus = read(runstatus_path)
+        new_runstatus = _append_new_runstatus(runstatus, latest_runstatus)
+        ri.write(new_runstatus, runstatus_path)
     return new_runstatus
+
+
+def _append_new_runstatus(old_runstatus, new_runstatus):
+    ors = old_runstatus.set_index(ID_RUNINFO_KEYS)
+    nrs = new_runstatus.set_index(ID_RUNINFO_KEYS)
+    nrs.loc[ors.index] = ors
+    return nrs.reset_index()
 
 
 def update_phs_status(obs_dir, skip_NumActualPhsEvents=False):
     runstatus_path = join(obs_dir, 'runstatus.csv')
-
     lock = filelock.FileLock(join(obs_dir, '.lock.runstatus.csv'))
     with lock.acquire(timeout=1):
-        runstatus = runinfo.read(runstatus_path)
-        runstatus = run_update(
+        runstatus = read(runstatus_path)
+        runstatus = _run_update(
             runstatus=runstatus,
             obs_dir=obs_dir,
             skip_NumActualPhsEvents=skip_NumActualPhsEvents
         )
-        runinfo.write(runstatus, runstatus_path)
+        ri.write(runstatus, runstatus_path)
     return runstatus
 
 
-def run_update(runstatus, obs_dir, skip_NumActualPhsEvents=False):
+def _run_update(runstatus, obs_dir, skip_NumActualPhsEvents=False):
     """
     Returns an updated runstatus
     """
@@ -96,4 +106,6 @@ def run_update(runstatus, obs_dir, skip_NumActualPhsEvents=False):
 
         if row['NumActualPhsEvents'] == row['NumExpectedPhsEvents']:
             rs.loc[index, 'IsOk'] = 1
+        else:
+            rs.loc[index, 'IsOk'] = 0
     return rs

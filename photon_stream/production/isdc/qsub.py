@@ -33,8 +33,8 @@ import subprocess as sp
 from shutil import which
 from .dummy_qsub import dummy_qsub
 from .. import prepare
-from .. import runinfo
-from .. import status
+from .. import runstatus as rs
+from .. import runinfo as ri
 from .. import tools
 import pandas as pd
 import fact
@@ -57,23 +57,23 @@ def qsub(
     use_dummy_qsub=False,
     runqstat_dummy=None,
     latest_runstatus=None,
-    start_new=False,
+    init=False,
     max_jobs_in_qsub=128,
 ):  
     obs_dir = join(phs_dir,'obs')
 
-    if start_new:
-        status.init_runstatus(
+    if init:
+        rs.init(
             obs_dir=obs_dir, 
             latest_runstatus=latest_runstatus
         )
 
-    status.update_to_latest(
+    rs.update_to_latest(
         obs_dir=obs_dir, 
         latest_runstatus=latest_runstatus
     )
 
-    runstatus = status.read(obs_dir=obs_dir)
+    runstatus = rs.read(join(obs_dir, 'runstatus.csv'))
 
     was_not_checked_yet = np.isnan(runstatus['IsOk'].values)
     all_runjobs = runstatus[was_not_checked_yet]
@@ -87,7 +87,7 @@ def qsub(
         print('Stop. Qsub is busy.')
         return
 
-    runjobs = runinfo.remove_from_first_when_also_in_second(
+    runjobs = ri.remove_from_first_when_also_in_second(
         first=all_runjobs,
         second=runqstat,
     )
