@@ -2,11 +2,20 @@ import os
 import fact
 from .runinfo import OBSERVATION_RUN_TYPE_KEY
 from .runinfo import DRS_RUN_TYPE_KEY
+from ..EventListReader import EventListReader
 
 
 def touch(path):
     with open(path, 'a') as out:
         os.utime(path)
+
+
+def number_of_events_in_file(path):
+    reader = EventListReader(path)
+    number_of_events = 0
+    for event in reader:
+        number_of_events += 1
+    return number_of_events
 
 
 def create_fake_fact_dir(path, runinfo):

@@ -10,15 +10,6 @@ import filelock
 
 from . import runinfo
 from . import tools
-from ..EventListReader import EventListReader
-
-
-def number_of_events_in_file(path):
-    reader = EventListReader(path)
-    number_of_events = 0
-    for event in reader:
-        number_of_events += 1
-    return number_of_events
 
 
 def read(obs_dir):
@@ -84,7 +75,7 @@ def run_update(runstatus, obs_dir, skip_NumActualPhsEvents=False):
             if exists(run_path):
                 actual_events = 0
                 try:
-                    actual_events = number_of_events_in_file(run_path)
+                    actual_events = tools.number_of_events_in_file(run_path)
                 except:
                     pass
                 rs.loc[index, 'NumActualPhsEvents'] = actual_events
