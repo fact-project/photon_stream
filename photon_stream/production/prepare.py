@@ -105,8 +105,8 @@ def make_job_list(
 
     jobs = []
     for i, r in ri[valid].iterrows():
-        night = int(r.fNight)
-        runid = r.fRunID
+        night = int(np.round(r.fNight))
+        runid = int(np.round(r.fRunID))
         job = {}
         job['name'] = fact.path.template_to_path(night, runid, 'phs_obs_{N}_{R}')
         job['--raw_path'] = tree_path(
@@ -118,19 +118,17 @@ def make_job_list(
 
         if np.isnan(r.DrsRunID):
             continue
+        else:
+            drs_runid = int(np.round(r.DrsRunID))
         job['--drs_path'] = tree_path(
-            night, r.DrsRunID , prefix=fact_drs_dir, suffix='.drs.fits.gz'
+            night, drs_runid , prefix=fact_drs_dir, suffix='.drs.fits.gz'
         )
         if not exists(job['--drs_path']):
             print('not find drs: ', job['--drs_path'])
             continue
 
-        job['--aux_dir'] = dirname(
-            tree_path(night, runid, prefix=fact_aux_dir, suffix='')
-        )
-        job['--out_basename'] = fact.path.template_to_path(
-            night, runid,'{N}_{R}'
-        )
+        job['--aux_dir'] = dirname(tree_path(night, runid, prefix=fact_aux_dir, suffix=''))
+        job['--out_basename'] = fact.path.template_to_path(night, runid,'{N}_{R}')
         job['--out_dir'] = dirname(tree_path(night, runid, prefix=p['obs_dir'], suffix=''))
         job['--tmp_dir_basename'] = 'phs_obs_'
         job['--java_path'] = java_path

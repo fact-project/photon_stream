@@ -75,8 +75,8 @@ def _run_update(runstatus, obs_dir, skip_NumActualPhsEvents=False):
     rs = runstatus.copy()
 
     for index, row in tqdm(rs.iterrows()):
-        night = int(row.fNight)
-        run = row.fRunID
+        night = int(np.round(row.fNight))
+        run = int(np.round(row.fRunID))
 
         if np.isnan(row['NumActualPhsEvents']) and not skip_NumActualPhsEvents:
             run_path = fact.path.tree_path(
