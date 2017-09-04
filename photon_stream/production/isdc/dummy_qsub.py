@@ -28,6 +28,9 @@ def dummy_qsub(command):
     exec_path = command[9]
     assert exec_path is not None
 
+    assert os.path.exists(exec_path)
+    assert os.path.isabs(exec_path)
+
     with open(stdout_path, 'w') as stdout:
         stdout.write('Dummy qsub:\n')
         stdout.write('job_name: '+job_name+'\n')
