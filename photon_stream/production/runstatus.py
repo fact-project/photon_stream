@@ -108,8 +108,9 @@ def _run_update(
     number_runs = 0
     for index, row in tqdm(rs.iterrows()):
 
-        if number_runs > stop_after_this_many_runs:
-            break
+        if stop_after_this_many_runs is not None:
+            if number_runs > stop_after_this_many_runs:
+                break
 
         night = int(np.round(row.fNight))
         run = int(np.round(row.fRunID))
