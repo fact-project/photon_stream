@@ -15,10 +15,19 @@ from .runinfo2runstatus import runinfo2runstatus
 
 
 def download_latest():
+    """
+    Download the latest runinfo from FACT on La Palma and convert it to     
+    a runstatus.
+
+    Return
+    ------
+    runstatus: pd.DataFrame
+        A fresh runstatus table with all photon-stream fields set to nan.
+    """
     return runinfo2runstatus(ri.download_latest())
 
 
-def read(path='runstatus.csv'):
+def read(path):
     return ri.read(path)
 
 
@@ -39,6 +48,9 @@ def init(obs_dir, latest_runstatus=None):
 
 
 def update_to_latest(obs_dir, latest_runstatus=None):
+    """
+    Update obs_dir/runstatus.csv to the latest version from FACT on La Palma.
+    """
     runstatus_path = join(obs_dir, 'runstatus.csv')
     if latest_runstatus is None:
         latest_runstatus = download_latest()
@@ -63,6 +75,10 @@ def update_phs_status(
     skip_NumActualPhsEvents=False, 
     stop_after_this_many_runs=None,
 ):
+    """
+    Update obs_dir/runstatus.csv with the status of the produced photon-stream
+    output.
+    """
     runstatus_path = join(obs_dir, 'runstatus.csv')
     lock = filelock.FileLock(join(obs_dir, '.lock.runstatus.csv'))
     with lock.acquire(timeout=1):
