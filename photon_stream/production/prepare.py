@@ -15,7 +15,7 @@ from .runinfo import DRS_STEP_KEY
 from . import tools
 
 
-def make_job_list(
+def jobs_and_directory_tree(
     runinfo,
     phs_dir='/gpfs0/fact/processing/public/phs',
     start_night=0,
@@ -139,10 +139,10 @@ def make_job_list(
         jobs.append(job)
         
     print('Found '+str(len(jobs))+' runs both in database and accesible in "'+fact_raw_dir+'".')
-    return {'jobs': jobs, 'tree': p}
+    return jobs, p
 
 
-def prepare_output_tree(tree):
+def output_tree(tree):
     os.makedirs(tree['phs_dir'], exist_ok=True, mode=0o755)
     readme_input_path = pkg_resources.resource_filename(
         'photon_stream', 

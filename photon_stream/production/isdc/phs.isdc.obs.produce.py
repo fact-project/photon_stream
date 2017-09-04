@@ -80,7 +80,7 @@ def automatic(
         second=runqstat,
     )
 
-    todo = prepare.make_job_list(
+    jobs, tree = prepare.jobs_and_directory_tree(
         phs_dir=phs_dir,
         start_night=start_night,
         end_night=end_night,
@@ -94,9 +94,9 @@ def automatic(
         tmp_dir_base_name=tmp_dir_base_name,
         runinfo=runjobs,
     )
-    prepare.prepare_output_tree(todo['tree'])
+    prepare.output_tree(tree)
 
-    for job in tqdm(todo['jobs']):
+    for job in tqdm(jobs):
         qsub(
             job=job, 
             exe_path=worker_node_main_path, 

@@ -79,7 +79,7 @@ def main():
             os.environ["FACT_PASSWORD"] = arguments['--fact_password']
             runinfo = ps.production.runinfo.download_latest()
 
-        job_structure = ps.production.prepare.make_job_list(
+        jobs, tree = ps.production.prepare.jobs_and_directory_tree(
             out_dir=arguments['--out_dir'],
             start_night=int(arguments['--start_night']),
             end_night=int(arguments['--end_night']),
@@ -93,8 +93,7 @@ def main():
             tmp_dir_base_name=arguments['--tmp_dir_base_name'],
             runinfo=runinfo,
         )
-        jobs = job_structure['jobs']
-        ps.production.prepare.prepare_output_tree(job_structure['tree'])
+        ps.production.prepare.output_tree(tree)
         job_return_codes = list(scoop.futures.map(run_job, jobs))
 
     except docopt.DocoptExit as e:
