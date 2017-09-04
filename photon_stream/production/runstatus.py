@@ -23,8 +23,12 @@ def read(path='runstatus.csv'):
 
 
 def init(obs_dir, latest_runstatus=None):
+    """
+    Initializes phs/obs/ and the runstatus.csv
+    """
     runstatus_lock_path = join(obs_dir, '.lock.runstatus.csv')
     runstatus_path = join(obs_dir, 'runstatus.csv')
+    assert not exists(runstatus_path)
     assert not exists(runstatus_lock_path)
     if not os.path.exists(runstatus_path):
         os.makedirs(obs_dir, exist_ok=True, mode=0o777)
@@ -54,7 +58,11 @@ def _append_new_runstatus(old_runstatus, new_runstatus):
     return nrs.reset_index()
 
 
-def update_phs_status(obs_dir, skip_NumActualPhsEvents=False):
+def update_phs_status(
+    obs_dir, 
+    skip_NumActualPhsEvents=False, 
+    stop_after_this_many_runs=None,
+):
     runstatus_path = join(obs_dir, 'runstatus.csv')
     lock = filelock.FileLock(join(obs_dir, '.lock.runstatus.csv'))
     with lock.acquire(timeout=1):
@@ -62,19 +70,47 @@ def update_phs_status(obs_dir, skip_NumActualPhsEvents=False):
         runstatus = _run_update(
             runstatus=runstatus,
             obs_dir=obs_dir,
-            skip_NumActualPhsEvents=skip_NumActualPhsEvents
+            skip_NumActualPhsEvents=skip_NumActualPhsEvents,
+            stop_after_this_many_runs=stop_after_this_many_runs
         )
         ri.write(runstatus, runstatus_path)
     return runstatus
 
 
-def _run_update(runstatus, obs_dir, skip_NumActualPhsEvents=False):
+def _run_update(
+    runstatus, 
+    obs_dir, 
+    skip_NumActualPhsEvents=False,
+    stop_after_this_many_runs=None
+):
     """
-    Returns an updated runstatus
+    Parameter
+    ---------
+    runstatus: pd.DataFrame
+        The current phs/obs/runstatus.csv.
+
+    obs_dir: path
+        The path to the photon-stream phs/obs/ directory.
+
+    skip_NumActualPhsEvents: Bool
+        skip the time consuming check for actual number of phs events.
+
+    stop_after_this_many_runs: Int
+        stop the check after this many existing output runs where checked for 
+        their number of events.
+
+    Retrun
+    ------
+    runstatus: pd.DataFrame
+        Now updated
     """
     rs = runstatus.copy()
-
+    number_runs = 0
     for index, row in tqdm(rs.iterrows()):
+
+        if number_runs > stop_after_this_many_runs:
+            break
+
         night = int(np.round(row.fNight))
         run = int(np.round(row.fRunID))
 
@@ -89,6 +125,7 @@ def _run_update(runstatus, obs_dir, skip_NumActualPhsEvents=False):
                 except:
                     pass
                 rs.loc[index, 'NumActualPhsEvents'] = actual_events
+                number_runs += 1
 
         if np.isnan(row['StdOutSize']):
             stdo_path = fact.path.tree_path(
