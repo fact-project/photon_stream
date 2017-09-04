@@ -12,11 +12,13 @@ import docopt
 from tqdm import tqdm
 import os
 from os.path import join
+import numpy as np
+from shutil import which
 
 from .. import prepare
 from .. import runstatus as rs
 from .. import runinfo as ri
-import numpy as np
+from .qsub import qsub
 
 
 def automatic(
@@ -90,6 +92,11 @@ def automatic(
     prepare.prepare_output_tree(todo['tree'])
 
     for job in tqdm(todo['jobs']):
+        qsub(
+            job=job, 
+            exe_path=which('phs.production.'), 
+            dummy=False
+        )
 
 
 def main():

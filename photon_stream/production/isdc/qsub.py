@@ -1,4 +1,4 @@
-from shutil import which
+
 import subprocess as sp
 from .dummy_qsub import dummy_qsub
 from os.path import exists
@@ -6,7 +6,7 @@ from os import makedirs
 from os import remove
 
 
-def qsub(phs_job, exe_path, dummy=False):
+def qsub(job, exe_path, dummy=False):
 
     for p in [job['o_path'], job['e_path']]:
         if exists(p):
