@@ -6,20 +6,7 @@ the universal FACT password: export FACT_PASSWORD=*********
 Usage: phs.production.isdc.automatic [options]
 
 Options:
-    --fact_raw_dir=PATH         [default: /fact/raw]
-    --fact_drs_dir=PATH         [default: /fact/raw]
-    --fact_aux_dir=PATH         [default: /fact/aux]
-    --fact_phs_dir=PATH         [default: /gpfs0/fact/processing/public/phs]
-    --java_path=PATH            [default: /home/guest/relleums/java8/jdk1.8.0_111]
-    --fact_tools_jar_path=PATH  [default: /home/guest/relleums/fact_photon_stream/fact-tools/target/fact-tools-0.18.0.jar']
-    --fact_tools_xml_path=PATH  [default: /home/guest/relleums/fact_photon_stream/photon_stream/photon_stream/production/resources/observations_pass4.xml']
-    --queue=NAME                [default: fact_medium]
-    --start_night=NIGHT         [default: 00000000]
-    --end_night=NIGHT           [default: 99999999]
-    --use_dummy_qsub=FLAG       [default: False]
-    --max_jobs_in_qsub=INT      [default: 128]
-    --only_a_fraction=FLOAT     [default: 1.0]
-    --start_new=FLAG            [default: False]
+    -h | --help
 """
 import docopt
 from tqdm import tqdm
@@ -32,7 +19,7 @@ from .. import runinfo as ri
 import numpy as np
 
 
-def qsub(
+def automatic(
     start_night=0,
     end_night=99999999,
     only_a_fraction=1.0,
@@ -110,15 +97,7 @@ def qsub(
 def main():
     try:
         arguments = docopt.docopt(__doc__)
-        run(
-            fact_password=arguments['--fact_password'],
-            raw_dir=arguments['--raw_dir'], 
-            phs_dir=arguments['--phs_dir'],
-            runstatus_path=arguments['--runstatus_path'],
-            max_jobs_in_qsub=int(arguments['--max_jobs_in_qsub']),
-            qsub_history_path=arguments['--qsub_history_path'],
-        )
-
+        automatic()
     except docopt.DocoptExit as e:
         print(e)
 
