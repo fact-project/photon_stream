@@ -13,6 +13,7 @@ Options:
     --out_basename=PATH         [default: /home/guest/relleums/test_qsub.20170901_139']
     --tmp_dir_basename=NAME     [default: phs_obs_]
 """
+import docopt
 import os
 from glob import glob
 from os.path import join
