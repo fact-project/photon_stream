@@ -13,12 +13,20 @@ from tqdm import tqdm
 import os
 from os.path import join
 import numpy as np
-from shutil import which
+import pkg_resources
 
 from .. import prepare
 from .. import runstatus as rs
 from .. import runinfo as ri
 from .qsub import qsub
+
+
+worker_node_main_path = os.path.abspath(
+    pkg_resources.resource_filename(
+        'photon_stream', 
+        os.path.join('production','isdc','worker_node_main.py')
+    )
+)
 
 
 def automatic(
@@ -94,7 +102,7 @@ def automatic(
     for job in tqdm(todo['jobs']):
         qsub(
             job=job, 
-            exe_path=which('phs.production.'), 
+            exe_path=worker_node_main_path, 
             dummy=False
         )
 
