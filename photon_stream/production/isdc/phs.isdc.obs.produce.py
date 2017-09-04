@@ -30,6 +30,7 @@ worker_node_main_path = os.path.abspath(
 
 
 def automatic(
+    init=False,
     start_night=0,
     end_night=99999999,
     only_a_fraction=1.0,
@@ -42,11 +43,10 @@ def automatic(
     fact_tools_xml_path='/home/guest/relleums/fact_photon_stream/photon_stream/photon_stream/production/resources/observations_pass4.xml',
     tmp_dir_base_name='phs_obs_',
     queue='fact_medium', 
+    latest_runstatus=None,
+    max_jobs_in_qsub=128,
     use_dummy_qsub=False,
     runqstat_dummy=None,
-    latest_runstatus=None,
-    init=False,
-    max_jobs_in_qsub=128,
 ):  
     obs_dir = join(phs_dir,'obs')
 
@@ -94,16 +94,13 @@ def automatic(
         tmp_dir_base_name=tmp_dir_base_name,
         runinfo=runjobs,
     )
-
-    assert len(todo['jobs']) > 0
-
     prepare.prepare_output_tree(todo['tree'])
 
     for job in tqdm(todo['jobs']):
         qsub(
             job=job, 
             exe_path=worker_node_main_path, 
-            dummy=False
+            dummy=use_dummy_qsub
         )
 
 
