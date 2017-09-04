@@ -78,8 +78,6 @@ def run_production_scenario(out_dir):
     ps.production.runstatus.update_phs_status(obs_dir=join(phs_dir,'obs'))
 
 
-    #input('Take a look into '+out_dir+' or press any key to continue')
-
     rs2 = ps.production.runinfo.read(new_runstatus_path)
     my_2nd_fact_tools_jar_path = join(out_dir, 'my_2nd_fact_tools.jar')
     with open(my_2nd_fact_tools_jar_path, 'w') as fftools:
