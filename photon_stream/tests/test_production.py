@@ -35,11 +35,11 @@ with open(qstat_xml_path, 'rt') as fin:
 
 def run_production_scenario(out_dir):
     fact_dir = join(out_dir, 'fact')
-
     ri = ps.production.runinfo.read(runinfo_path)
     ps.production.tools.create_fake_fact_dir(fact_dir, ri)
 
-    rs1 = ps.production.runinfo.read(old_runstatus_path)
+
+    rs1 = ps.production.runstatus.read(old_runstatus_path)
     my_fact_tools_jar_path = join(out_dir, 'my_fact_tools.jar')
     with open(my_fact_tools_jar_path, 'w') as fftools:
         fftools.write('Hi, I am a fact tools dummy java jar!')
@@ -78,12 +78,9 @@ def run_production_scenario(out_dir):
     ps.production.runstatus.update_phs_status(obs_dir=join(phs_dir,'obs'))
 
 
-    rs2 = ps.production.runinfo.read(new_runstatus_path)
-    my_2nd_fact_tools_jar_path = join(out_dir, 'my_2nd_fact_tools.jar')
-    with open(my_2nd_fact_tools_jar_path, 'w') as fftools:
-        fftools.write('Hi, I am another fact tools dummy java jar!')    
+    rs2 = ps.production.runstatus.read(new_runstatus_path)
 
-    # SECOND CHUNK with 2nd fact-tools.jar
+    # SECOND CHUNK
     ps.production.isdc.qsub(
         phs_dir=phs_dir,
         only_a_fraction=1.0,
@@ -91,7 +88,7 @@ def run_production_scenario(out_dir):
         fact_drs_dir=join(fact_dir, 'raw'),
         fact_aux_dir=join(fact_dir, 'aux'),
         java_path='/usr/java/jdk1.8.0_77/bin',
-        fact_tools_jar_path=my_2nd_fact_tools_jar_path,
+        fact_tools_jar_path=my_fact_tools_jar_path,
         fact_tools_xml_path=my_fact_tools_xml_path,
         tmp_dir_base_name='fact_photon_stream_JOB_ID_',
         queue='fact_medium', 
@@ -101,12 +98,10 @@ def run_production_scenario(out_dir):
         init=False,
     )
 
-    #input('Take a look into '+out_dir+' or press any key to continue')
     ps.production.runstatus.update_phs_status(obs_dir=join(phs_dir,'obs'))
 
 
 def test_production_scenario(out_dir):
-
     if out_dir is None:
         with tempfile.TemporaryDirectory(prefix='phs_') as tmp:
             run_production_scenario(out_dir=tmp)
