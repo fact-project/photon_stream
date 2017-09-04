@@ -4,13 +4,13 @@ Usage: phs.obs.production.isdc.worker [options]
 
 Options:
     --java_path=PATH            [default: /home/guest/relleums/java8/jdk1.8.0_111]
-    --fact_tools_jar_path=PATH  [default: /home/guest/relleums/fact_photon_stream/fact-tools/target/fact-tools-0.18.0.jar']
-    --fact_tools_xml_path=PATH  [default: /home/guest/relleums/fact_photon_stream/photon_stream/photon_stream/production/resources/observations_pass4.xml']
+    --fact_tools_jar_path=PATH  [default: /home/guest/relleums/fact_photon_stream/fact-tools/target/fact-tools-0.18.1.jar]
+    --fact_tools_xml_path=PATH  [default: /home/guest/relleums/fact_photon_stream/photon_stream/photon_stream/production/resources/observations_pass4.xml]
     --raw_path=PATH             [default: /fact/raw/2017/09/01/20170901_139.fits.fz]
     --drs_path=PATH             [default: /fact/raw/2017/09/01/20170901_129.drs.fits.gz]
     --aux_dir=PATH              [default: /fact/aux/2017/09/01/]
-    --out_dir=PATH              [default: /gpfs0/fact/processing/public/phs/obs/2017/09/01/]
-    --out_basename=PATH         [default: /home/guest/relleums/test_qsub.20170901_139']
+    --out_dir=PATH              [default: /home/guest/relleums/qsub]
+    --out_basename=PATH         [default: 20170901_139]
     --tmp_dir_basename=NAME     [default: phs_obs_]
 """
 import docopt
@@ -30,15 +30,15 @@ def run(
     drs_path,
     aux_dir,
     out_dir,
-    out_base_name,
-    tmp_dir_base_name,
+    out_basename,
+    tmp_dir_basename,
 ):
-    with tempfile.TemporaryDirectory(prefix=tmp_dir_base_name) as tmp:
+    with tempfile.TemporaryDirectory(prefix=tmp_dir_basename) as tmp:
 
         my_env = os.environ.copy()
         my_env["PATH"] = java_path + my_env["PATH"]
 
-        cmd = [
+        subprocess.call([
             'java',
             '-XX:MaxHeapSize=1024m',
             '-XX:InitialHeapSize=512m',
@@ -50,8 +50,8 @@ def run(
             '-Dinfile=file:'+raw_path,
             '-Ddrsfile=file:'+drs_path,
             '-Daux_dir=file:'+aux_dir,
-            '-Dout_path_basename=file:'+join(tmp, out_base_name),
-        ]
+            '-Dout_path_basename=file:'+join(tmp, out_basename),
+        ])
 
         for intermediate_file_path in glob(join(tmp, '*')):
             if os.path.isfile(intermediate_file_path):
@@ -71,8 +71,8 @@ def main():
             drs_path=arguments['--drs_path'],
             aux_dir=arguments['--aux_dir'],
             out_dir=arguments['--out_dir'],
-            out_base_name=arguments['--out_base_name'],
-            tmp_dir_base_name=arguments['--tmp_dir_base_name'],
+            out_basename=arguments['--out_basename'],
+            tmp_dir_basename=arguments['--tmp_dir_basename'],
         )
 
     except docopt.DocoptExit as e:
