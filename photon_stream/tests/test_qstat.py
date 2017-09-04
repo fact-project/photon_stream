@@ -21,9 +21,9 @@ def test_job_name_2_obs_run_id():
 def test_jobs_2_run_ids():
     with open(qstat_xml_path, 'rt') as fin:
         qstat_xml = fin.read()
-    all_jobs = qstat2dict._tools.xml2job_infos(qstat_xml)
+    queue_info, job_info = qstat2dict._tools.xml2queue_and_job_info(qstat_xml)
     ids = ps.production.isdc.qstat.q_jobs_2_runqstat(
-        all_jobs, 
+        queue_info + job_info, 
         is_in_JB_name='phs_obs'
     )
     assert 'fNight' in ids

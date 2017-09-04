@@ -18,10 +18,12 @@ def qstat(is_in_JB_name='phs_obs', xml=None):
     RRR is the fRunID
     """
     if xml is None:
-        q_jobs = qstat2dict.qstat()
+        queue_info, job_info = qstat2dict.qstat()
     else:
-        q_jobs = qstat2dict._tools.xml2job_infos(xml)
-    return q_jobs_2_runqstat(q_jobs, is_in_JB_name)
+        queue_info, job_info = qstat2dict._tools.xml2queue_and_job_info(xml)
+
+    all_jobs = queue_info + job_info
+    return q_jobs_2_runqstat(all_jobs, is_in_JB_name)
 
 
 def JB_name_2_run_ids(JB_name, regex='\d+'):
