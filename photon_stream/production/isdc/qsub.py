@@ -1,12 +1,12 @@
-
 import subprocess as sp
 from .dummy_qsub import dummy_qsub
 from os.path import exists
 from os import makedirs
 from os import remove
+from os.path import dirname
 
 
-def qsub(job, exe_path, dummy=False):
+def qsub(job, exe_path, queue, dummy=False):
 
     for p in [job['o_path'], job['e_path']]:
         if exists(p):
@@ -20,7 +20,7 @@ def qsub(job, exe_path, dummy=False):
         '-o', job['o_path'],
         '-e', job['e_path'],
         '-N', job['name'],
-        which(exe_path)
+        exe_path
     ]
     for key in job:
         if '--' in key:

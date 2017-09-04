@@ -29,7 +29,7 @@ worker_node_main_path = os.path.abspath(
 )
 
 
-def automatic(
+def produce(
     init=False,
     start_night=0,
     end_night=99999999,
@@ -99,7 +99,8 @@ def automatic(
     for job in tqdm(jobs):
         qsub(
             job=job, 
-            exe_path=worker_node_main_path, 
+            exe_path=worker_node_main_path,
+            queue=queue,
             dummy=use_dummy_qsub
         )
 
@@ -107,7 +108,7 @@ def automatic(
 def main():
     try:
         arguments = docopt.docopt(__doc__)
-        automatic()
+        produce()
     except docopt.DocoptExit as e:
         print(e)
 

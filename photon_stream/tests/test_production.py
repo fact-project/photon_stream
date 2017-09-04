@@ -51,7 +51,7 @@ def run_production_scenario(out_dir):
     phs_dir = join(out_dir, 'phs')
 
     # FIRST CHUNK
-    ps.production.isdc.qsub(
+    ps.production.isdc.produce(
         phs_dir=phs_dir, 
         only_a_fraction=1.0,
         fact_raw_dir=join(fact_dir, 'raw'),
@@ -81,7 +81,7 @@ def run_production_scenario(out_dir):
     rs2 = ps.production.runstatus.read(new_runstatus_path)
 
     # SECOND CHUNK
-    ps.production.isdc.qsub(
+    ps.production.isdc.produce(
         phs_dir=phs_dir,
         only_a_fraction=1.0,
         fact_raw_dir=join(fact_dir, 'raw'),
