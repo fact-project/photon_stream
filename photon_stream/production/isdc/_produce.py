@@ -31,7 +31,7 @@ def produce(
     tmp_dir_base_name='phs_obs_',
     queue='fact_medium', 
     latest_runstatus=None,
-    max_jobs_in_qsub=128,
+    max_jobs_in_qsub=256,
     use_dummy_qsub=False,
     runqstat_dummy=None,
 ):  
@@ -50,8 +50,8 @@ def produce(
 
     runstatus = rs.read(join(obs_dir, 'runstatus.csv'))
 
-    was_not_checked_yet = np.isnan(runstatus['IsOk'].values)
-    all_runjobs = runstatus[was_not_checked_yet]
+    needs_processing = np.isnan(runstatus['IsOk'].values)
+    all_runjobs = runstatus[needs_processing]
 
     if runqstat_dummy is None:
         runqstat = ps.production.isdc.qstat.qstat(is_in_JB_name='phs_obs')
