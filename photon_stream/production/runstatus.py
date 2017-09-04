@@ -87,7 +87,7 @@ def update_phs_status(
             runstatus=runstatus,
             obs_dir=obs_dir,
             skip_NumActualPhsEvents=skip_NumActualPhsEvents,
-            stop_after_this_many_runs=stop_after_this_many_runs
+            stop_after_this_many_runs=stop_after_this_many_runs,
         )
         ri.write(runstatus, runstatus_path)
     return runstatus
@@ -97,7 +97,7 @@ def _run_update(
     runstatus, 
     obs_dir, 
     skip_NumActualPhsEvents=False,
-    stop_after_this_many_runs=None
+    stop_after_this_many_runs=None,
 ):
     """
     Parameter
@@ -122,7 +122,7 @@ def _run_update(
     """
     rs = runstatus.copy()
     number_runs = 0
-    for index, row in tqdm(rs.iterrows()):
+    for index, row in tqdm(rs.iterrows(), ascii=True, desc='Update runstatus.csv'):
 
         if stop_after_this_many_runs is not None:
             if number_runs > stop_after_this_many_runs:
@@ -161,5 +161,6 @@ def _run_update(
         if row['NumActualPhsEvents'] == row['NumExpectedPhsEvents']:
             rs.loc[index, 'IsOk'] = 1
         else:
-            rs.loc[index, 'IsOk'] = 0
+            if exists(run_path):
+                rs.loc[index, 'IsOk'] = 0
     return rs

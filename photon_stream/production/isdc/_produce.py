@@ -17,7 +17,6 @@ worker_node_main_path = os.path.abspath(
 )
 
 def produce(
-    init=False,
     start_night=0,
     end_night=99999999,
     only_a_fraction=1.0,
@@ -35,23 +34,20 @@ def produce(
     use_dummy_qsub=False,
     runqstat_dummy=None,
 ):  
+    print('Start fact/raw to public/phs/obs.')
+
+    print('Update runstatus.csv from La Palma ...')
     obs_dir = join(phs_dir,'obs')
-
-    if init:
-        rs.init(
-            obs_dir=obs_dir, 
-            latest_runstatus=latest_runstatus
-        )
-
     rs.update_to_latest(
         obs_dir=obs_dir, 
         latest_runstatus=latest_runstatus
     )
-
     runstatus = rs.read(join(obs_dir, 'runstatus.csv'))
+    print('Update runstatus.csv done.')
 
     needs_processing = np.isnan(runstatus['IsOk'].values)
     all_runjobs = runstatus[needs_processing]
+    print(str(len(all_runjobs))+' runs need processing.')
 
     if runqstat_dummy is None:
         runqstat = ps.production.isdc.qstat.qstat(is_in_JB_name='phs_obs')
@@ -59,13 +55,19 @@ def produce(
         runqstat = runqstat_dummy
 
     if len(runqstat) > max_jobs_in_qsub:
-        print('Stop. Qsub is busy.')
+        print('Stop. Qsub is busy. '+str(len(runqstat))+' jobs in the queue.')
         return
 
     runjobs = ri.remove_from_first_when_also_in_second(
         first=all_runjobs,
         second=runqstat,
     )
+    print(str(len(runjobs))+' runs need processing and are not yet in the queue.')
+    
+    num_runs_for_qsub = max_jobs_in_qsub - len(runqstat)
+    print('Qsub is good to go for '+str(num_runs_for_qsub)+' of '+str(max_jobs_in_qsub)+' more jobs.')
+
+    runjobs.sort_values(by=ri.ID_RUNINFO_KEYS , inplace=True, ascending=False)
 
     jobs, tree = prepare.jobs_and_directory_tree(
         phs_dir=phs_dir,
@@ -82,11 +84,15 @@ def produce(
         runinfo=runjobs,
     )
     prepare.output_tree(tree)
-
-    for job in tqdm(jobs):
+    i = 0
+    for job in tqdm(jobs, ascii=True, desc='qsub'):
+        if i > num_runs_for_qsub:
+            break
+        i += 1
         qsub(
             job=job, 
             exe_path=worker_node_main_path,
             queue=queue,
             dummy=use_dummy_qsub
         )
+    print('Done. '+str(i)+' jobs have been submitted.')

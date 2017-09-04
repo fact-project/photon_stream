@@ -73,7 +73,7 @@ def jobs_and_directory_tree(
                         worker nodes. (default 'fact_photon_stream_JOB_ID_')
     """
     
-    print('Make raw->phs job list ...')
+    print('Make jobs and directory tree ...')
 
     phs_dir = abspath(phs_dir)
     fact_raw_dir = abspath(fact_raw_dir)
@@ -92,7 +92,7 @@ def jobs_and_directory_tree(
 
     p['phs_readme_path'] = join(p['phs_dir'], 'README.md')
 
-    print('Find runs in night range '+str(start_night)+' to '+str(end_night)+' in runinfo database ...')
+    print('Find runs in night range '+str(start_night)+' to '+str(end_night)+' in runstatus.csv ...')
     
     ri = runinfo
     past_start = (ri['fNight'] >= start_night).values
@@ -100,7 +100,7 @@ def jobs_and_directory_tree(
     fraction = np.random.uniform(size=ri.shape[0]) < only_a_fraction
     valid = past_start*before_end*fraction
 
-    print('Found '+str(valid.sum())+' runs in database.')
+    print('Found '+str(valid.sum())+' runs in runstatus.csv.')
     print('Find overlap with runs accessible in "'+fact_raw_dir+'" ...')
 
     jobs = []
@@ -138,7 +138,7 @@ def jobs_and_directory_tree(
         job['e_path'] = tree_path(night, runid, prefix=p['std_dir'], suffix='.e')
         jobs.append(job)
         
-    print('Found '+str(len(jobs))+' runs both in database and accesible in "'+fact_raw_dir+'".')
+    print('Found '+str(len(jobs))+' runs both in runstatus.csv and accesible in "'+fact_raw_dir+'".')
     return jobs, p
 
 
