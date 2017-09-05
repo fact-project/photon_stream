@@ -1,4 +1,3 @@
-#! /usr/bin/env python
 """
 Usage: worker_node_status.py --phs_path=PATH --status_path=PATH --phs_o_path=PATH --phs_e_path=PATH
 
