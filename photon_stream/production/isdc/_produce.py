@@ -12,7 +12,7 @@ from .qsub import qsub
 worker_node_main_path = os.path.abspath(
     pkg_resources.resource_filename(
         'photon_stream', 
-        os.path.join('production','isdc','worker_node_main.py')
+        os.path.join('production','isdc','worker_node_produce.py')
     )
 )
 
