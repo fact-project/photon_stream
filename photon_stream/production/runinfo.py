@@ -26,14 +26,18 @@ RUNINFO_KEYS = (
     TRIGGER_NUMBER_RUNINFO_KEYS
 )
 
-
-PHS_KEYS = [
-    'NumExpectedPhsEvents',
+PHS_STATUS_KEYS = [
     'NumActualPhsEvents',
+    'PhsSize',
     'StdOutSize',
     'StdErrorSize',
-    'IsOk',
 ]
+
+PHS_KEYS = (
+    ['NumExpectedPhsEvents'] +
+    PHS_STATUS_KEYS +
+    ['IsOk']
+)
 
 RUNSTATUS_KEYS = (
     ID_RUNINFO_KEYS +
