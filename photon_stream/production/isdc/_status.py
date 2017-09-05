@@ -20,8 +20,8 @@ worker_node_main_path = os.path.abspath(
 
 QSUB_OBS_STATUS_NAME_PREFIX = 'phs_obs_status'
 
-def _status(
-    obs_dir,
+def status(
+    obs_dir=join('/gpfs0','fact','processing','public','phs','obs'),
     max_jobs_in_qsub=256,
     queue='fact_medium',
 ):
