@@ -6,11 +6,15 @@ from filelock import FileLock
 from filelock import Timeout
 from glob import glob
 import json
+import pandas as pd
+import numpy as np
 from .. import runstatus as rs
 from .. import runinfo as ri
 from .qstat import qstat
 from fact.path import template_to_path
 from fact.path import tree_path
+from .qsub import qsub
+
 
 worker_node_main_path = os.path.abspath(
     pkg_resources.resource_filename(
@@ -49,7 +53,7 @@ def status(
             runstatus = add_tmp_status_to_runstatus(tmp_status, runstatus)
             ri.write(runstatus, runstatus_path)
 
-            print('Add '+len(tmp_status)+' new stati to '+runstatus_path)
+            print('Add '+str(len(tmp_status))+' new stati to '+runstatus_path)
 
             no_status_yet = runstatus[np.isnan(runstatus.PhsSize)]
             rs_qstat = qstat(is_in_JB_name=QSUB_OBS_STATUS_NAME_PREFIX)
@@ -62,12 +66,12 @@ def status(
                 inplace=True,
                 ascending=False
             )  
-            num_runs_for_qsub = len(rs_qstat) - max_jobs_in_qsub
+            num_runs_for_qsub = max_jobs_in_qsub - len(rs_qstat)
 
             print('Submitt '+str(num_runs_for_qsub)+' new status requests ...')
 
             i = 0
-            for row in no_status_yet:
+            for index, row in no_status_yet.iterrows():
                 if i > num_runs_for_qsub:
                     break
                 i += 1
@@ -75,7 +79,7 @@ def status(
                 fNight = int(np.round(row.fNight))
                 fRunID = int(np.round(row.fRunID))
                 job = {
-                    'name': fact.path.template_to_path(fNight, fRunID, QSUB_OBS_STATUS_NAME_PREFIX+'_{N}_{R}'),
+                    'name': template_to_path(fNight, fRunID, QSUB_OBS_STATUS_NAME_PREFIX+'_{N}_{R}'),
                     'o_path': tree_path(fNight, fRunID, prefix=tmp_status_dir, suffix='.o'),
                     'e_path': tree_path(fNight, fRunID, prefix=tmp_status_dir, suffix='.e'),
                     '--phs_path': tree_path(fNight, fRunID, prefix=obs_dir, suffix='.phs.jsonl.gz'),
@@ -94,7 +98,7 @@ def status(
     print('End')
 
 def read_and_remove_tmp_status(tmp_status_dir):
-    tmp_status_paths = glob.glob(join(tmp_status_dir,'*','*','*','*.json'))
+    tmp_status_paths = glob(join(tmp_status_dir,'*','*','*','*.json'))
     tmp_status_list = []
     for tmp_status_path in tmp_status_paths:
         with open(tmp_status_path, 'rt') as fin:
@@ -109,7 +113,7 @@ def read_and_remove_tmp_status(tmp_status_dir):
 
 
 def add_tmp_status_to_runstatus(tmp_status, runstatus):
-    irs = runstatus.set_index(ps.production.runinfo.ID_RUNINFO_KEYS)
+    irs = runstatus.set_index(ri.ID_RUNINFO_KEYS)
     for i, row in tmp_status.iterrows():
         for key in ri.PHS_STATUS_KEYS:
             irs.set_value((row['fNight'], row['fRunID']), key, row[key])
