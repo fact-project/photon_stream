@@ -79,20 +79,44 @@ def status(
 
                 fNight = int(np.round(row.fNight))
                 fRunID = int(np.round(row.fRunID))
-                job = {
-                    'name': template_to_path(fNight, fRunID, QSUB_OBS_STATUS_NAME_PREFIX+'_{N}_{R}'),
-                    'o_path': tree_path(fNight, fRunID, tmp_status_dir, '.o'),
-                    'e_path': tree_path(fNight, fRunID, tmp_status_dir, '.e'),
-                    '--phs_path': tree_path(fNight, fRunID, prefix=obs_dir, suffix='.phs.jsonl.gz'),
-                    '--status_path': tree_path(fNight, fRunID, prefix=tmp_status_dir, suffix='.json'),
-                    '--phs_o_path': tree_path(fNight, fRunID, prefix=obs_std_dir, suffix='.o'),
-                    '--phs_e_path': tree_path(fNight, fRunID, prefix=obs_std_dir, suffix='.e'),
-                }
-                qsub(
-                    job=job, 
-                    exe_path=which('phs.isdc.obs.status.worker'),
-                    queue=queue
-                )
+
+                # StdOutSize and StdErrorSize
+                #----------------------------
+                o_path = tree_path(fNight, fRunID, prefix=obs_std_dir, suffix='.o')
+                o_size = np.nan
+                if exists(o_path):
+                    o_size = os.stat(o_path).st_size
+                runstatus.set_value((fNight, fRunID), 'StdOutSize', o_size)
+                e_path = tree_path(fNight, fRunID, prefix=obs_std_dir, suffix='.e')
+                e_size = np.nan
+                if exists(e_path):
+                    e_size = os.stat(e_path).st_size
+                runstatus.set_value((fNight, fRunID), 'StdErrorSize', e_size)
+
+
+                # PhsSize and NumActualPhsEvents
+                #-------------------------------
+                phs_path = tree_path(fNight, fRunID, prefix=obs_dir, suffix='.phs.jsonl.gz'),
+                
+                if exists(phs_path):
+                    # Submitt the intense task of event counting to qsub, and 
+                    # collect the output next time in phs/obs/.tmp_status
+                    job = {
+                        'name': template_to_path(fNight, fRunID, QSUB_OBS_STATUS_NAME_PREFIX+'_{N}_{R}'),
+                        'o_path': tree_path(fNight, fRunID, tmp_status_dir, '.o'),
+                        'e_path': tree_path(fNight, fRunID, tmp_status_dir, '.e'),
+                        '--phs_path': phs_path,
+                        '--status_path': tree_path(fNight, fRunID, prefix=tmp_status_dir, suffix='.json'),
+                    }
+                    qsub(
+                        job=job, 
+                        exe_path=which('phs.isdc.obs.status.worker'),
+                        queue=queue
+                    )
+                else:
+                    runstatus.set_value((fNight, fRunID), 'PhsSize', np.nan)
+                    runstatus.set_value((fNight, fRunID), 'NumActualPhsEvents', np.nan)
+
                 runstatus.set_value((fNight, fRunID), 'StatusIteration', row['StatusIteration'] + 1)
 
             runstatus = runstatus.reset_index()
@@ -101,6 +125,7 @@ def status(
     except Timeout:
         print('Could not get the lock on '+runstatus_path)
     print('End')
+
 
 def read_and_remove_tmp_status(tmp_status_dir):
     tmp_status_paths = glob(join(tmp_status_dir,'*','*','*','*.json'))
@@ -121,7 +146,7 @@ def read_and_remove_tmp_status(tmp_status_dir):
 def add_tmp_status_to_runstatus(tmp_status, runstatus):
     irs = runstatus.set_index(ri.ID_RUNINFO_KEYS)
     for i, row in tmp_status.iterrows():
-        for key in ri.PHS_STATUS_KEYS:
+        for key in ['PhsSize', 'NumActualPhsEvents']:
             irs.set_value((row['fNight'], row['fRunID']), key, row[key])
     return irs.reset_index()
 
