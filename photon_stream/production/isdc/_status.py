@@ -1,6 +1,7 @@
-import docopt
 from os.path import join
 from os.path import exists
+import os
+import pkg_resources
 from filelock import FileLock
 from filelock import Timeout
 from glob import glob
