@@ -1,12 +1,12 @@
 #! /usr/bin/env python
 """
-Usage: worker_node_status.py --phs_path=PATH --status_path=PATH --o_path=PATH --e_path=PATH
+Usage: worker_node_status.py --phs_path=PATH --status_path=PATH --phs_o_path=PATH --phs_e_path=PATH
 
 Options:
     --phs_path=PATH
     --status_path=PATH
-    --o_path=PATH
-    --e_path=PATH
+    --phs_o_path=PATH
+    --phs_e_path=PATH
 """
 import docopt
 import os
@@ -17,7 +17,7 @@ import fact
 from photon_stream.production.tools import number_of_events_in_file
 
 
-def status(phs_path, status_path, o_path, e_path):
+def status(phs_path, status_path, phs_o_path, phs_e_path):
     stat = {}
     r = fact.path.parse(phs_path)
     stat['fNight'] = r['night']
@@ -46,7 +46,7 @@ def status(phs_path, status_path, o_path, e_path):
     #-----------
     stat['StdOutSize'] = np.nan
     try:
-        stat['StdOutSize'] = os.stat(o_path).st_size
+        stat['StdOutSize'] = os.stat(phs_o_path).st_size
     except:
         pass
 
@@ -55,7 +55,7 @@ def status(phs_path, status_path, o_path, e_path):
     #-------------
     stat['StdErrorSize'] = np.nan
     try:
-        stat['StdErrorSize'] = os.stat(e_path).st_size
+        stat['StdErrorSize'] = os.stat(phs_e_path).st_size
     except:
         pass
 
@@ -70,8 +70,8 @@ def main():
         status(
             phs_path=args['--phs_path'], 
             status_path=args['--status_path'],
-            o_path=args['--o_path'], 
-            e_path=args['--e_path']
+            phs_o_path=args['--phs_o_path'], 
+            phs_e_path=args['--phs_e_path']
         )
     except docopt.DocoptExit as e:
         print(e)
