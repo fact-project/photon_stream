@@ -31,6 +31,7 @@ PHS_STATUS_KEYS = [
     'PhsSize',
     'StdOutSize',
     'StdErrorSize',
+    'StatusIteration',
 ]
 
 PHS_KEYS = (
