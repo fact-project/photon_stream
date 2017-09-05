@@ -10,6 +10,8 @@ Options:
 import docopt
 import os
 from os.path import exists
+from os.path import dirname
+from os import makedirs
 import shutil
 import numpy as np
 import json
@@ -18,24 +20,16 @@ from photon_stream.production.tools import number_of_events_in_file
 
 
 def status(phs_path, status_path, phs_o_path, phs_e_path):
-
-    print(phs_path)
-    print(status_path)
-    print(phs_o_path)
-    print(phs_e_path)
-    
     stat = {}
     r = fact.path.parse(phs_path)
     stat['fNight'] = r['night']
     stat['fRunID'] = r['run']
-
 
     # PhsSize
     #--------
     stat['PhsSize'] = np.nan
     if exists(phs_path): 
         stat['PhsSize'] = os.stat(phs_path).st_size
-
 
     # NumActualPhsEvents
     #-------------------
@@ -55,6 +49,7 @@ def status(phs_path, status_path, phs_o_path, phs_e_path):
     if exists(phs_e_path):
         stat['StdErrorSize'] = os.stat(phs_e_path).st_size
 
+    makedirs(dirname(status_path), exist_ok=True, mode=0o755)
     with open(status_path+'.part', 'wt') as fout:
         json.dump(stat, fout)
     shutil.move(status_path+'.part', status_path)

@@ -14,6 +14,7 @@ from fact.path import template_to_path
 from fact.path import tree_path
 from .qsub import qsub
 from shutil import which
+import shutil
 
 QSUB_OBS_STATUS_NAME_PREFIX = 'phs_obs_status'
 
@@ -63,12 +64,12 @@ def status(
             if np.all(runstatus['StatusIteration'] == max_it):
                 to_be_ckecked_now = no_status_yet
             else:
-                to_be_ckecked_now = no_status_yet['StatusIteration'] < max_it
+                to_be_ckecked_now = no_status_yet[no_status_yet['StatusIteration'] < max_it]
 
             num_runs_for_qsub = max_jobs_in_qsub - len(rs_qstat)
 
             print('Submitt '+str(num_runs_for_qsub)+' new status requests ...')
-            runstatus.set_index(ri.ID_RUNINFO_KEYS)
+            runstatus = runstatus.set_index(ri.ID_RUNINFO_KEYS)
 
             i = 0
             for index, row in to_be_ckecked_now.iterrows():
@@ -80,8 +81,8 @@ def status(
                 fRunID = int(np.round(row.fRunID))
                 job = {
                     'name': template_to_path(fNight, fRunID, QSUB_OBS_STATUS_NAME_PREFIX+'_{N}_{R}'),
-                    'o_path': tree_path(fNight, fRunID, prefix=tmp_status_dir, suffix='.o'),
-                    'e_path': tree_path(fNight, fRunID, prefix=tmp_status_dir, suffix='.e'),
+                    'o_path': tree_path(fNight, fRunID, tmp_status_dir, '.o'),
+                    'e_path': tree_path(fNight, fRunID, tmp_status_dir, '.e'),
                     '--phs_path': tree_path(fNight, fRunID, prefix=obs_dir, suffix='.phs.jsonl.gz'),
                     '--status_path': tree_path(fNight, fRunID, prefix=tmp_status_dir, suffix='.json'),
                     '--phs_o_path': tree_path(fNight, fRunID, prefix=obs_std_dir, suffix='.o'),
@@ -92,12 +93,7 @@ def status(
                     exe_path=which('phs.isdc.obs.status.worker'),
                     queue=queue
                 )
-
-                runstatus.set_value(
-                    (row['fNight'], row['fRunID']),
-                    'StatusIteration', 
-                    row['StatusIteration'] + 1
-                )
+                runstatus.set_value((fNight, fRunID), 'StatusIteration', row['StatusIteration'] + 1)
 
             runstatus = runstatus.reset_index()
             ri.write(runstatus, runstatus_path)
@@ -112,7 +108,8 @@ def read_and_remove_tmp_status(tmp_status_dir):
     for tmp_status_path in tmp_status_paths:
         with open(tmp_status_path, 'rt') as fin:
             tmp_status_list.append(json.loads(fin.read()))
-        os.remove(tmp_status_path)
+        #os.remove(tmp_status_path)
+        shutil.move(tmp_status_path, tmp_status_path+'.u')
     if len(tmp_status_list) > 0:
         tmp_stauts = pd.DataFrame(tmp_status_list)
     else:

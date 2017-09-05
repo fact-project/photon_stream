@@ -8,7 +8,12 @@ from os.path import dirname
 
 def qsub(job, exe_path, queue, dummy=False):
 
-    for p in [job['o_path'], job['e_path']]:
+    o_path = job['o_path'] if job['o_path'] is not None else '/dev/null'
+    e_path = job['e_path'] if job['e_path'] is not None else '/dev/null'
+
+    for p in [o_path, e_path]:
+        if p == '/dev/null':
+            continue
         if exists(p):
             remove(p)
         else:
@@ -17,8 +22,8 @@ def qsub(job, exe_path, queue, dummy=False):
     cmd = [ 
         'qsub',
         '-q', queue,
-        '-o', job['o_path'],
-        '-e', job['e_path'],
+        '-o', o_path,
+        '-e', e_path,
         '-N', job['name'],
         exe_path
     ]
