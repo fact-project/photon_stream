@@ -25,6 +25,8 @@ def status(
     max_jobs_in_qsub=256,
     queue='fact_medium',
 ):
+    print('Start status in '+obs_dir)
+
     runstatus_path = join(obs_dir,'runstatus.csv')
     runstatus_lock_path = join(obs_dir,'.lock.runstatus.csv')
     tmp_status_dir = join(obs_dir,'.tmp_status')
@@ -34,13 +36,19 @@ def status(
     assert exists(runstatus_lock_path)
     os.makedirs(tmp_status_dir, exist_ok=True)
 
+    print('Try to lock '+runstatus_path)
+
     try:
         runstatus_lock = FileLock(runstatus_lock_path)
         with runstatus_lock.acquire(timeout=1):
+            print(runstatus_path+' is locked now')
+
             tmp_status = read_and_remove_tmp_status(tmp_status_dir)
             runstatus = rs.read(runstatus_path)
             runstatus = add_tmp_status_to_runstatus(tmp_status, runstatus)
             ri.write(runstatus, runstatus_path)
+
+            print('Add '+len(tmp_status)+' new stati to '+runstatus_path)
 
             no_status_yet = runstatus[np.isnan(runstatus.PhsSize)]
             rs_qstat = qstat(is_in_JB_name=QSUB_OBS_STATUS_NAME_PREFIX)
@@ -54,6 +62,8 @@ def status(
                 ascending=False
             )  
             num_runs_for_qsub = len(rs_qstat) - max_jobs_in_qsub
+
+            print('Submitt '+str(num_runs_for_qsub)+' new status requests ...')
 
             i = 0
             for row in no_status_yet:
@@ -77,10 +87,10 @@ def status(
                     exe_path=worker_node_main_path,
                     queue=queue
                 )
-            return 0
+            print('Submission done')
     except Timeout:
-        pass
-
+        print('Could not get the lock on '+runstatus_path)
+    print('End')
 
 def read_and_remove_tmp_status(tmp_status_dir):
     tmp_status_paths = glob.glob(join(tmp_status_dir,'*','*','*','*.json'))
