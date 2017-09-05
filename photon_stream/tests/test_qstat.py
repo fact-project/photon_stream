@@ -28,7 +28,7 @@ def test_jobs_2_run_ids():
     )
     assert 'fNight' in ids
     assert 'fRunID' in ids
-    assert len(ids) == 48
+    assert len(ids) == 49
 
 
 def test_empty_jobs_2_run_ids():
