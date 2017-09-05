@@ -31,13 +31,13 @@ PHS_STATUS_KEYS = [
     'PhsSize',
     'StdOutSize',
     'StdErrorSize',
-    'StatusIteration',
 ]
 
 PHS_KEYS = (
     ['NumExpectedPhsEvents'] +
     PHS_STATUS_KEYS +
-    ['IsOk']
+    ['IsOk'] +
+    ['StatusIteration']
 )
 
 RUNSTATUS_KEYS = (

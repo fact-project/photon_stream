@@ -12,6 +12,7 @@ def runinfo2runstatus(runinfo):
     ri = drop_not_obs_runs(ri)
     ri = add_expected_phs_event_column(ri)
     ri = add_empty_runstatus_columns(ri)
+    ri = init_StatusIteration_column_to_zero()
     return drop_not_matching_keys(ri, RUNSTATUS_KEYS)
 
 
@@ -43,6 +44,12 @@ def add_empty_runstatus_columns(runinfo):
     for phs_key in RUNSTATUS_KEYS:
         if phs_key not in riout:
             riout[phs_key] = pd.Series(np.nan, index=riout.index)
+    return riout
+
+
+def init_StatusIteration_column_to_zero(runinfo):
+    riout = runinfo.copy()
+    riout[phs_key] = pd.Series(0, index=riout.index)
     return riout
 
 

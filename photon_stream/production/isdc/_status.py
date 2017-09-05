@@ -58,13 +58,20 @@ def status(
                 by=ri.ID_RUNINFO_KEYS , 
                 inplace=True,
                 ascending=False
-            )  
+            )
+            max_it = max_status_iteration(runstatus)
+            if np.all(runstatus['StatusIteration'] == max_it):
+                to_be_ckecked_now = no_status_yet
+            else:
+                to_be_ckecked_now = no_status_yet['StatusIteration'] < max_it
+
             num_runs_for_qsub = max_jobs_in_qsub - len(rs_qstat)
 
             print('Submitt '+str(num_runs_for_qsub)+' new status requests ...')
+            runstatus.set_index(ri.ID_RUNINFO_KEYS)
 
             i = 0
-            for index, row in no_status_yet.iterrows():
+            for index, row in to_be_ckecked_now.iterrows():
                 if i > num_runs_for_qsub:
                     break
                 i += 1
@@ -85,6 +92,15 @@ def status(
                     exe_path=which('phs.isdc.obs.status.worker'),
                     queue=queue
                 )
+
+                runstatus.set_value(
+                    (row['fNight'], row['fRunID']),
+                    'StatusIteration', 
+                    row['StatusIteration'] + 1
+                )
+
+            runstatus = runstatus.reset_index()
+            ri.write(runstatus, runstatus_path)
             print('Submission done')
     except Timeout:
         print('Could not get the lock on '+runstatus_path)
@@ -111,3 +127,8 @@ def add_tmp_status_to_runstatus(tmp_status, runstatus):
         for key in ri.PHS_STATUS_KEYS:
             irs.set_value((row['fNight'], row['fRunID']), key, row[key])
     return irs.reset_index()
+
+
+def max_status_iteration(runstatus):
+    return int(np.round(runstatus['StatusIteration'].max()))
+
