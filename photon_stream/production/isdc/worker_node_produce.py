@@ -1,4 +1,3 @@
-#! /usr/bin/env python
 """
 Usage: phs.obs.production.isdc.worker [options]
 
