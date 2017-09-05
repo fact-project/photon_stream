@@ -75,7 +75,6 @@ def status(
             for index, row in to_be_ckecked_now.iterrows():
                 if i > num_runs_for_qsub:
                     break
-                i += 1
 
                 fNight = int(np.round(row.fNight))
                 fRunID = int(np.round(row.fRunID))
@@ -96,7 +95,7 @@ def status(
 
                 # PhsSize and NumActualPhsEvents
                 #-------------------------------
-                phs_path = tree_path(fNight, fRunID, prefix=obs_dir, suffix='.phs.jsonl.gz'),
+                phs_path = tree_path(fNight, fRunID, prefix=obs_dir, suffix='.phs.jsonl.gz')
                 
                 if exists(phs_path):
                     # Submitt the intense task of event counting to qsub, and 
@@ -113,6 +112,7 @@ def status(
                         exe_path=which('phs.isdc.obs.status.worker'),
                         queue=queue
                     )
+                    i += 1
                 else:
                     runstatus.set_value((fNight, fRunID), 'PhsSize', np.nan)
                     runstatus.set_value((fNight, fRunID), 'NumActualPhsEvents', np.nan)
