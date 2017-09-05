@@ -9,6 +9,7 @@ Options:
 """
 import docopt
 import os
+from os.path import exists
 import shutil
 import numpy as np
 import json
@@ -17,6 +18,12 @@ from photon_stream.production.tools import number_of_events_in_file
 
 
 def status(phs_path, status_path, phs_o_path, phs_e_path):
+
+    print(phs_path)
+    print(status_path)
+    print(phs_o_path)
+    print(phs_e_path)
+    
     stat = {}
     r = fact.path.parse(phs_path)
     stat['fNight'] = r['night']
@@ -26,37 +33,27 @@ def status(phs_path, status_path, phs_o_path, phs_e_path):
     # PhsSize
     #--------
     stat['PhsSize'] = np.nan
-    try:
+    if exists(phs_path): 
         stat['PhsSize'] = os.stat(phs_path).st_size
-    except:
-        pass
 
 
     # NumActualPhsEvents
     #-------------------
     stat['NumActualPhsEvents'] = np.nan
-    try:
+    if exists(phs_path):
         stat['NumActualPhsEvents'] = number_of_events_in_file(phs_path)
-    except:
-        pass
-
 
     # StdOutSize
     #-----------
     stat['StdOutSize'] = np.nan
-    try:
+    if exists(phs_o_path):
         stat['StdOutSize'] = os.stat(phs_o_path).st_size
-    except:
-        pass
-
 
     # StdErrorSize
     #-------------
     stat['StdErrorSize'] = np.nan
-    try:
+    if exists(phs_e_path):
         stat['StdErrorSize'] = os.stat(phs_e_path).st_size
-    except:
-        pass
 
     with open(status_path+'.part', 'wt') as fout:
         json.dump(stat, fout)

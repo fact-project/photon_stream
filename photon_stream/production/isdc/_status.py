@@ -1,7 +1,6 @@
 from os.path import join
 from os.path import exists
 import os
-import pkg_resources
 from filelock import FileLock
 from filelock import Timeout
 from glob import glob
@@ -14,16 +13,10 @@ from .qstat import qstat
 from fact.path import template_to_path
 from fact.path import tree_path
 from .qsub import qsub
-
-
-worker_node_main_path = os.path.abspath(
-    pkg_resources.resource_filename(
-        'photon_stream', 
-        os.path.join('production','isdc','worker_node_status.py')
-    )
-)
+from shutil import which
 
 QSUB_OBS_STATUS_NAME_PREFIX = 'phs_obs_status'
+
 
 def status(
     obs_dir=join('/gpfs0','fact','processing','public','phs','obs'),
@@ -89,7 +82,7 @@ def status(
                 }
                 qsub(
                     job=job, 
-                    exe_path=worker_node_main_path,
+                    exe_path=which('phs.isdc.obs.status.worker'),
                     queue=queue
                 )
             print('Submission done')
