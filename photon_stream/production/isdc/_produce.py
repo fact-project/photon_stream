@@ -3,7 +3,7 @@ import os
 from os.path import join
 import numpy as np
 import pkg_resources
-
+from . import QUEUE_NAME
 from .. import prepare
 from .. import runstatus as rs
 from .. import runinfo as ri
@@ -28,9 +28,8 @@ def produce(
     fact_tools_jar_path='/home/guest/relleums/fact_photon_stream/fact-tools/target/fact-tools-0.18.1.jar',
     fact_tools_xml_path='/home/guest/relleums/fact_photon_stream/photon_stream/photon_stream/production/resources/observations_pass4.xml',
     tmp_dir_base_name='phs_obs_',
-    queue='fact_medium',
+    queue=QUEUE_NAME,
     max_jobs_in_qsub=256,
-    use_dummy_qsub=False,
     runqstat_dummy=None,
 ):  
     print('Start fact/raw to public/phs/obs.')
@@ -83,6 +82,5 @@ def produce(
             job=job, 
             exe_path=worker_node_main_path,
             queue=queue,
-            dummy=use_dummy_qsub
         )
     print('Done. '+str(i)+' jobs have been submitted.')

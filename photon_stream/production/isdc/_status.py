@@ -7,6 +7,7 @@ from glob import glob
 import json
 import pandas as pd
 import numpy as np
+from . import QUEUE_NAME
 from .. import runstatus as rs
 from .. import runinfo as ri
 from .qstat import qstat
@@ -22,7 +23,7 @@ QSUB_OBS_STATUS_NAME_PREFIX = 'phs_obs_status'
 def status(
     obs_dir=join('/gpfs0','fact','processing','public','phs','obs'),
     max_jobs_in_qsub=256,
-    queue='fact_medium',
+    queue=QUEUE_NAME,
 ):
     print('Start status in '+obs_dir)
 
