@@ -7,17 +7,17 @@ from glob import glob
 import json
 import pandas as pd
 import numpy as np
-from . import QUEUE_NAME
 from .. import runstatus as rs
 from .. import runinfo as ri
 from .qstat import qstat
 from fact.path import template_to_path
 from fact.path import tree_path
 from .qsub import qsub
+from .qsub import QUEUE_NAME
 from shutil import which
 import shutil
 
-QSUB_OBS_STATUS_NAME_PREFIX = 'phs_obs_status'
+QSUB_OBS_STATUS_PREFIX = 'phs_obs_status'
 
 
 def status(
@@ -51,7 +51,7 @@ def status(
             print('Add '+str(len(tmp_status))+' new stati to '+runstatus_path)
 
             no_status_yet = runstatus[np.isnan(runstatus.PhsSize)]
-            rs_qstat = qstat(is_in_JB_name=QSUB_OBS_STATUS_NAME_PREFIX)
+            rs_qstat = qstat(is_in_JB_name=QSUB_OBS_STATUS_PREFIX)
             no_status_yet = ri.remove_from_first_when_also_in_second(
                 first=no_status_yet,
                 second=rs_qstat,
@@ -102,7 +102,7 @@ def status(
                     # Submitt the intense task of event counting to qsub, and 
                     # collect the output next time in phs/obs/.tmp_status
                     job = {
-                        'name': template_to_path(fNight, fRunID, QSUB_OBS_STATUS_NAME_PREFIX+'_{N}_{R}'),
+                        'name': template_to_path(fNight, fRunID, QSUB_OBS_STATUS_PREFIX+'_{N}_{R}'),
                         'o_path': tree_path(fNight, fRunID, tmp_status_dir, '.o'),
                         'e_path': tree_path(fNight, fRunID, tmp_status_dir, '.e'),
                         '--phs_path': phs_path,
