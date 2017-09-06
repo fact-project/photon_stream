@@ -28,22 +28,12 @@ def produce(
     fact_tools_jar_path='/home/guest/relleums/fact_photon_stream/fact-tools/target/fact-tools-0.18.1.jar',
     fact_tools_xml_path='/home/guest/relleums/fact_photon_stream/photon_stream/photon_stream/production/resources/observations_pass4.xml',
     tmp_dir_base_name='phs_obs_',
-    queue='fact_medium', 
-    latest_runstatus=None,
+    queue='fact_medium',
     max_jobs_in_qsub=256,
     use_dummy_qsub=False,
     runqstat_dummy=None,
 ):  
     print('Start fact/raw to public/phs/obs.')
-
-    print('Update runstatus.csv from La Palma ...')
-    obs_dir = join(phs_dir,'obs')
-    rs.update_to_latest(
-        obs_dir=obs_dir, 
-        latest_runstatus=latest_runstatus
-    )
-    runstatus = rs.read(join(obs_dir, 'runstatus.csv'))
-    print('Update runstatus.csv done.')
 
     needs_processing = np.isnan(runstatus['IsOk'].values)
     all_runjobs = runstatus[needs_processing]

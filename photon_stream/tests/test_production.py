@@ -78,7 +78,6 @@ def run_production_scenario(out_dir):
         queue='fact_medium', 
         use_dummy_qsub=True,
         runqstat_dummy=runqstat,
-        latest_runstatus=rs1,
         max_jobs_in_qsub=1000,
     )
 
@@ -106,7 +105,6 @@ def run_production_scenario(out_dir):
         queue='fact_medium', 
         use_dummy_qsub=True,
         runqstat_dummy=runqstat,
-        latest_runstatus=rs1,
         max_jobs_in_qsub=1000,
     )
 
