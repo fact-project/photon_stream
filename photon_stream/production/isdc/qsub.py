@@ -6,7 +6,7 @@ from os import remove
 from os.path import dirname
 
 
-def qsub(job, exe_path, queue, dummy=False):
+def qsub(job, exe_path, queue):
 
     o_path = job['o_path'] if job['o_path'] is not None else '/dev/null'
     e_path = job['e_path'] if job['e_path'] is not None else '/dev/null'
@@ -31,7 +31,7 @@ def qsub(job, exe_path, queue, dummy=False):
         if '--' in key:
             cmd += [key, job[key]] 
 
-    if dummy:
+    if 'test_dummy' in queue:
         dummy_qsub(cmd)
     else:
         try:
