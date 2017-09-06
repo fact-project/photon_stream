@@ -14,19 +14,6 @@ from . import tools
 from .runinfo2runstatus import runinfo2runstatus
 
 
-def download_latest():
-    """
-    Download the latest runinfo from FACT on La Palma and convert it to     
-    a runstatus.
-
-    Return
-    ------
-    runstatus: pd.DataFrame
-        A fresh runstatus table with all photon-stream fields set to nan.
-    """
-    return runinfo2runstatus(ri.download_latest())
-
-
 def read(path):
     return ri.read(path)
 
@@ -42,7 +29,7 @@ def init(obs_dir, latest_runstatus=None):
     if not os.path.exists(runstatus_path):
         os.makedirs(obs_dir, exist_ok=True, mode=0o777)
         if latest_runstatus is None:
-            latest_runstatus = download_latest()
+            latest_runstatus = _download_latest()
         ri.write(latest_runstatus, runstatus_path)
     tools.touch(runstatus_lock_path)
 
@@ -53,7 +40,7 @@ def update_to_latest(obs_dir, latest_runstatus=None):
     """
     runstatus_path = join(obs_dir, 'runstatus.csv')
     if latest_runstatus is None:
-        latest_runstatus = download_latest()
+        latest_runstatus = _download_latest()
 
     lock = filelock.FileLock(join(obs_dir, '.lock.runstatus.csv'))
     with lock.acquire(timeout=1):
@@ -68,6 +55,20 @@ def _append_new_runstatus(old_runstatus, new_runstatus):
     nrs = new_runstatus.set_index(ID_RUNINFO_KEYS)
     nrs.loc[ors.index] = ors
     return nrs.reset_index()
+
+
+def _download_latest():
+    """
+    Download the latest runinfo from FACT on La Palma and convert it to     
+    a runstatus.
+
+    Return
+    ------
+    runstatus: pd.DataFrame
+        A fresh runstatus table with all photon-stream fields set to nan.
+    """
+    return runinfo2runstatus(ri.download_latest())
+
 
 
 def update_phs_status(
