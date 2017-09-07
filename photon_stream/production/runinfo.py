@@ -48,7 +48,9 @@ RUNSTATUS_KEYS = (
 
 
 def read(path='runinfo.csv'):
-    return pd.read_csv(path, sep='\t')
+    ri = pd.read_csv(path, sep='\t')
+    ri.sort_values(by=ID_RUNINFO_KEYS, inplace=True, ascending=False)
+    return ri
 
 
 def write(runinfo, path='runinfo.csv'):
