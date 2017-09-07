@@ -117,7 +117,7 @@ def jobs_and_directory_tree(
         job['--aux_dir'] = dirname(tree_path(night, runid, prefix=fact_aux_dir, suffix=''))
         job['--out_basename'] = fact.path.template_to_path(night, runid,'{N}_{R}')
         job['--out_dir'] = dirname(tree_path(night, runid, prefix=p['obs_dir'], suffix=''))
-        job['--tmp_dir_basename'] = 'phs_obs_'
+        job['--tmp_dir_basename'] = QSUB_OBS_PRODUCE_PREFIX
         job['--java_path'] = java_path
         job['--fact_tools_jar_path'] = fact_tools_jar_path
         job['--fact_tools_xml_path'] = fact_tools_xml_path
