@@ -57,7 +57,7 @@ def status(
             print(len(runstatus)-len(runs_to_be_checked_now),'are not checked again')
 
             if runs_in_qstat is None:
-                runs_in_qstat = qstat(is_in_JB_name=QSUB_OBS_STATUS_NAME_PREFIX)
+                runs_in_qstat = qstat(is_in_JB_name=QSUB_OBS_STATUS_PREFIX)
 
             runs_to_be_checked_now = ri.remove_from_first_when_also_in_second(
                 first=runs_to_be_checked_now,
