@@ -1,6 +1,7 @@
 from .drs_run import assign_drs_runs
 from .runinfo import RUNSTATUS_KEYS
 from .runinfo import OBSERVATION_RUN_TYPE_KEY
+from .runinfo import ID_RUNINFO_KEYS
 from .runinfo import TRIGGER_NUMBER_RUNINFO_KEYS
 import pandas as pd
 import numpy as np
@@ -14,7 +15,9 @@ def runinfo2runstatus(runinfo):
     ri = add_empty_runstatus_columns(ri)
     ri['StatusIteration'] = pd.Series(0, index=riout.index)
     ri['IsOk'] = pd.Series(0, index=riout.index)
-    return drop_not_matching_keys(ri, RUNSTATUS_KEYS)
+    ri = drop_not_matching_keys(ri, RUNSTATUS_KEYS)
+    ri.sort_values(by=ID_RUNINFO_KEYS, inplace=True, ascending=False)
+    return ri
 
 
 def drop_not_obs_runs(runinfo):
