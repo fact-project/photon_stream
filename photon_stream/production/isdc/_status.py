@@ -14,16 +14,18 @@ from .qstat import qstat
 from fact.path import template_to_path
 from fact.path import tree_path
 from .qsub import qsub
+from .qsub import QUEUE_NAME
 from shutil import which
 import shutil
 
-QSUB_OBS_STATUS_NAME_PREFIX = 'phs_obs_status'
+QSUB_OBS_STATUS_PREFIX = 'phs_obs_status'
 
 
 def status(
     obs_dir=join('/gpfs0','fact','processing','public','phs','obs'),
     max_jobs_in_qsub=256,
-    queue='fact_medium',
+    queue=QUEUE_NAME,
+    runs_in_qstat=None
 ):
     print('Start status')
 
@@ -54,7 +56,9 @@ def status(
 
             print(len(runstatus)-len(runs_to_be_checked_now),'are not checked again')
 
-            runs_in_qstat = qstat(is_in_JB_name=QSUB_OBS_STATUS_NAME_PREFIX)
+            if runs_in_qstat is None:
+                runs_in_qstat = qstat(is_in_JB_name=QSUB_OBS_STATUS_NAME_PREFIX)
+
             runs_to_be_checked_now = ri.remove_from_first_when_also_in_second(
                 first=runs_to_be_checked_now,
                 second=runs_in_qstat,
@@ -102,7 +106,7 @@ def status(
                         # Submitt the intense task of event counting to qsub, and 
                         # collect the output next time in phs/obs/.tmp_status
                         job = {
-                            'name': template_to_path(fNight, fRunID, QSUB_OBS_STATUS_NAME_PREFIX+'_{N}_{R}'),
+                            'name': template_to_path(fNight, fRunID, QSUB_OBS_STATUS_PREFIX+'_{N}_{R}'),
                             'o_path': None, #tree_path(fNight, fRunID, tmp_status_dir, '.o'),
                             'e_path': None, #tree_path(fNight, fRunID, tmp_status_dir, '.e'),
                             '--phs_path': phs_path,

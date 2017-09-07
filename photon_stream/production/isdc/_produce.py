@@ -2,23 +2,17 @@ from tqdm import tqdm
 import os
 from os.path import join
 import numpy as np
-import pkg_resources
-
+from shutil import which
 from .. import prepare
 from .. import runstatus as rs
 from .. import runinfo as ri
 from .qsub import qsub
+from .qsub import QUEUE_NAME
 
-worker_node_main_path = os.path.abspath(
-    pkg_resources.resource_filename(
-        'photon_stream', 
-        os.path.join('production','isdc','worker_node_produce.py')
-    )
-)
+QSUB_OBS_PRODUCE_PREFIX = 'phs_obs_'
+
 
 def produce(
-    start_night=0,
-    end_night=99999999,
     only_a_fraction=1.0,
     fact_raw_dir='/fact/raw',
     fact_drs_dir='/fact/raw',
@@ -28,51 +22,33 @@ def produce(
     fact_tools_jar_path='/home/guest/relleums/fact_photon_stream/fact-tools/target/fact-tools-0.18.1.jar',
     fact_tools_xml_path='/home/guest/relleums/fact_photon_stream/photon_stream/photon_stream/production/resources/observations_pass4.xml',
     tmp_dir_base_name='phs_obs_',
-    queue='fact_medium', 
-    latest_runstatus=None,
+    queue=QUEUE_NAME,
     max_jobs_in_qsub=256,
-    use_dummy_qsub=False,
-    runqstat_dummy=None,
+    runs_in_qstat=None,
 ):  
-    print('Start fact/raw to public/phs/obs.')
+    obs_dir = join(phs_dir, 'obs')
+    runstatus_path = join(obs_dir, 'runstatus.csv')
+    runstatus = rs.read(runstatus_path)
 
-    print('Update runstatus.csv from La Palma ...')
-    obs_dir = join(phs_dir,'obs')
-    rs.update_to_latest(
-        obs_dir=obs_dir, 
-        latest_runstatus=latest_runstatus
-    )
-    runstatus = rs.read(join(obs_dir, 'runstatus.csv'))
-    print('Update runstatus.csv done.')
+    all_runjobs = runstatus[np.isnan(runstatus['PhsSize'])]
 
-    needs_processing = np.isnan(runstatus['IsOk'].values)
-    all_runjobs = runstatus[needs_processing]
-    print(str(len(all_runjobs))+' runs need processing.')
+    if runs_in_qstat is None:
+        runs_in_qstat = ps.production.isdc.qstat.qstat(is_in_JB_name=QSUB_OBS_PRODUCE_PREFIX)
 
-    if runqstat_dummy is None:
-        runqstat = ps.production.isdc.qstat.qstat(is_in_JB_name='phs_obs')
-    else:
-        runqstat = runqstat_dummy
-
-    if len(runqstat) > max_jobs_in_qsub:
-        print('Stop. Qsub is busy. '+str(len(runqstat))+' jobs in the queue.')
+    if len(runs_in_qstat) > max_jobs_in_qsub:
         return
 
     runjobs = ri.remove_from_first_when_also_in_second(
         first=all_runjobs,
-        second=runqstat,
+        second=runs_in_qstat,
     )
-    print(str(len(runjobs))+' runs need processing and are not yet in the queue.')
-    
-    num_runs_for_qsub = max_jobs_in_qsub - len(runqstat)
-    print('Qsub is good to go for '+str(num_runs_for_qsub)+' of '+str(max_jobs_in_qsub)+' more jobs.')
+
+    num_runs_for_qsub = max_jobs_in_qsub - len(runs_in_qstat)
 
     runjobs.sort_values(by=ri.ID_RUNINFO_KEYS , inplace=True, ascending=False)
 
     jobs, tree = prepare.jobs_and_directory_tree(
         phs_dir=phs_dir,
-        start_night=start_night,
-        end_night=end_night,
         only_a_fraction=only_a_fraction,
         fact_raw_dir=fact_raw_dir,
         fact_drs_dir=fact_drs_dir,
@@ -81,18 +57,17 @@ def produce(
         fact_tools_jar_path=fact_tools_jar_path,
         fact_tools_xml_path=fact_tools_xml_path,
         tmp_dir_base_name=tmp_dir_base_name,
-        runinfo=runjobs,
+        runstatus=runjobs,
     )
     prepare.output_tree(tree)
+
     i = 0
-    for job in tqdm(jobs, ascii=True, desc='qsub'):
+    for job in tqdm(jobs, desc='qsub'):
         if i > num_runs_for_qsub:
             break
         i += 1
         qsub(
             job=job, 
-            exe_path=worker_node_main_path,
+            exe_path=which('phs.isdc.obs.produce.worker'),
             queue=queue,
-            dummy=use_dummy_qsub
         )
-    print('Done. '+str(i)+' jobs have been submitted.')

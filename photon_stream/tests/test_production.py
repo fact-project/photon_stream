@@ -32,10 +32,21 @@ qstat_xml_path = pkg_resources.resource_filename(
 )
 with open(qstat_xml_path, 'rt') as fin:
     qstat_xml = fin.read()
-    runqstat = ps.production.isdc.qstat.qstat(xml=qstat_xml)
+    runs_in_qstat = ps.production.isdc.qstat.qstat(xml=qstat_xml)
+
+
+def test_production_scenario(out_dir):
+    if out_dir is None:
+        with tempfile.TemporaryDirectory(prefix='phs_') as tmp:
+            run_production_scenario(out_dir=tmp)
+    else:
+        os.makedirs(out_dir, exist_ok=True)
+        run_production_scenario(out_dir=out_dir)
 
 
 def run_production_scenario(out_dir):
+    TEST_DUMMY_QUEUE_NAME = 'test_dummy'
+
     fact_dir = join(out_dir, 'fact')
     ri = ps.production.runinfo.read(runinfo_path)
     ps.production.tools.create_fake_fact_dir(fact_dir, ri)
@@ -58,11 +69,17 @@ def run_production_scenario(out_dir):
         obs_dir=obs_dir, 
         latest_runstatus=rs1
     )
-    assert os.path.exists(phs_dir)
-    assert os.path.exists(join(phs_dir,'obs'))
-    assert os.path.exists(join(phs_dir,'obs','runstatus.csv'))
-    assert os.path.exists(join(phs_dir,'obs','.lock.runstatus.csv'))
 
+    assert exists(phs_dir)
+    assert exists(join(phs_dir,'obs'))
+    assert exists(join(phs_dir,'obs','runstatus.csv'))
+    assert exists(join(phs_dir,'obs','.lock.runstatus.csv'))
+
+    ps.production.isdc.status(
+        obs_dir=obs_dir,
+        queue=TEST_DUMMY_QUEUE_NAME,
+        runs_in_qstat=runs_in_qstat
+    )
 
     # FIRST CHUNK
     ps.production.isdc.produce(
@@ -74,23 +91,22 @@ def run_production_scenario(out_dir):
         java_path='/usr/java/jdk1.8.0_77/bin',
         fact_tools_jar_path=my_fact_tools_jar_path,
         fact_tools_xml_path=my_fact_tools_xml_path,
-        tmp_dir_base_name='fact_photon_stream_JOB_ID_',
-        queue='fact_medium', 
-        use_dummy_qsub=True,
-        runqstat_dummy=runqstat,
-        latest_runstatus=rs1,
+        queue=TEST_DUMMY_QUEUE_NAME,
+        runs_in_qstat=runs_in_qstat,
         max_jobs_in_qsub=1000,
     )
 
-    assert os.path.exists(join(phs_dir,'obs.std'))
-    ps.production.runstatus.update_phs_status(obs_dir=obs_dir)
+    t = len(glob.glob(join(obs_dir,'*','*','*','*phs.jsonl.gz')))
+    assert t == 952
 
-    runs_1st_chunk = runs_in_obs_dir(obs_dir)
-    assert len(runs_1st_chunk) < 1000
-    assert len(runs_1st_chunk) > 1000 - 100
-    assert np.all(runs_1st_chunk.fNight < 20170101)
-    assert np.all(runs_1st_chunk.fNight > 20161223)
+    ps.production.isdc.status(
+        obs_dir=obs_dir,
+        queue=TEST_DUMMY_QUEUE_NAME,
+        runs_in_qstat=runs_in_qstat,
+        max_jobs_in_qsub=500
+    )
 
+    """
 
     # SECOND CHUNK
     ps.production.isdc.produce(
@@ -102,20 +118,16 @@ def run_production_scenario(out_dir):
         java_path='/usr/java/jdk1.8.0_77/bin',
         fact_tools_jar_path=my_fact_tools_jar_path,
         fact_tools_xml_path=my_fact_tools_xml_path,
-        tmp_dir_base_name='fact_photon_stream_JOB_ID_',
-        queue='fact_medium', 
-        use_dummy_qsub=True,
+        queue=TEST_DUMMY_QUEUE_NAME, 
         runqstat_dummy=runqstat,
-        latest_runstatus=rs1,
         max_jobs_in_qsub=1000,
     )
 
-    runs_2nd_chunk = runs_in_obs_dir(obs_dir)
-    assert len(runs_2nd_chunk) < 2000
-    assert len(runs_2nd_chunk) > 1000
-    assert np.all(runs_2nd_chunk.fNight < 20170101)
-    assert np.all(runs_2nd_chunk.fNight > 20161115)
-
+    ps.production.isdc.status(
+        obs_dir=obs_dir,
+        queue=TEST_DUMMY_QUEUE_NAME,
+        runstatus_qstat=runqstat
+    )
 
     # THIRD CHUNK
     rs2 = ps.production.runstatus.read(new_runstatus_path)
@@ -128,30 +140,17 @@ def run_production_scenario(out_dir):
         java_path='/usr/java/jdk1.8.0_77/bin',
         fact_tools_jar_path=my_fact_tools_jar_path,
         fact_tools_xml_path=my_fact_tools_xml_path,
-        tmp_dir_base_name='fact_photon_stream_JOB_ID_',
-        queue='fact_medium', 
-        use_dummy_qsub=True,
+        queue=TEST_DUMMY_QUEUE_NAME, 
         runqstat_dummy=runqstat,
-        latest_runstatus=rs2,
         max_jobs_in_qsub=100,
     )
 
-    ps.production.runstatus.update_phs_status(obs_dir=join(phs_dir,'obs'))
-    runs_3rd_chunk = runs_in_obs_dir(obs_dir)
-    assert len(runs_3rd_chunk) < 2000
-    assert len(runs_3rd_chunk) > 1000
-    assert np.all(runs_3rd_chunk.fNight < 20170103)
-    assert np.all(runs_3rd_chunk.fNight > 20161115)
-
-
-
-def test_production_scenario(out_dir):
-    if out_dir is None:
-        with tempfile.TemporaryDirectory(prefix='phs_') as tmp:
-            run_production_scenario(out_dir=tmp)
-    else:
-        os.makedirs(out_dir, exist_ok=True)
-        run_production_scenario(out_dir=out_dir)
+    ps.production.isdc.status(
+        obs_dir=obs_dir,
+        queue=TEST_DUMMY_QUEUE_NAME,
+        runstatus_qstat=runqstat
+    )
+    """
 
 
 def runs_in_obs_dir(obs_dir):
