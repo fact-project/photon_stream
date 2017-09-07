@@ -9,8 +9,9 @@ from .. import runstatus as rs
 from .. import runinfo as ri
 from .qsub import qsub
 from .qsub import QUEUE_NAME
+from .qstat import qstat
 
-QSUB_OBS_PRODUCE_PREFIX = 'phs_obs_'
+QSUB_OBS_PRODUCE_PREFIX = 'phs_obs_produce'
 
 fact_tools_xml_path = pkg_resources.resource_filename(
     'photon_stream', 
@@ -36,9 +37,7 @@ def produce(
     runstatus_path = join(obs_dir, 'runstatus.csv')
     
     if runs_in_qstat is None:
-        runs_in_qstat = ps.production.isdc.qstat.qstat(
-            is_in_JB_name=QSUB_OBS_PRODUCE_PREFIX
-        )
+        runs_in_qstat = qstat(is_in_JB_name=QSUB_OBS_PRODUCE_PREFIX )
 
     runstatus = rs.read(runstatus_path)
     runs_to_be_converted = runstatus[np.isnan(runstatus['PhsSize'])]
