@@ -14,7 +14,7 @@ import shutil
 import numpy as np
 import json
 import fact
-from photon_stream.production.tools import number_of_events_in_file
+from photon_stream.EventListReader import EventListReader
 
 
 def status(phs_path, status_path):
@@ -33,7 +33,13 @@ def status(phs_path, status_path):
     #-------------------
     stat['NumActualPhsEvents'] = np.nan
     if exists(phs_path):
-        stat['NumActualPhsEvents'] = number_of_events_in_file(phs_path)
+        i = 0
+        try:
+            for evt in EventListReader(phs_path):
+                i += 1
+        except:
+            pass
+        stat['NumActualPhsEvents'] = i
 
     makedirs(dirname(status_path), exist_ok=True, mode=0o755)
     with open(status_path+'.part', 'wt') as fout:
