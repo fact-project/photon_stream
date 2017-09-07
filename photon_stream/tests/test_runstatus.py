@@ -45,16 +45,19 @@ def test_append_runstatus():
     assert mer_rs.shape[0] == runs_in_new
     assert mer_rs.shape[1] == cols_in_old
 
+    len_diff = new_rs.shape[0] - old_rs.shape[0]
+
     for i, row in mer_rs.iterrows():
-        if i < old_rs.shape[0]:
-            for key in ps.production.runinfo.RUNSTATUS_KEYS:
-                if np.isnan(mer_rs[key][i]):
-                    assert np.isnan(old_rs[key][i])
-                else:
-                    assert mer_rs[key][i] == old_rs[key][i]
-        else:
+        print(row.fNight, row.fRunID)
+        if i < len_diff:
             for key in ps.production.runinfo.RUNSTATUS_KEYS:
                 if np.isnan(mer_rs[key][i]):
                     assert np.isnan(new_rs[key][i])
                 else:
                     assert mer_rs[key][i] == new_rs[key][i]
+        else:
+            for key in ps.production.runinfo.RUNSTATUS_KEYS:
+                if np.isnan(mer_rs[key][i]):
+                    assert np.isnan(old_rs[key][i-len_diff])
+                else:
+                    assert mer_rs[key][i] == old_rs[key][i-len_diff]
