@@ -34,7 +34,7 @@ def init(obs_dir, latest_runstatus=None):
     tools.touch(runstatus_lock_path)
 
 
-def update_to_latest(obs_dir, latest_runstatus=None):
+def update_to_latest(obs_dir, latest_runstatus=None, lock_timeout=1):
     """
     Update obs_dir/runstatus.csv to the latest version from FACT on La Palma.
     """
@@ -43,7 +43,7 @@ def update_to_latest(obs_dir, latest_runstatus=None):
         latest_runstatus = _download_latest()
 
     lock = filelock.FileLock(join(obs_dir, '.lock.runstatus.csv'))
-    with lock.acquire(timeout=1):
+    with lock.acquire(timeout=lock_timeout):
         runstatus = read(runstatus_path)
         new_runstatus = _append_new_runstatus(runstatus, latest_runstatus)
         ri.write(new_runstatus, runstatus_path)

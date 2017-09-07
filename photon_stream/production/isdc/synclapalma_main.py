@@ -16,7 +16,8 @@ def main():
     try:
         docopt.docopt(__doc__)
         ps.production.runstatus.update_to_latest(
-        	obs_dir=join('/gpfs0','fact','processing','public','phs','obs')
+        	obs_dir=join('/gpfs0','fact','processing','public','phs','obs'),
+        	lock_timeout=23*60*60
         )
     except docopt.DocoptExit as e:
         print(e)
