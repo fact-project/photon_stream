@@ -9,6 +9,7 @@ import pkg_resources
 import fact
 from fact.path import tree_path
 
+from .isdc._produce import QSUB_OBS_PRODUCE_PREFIX
 from .runinfo import OBSERVATION_RUN_TYPE_KEY
 from .runinfo import DRS_RUN_TYPE_KEY
 from .runinfo import DRS_STEP_KEY
@@ -16,10 +17,8 @@ from . import tools
 
 
 def jobs_and_directory_tree(
-    runinfo,
+    runstatus,
     phs_dir='/gpfs0/fact/processing/public/phs',
-    start_night=0,
-    end_night=99999999,
     only_a_fraction=1.0,
     fact_raw_dir='/fact/raw',
     fact_drs_dir='/fact/raw',
@@ -40,17 +39,11 @@ def jobs_and_directory_tree(
                         observations directory ./obs and simulations directory
                         ./sim
     
-    runinfo             A pandas DataFrame() of the FACT run-info-database which
+    runstatus           A pandas DataFrame() of the FACT run-info-database which
                         is used as a reference for the runs to be processed.
                         All observation runs are taken into account. If you want
                         to process specific runs, remove the other runs from
-                        runinfo.
-
-    start_night         The start night integer 'YYYYmmnn', processes only runs 
-                        after this night. (default 0)
-
-    end_night           The end night integer 'YYYYmmnn', process only runs
-                        until this night. (default 99999999)
+                        runstatus.
 
     only_a_fraction     A ratio between 0.0 and 1.0 to only process a 
                         random fraction of the runs. Usefull for debugging over 
@@ -92,23 +85,17 @@ def jobs_and_directory_tree(
 
     p['phs_readme_path'] = join(p['phs_dir'], 'README.md')
 
-    print('Find runs in night range '+str(start_night)+' to '+str(end_night)+' in runstatus.csv ...')
-    
-    ri = runinfo
-    past_start = (ri['fNight'] >= start_night).values
-    before_end = (ri['fNight'] < end_night).values
-    fraction = np.random.uniform(size=ri.shape[0]) < only_a_fraction
-    valid = past_start*before_end*fraction
+    fraction = np.random.uniform(size=runstatus.shape[0]) < only_a_fraction
 
-    print('Found '+str(valid.sum())+' runs in runstatus.csv.')
+    print('Found '+str(fraction.sum())+' runs in runstatus.csv.')
     print('Find overlap with runs accessible in "'+fact_raw_dir+'" ...')
 
     jobs = []
-    for i, r in ri[valid].iterrows():
+    for i, r in runstatus[fraction].iterrows():
         night = int(np.round(r.fNight))
         runid = int(np.round(r.fRunID))
         job = {}
-        job['name'] = fact.path.template_to_path(night, runid, 'phs_obs_{N}_{R}')
+        job['name'] = fact.path.template_to_path(night, runid, QSUB_OBS_PRODUCE_PREFIX+'_{N}_{R}')
         job['--raw_path'] = tree_path(
             night, runid, prefix=fact_raw_dir, suffix='.fits.fz'
         )

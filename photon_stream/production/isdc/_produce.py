@@ -2,23 +2,17 @@ from tqdm import tqdm
 import os
 from os.path import join
 import numpy as np
-import pkg_resources
-from . import QUEUE_NAME
+from shutil import which
 from .. import prepare
 from .. import runstatus as rs
 from .. import runinfo as ri
 from .qsub import qsub
+from .qsub import QUEUE_NAME
 
-worker_node_main_path = os.path.abspath(
-    pkg_resources.resource_filename(
-        'photon_stream', 
-        os.path.join('production','isdc','worker_node_produce.py')
-    )
-)
+QSUB_OBS_PRODUCE_PREFIX = 'phs_obs_'
+
 
 def produce(
-    start_night=0,
-    end_night=99999999,
     only_a_fraction=1.0,
     fact_raw_dir='/fact/raw',
     fact_drs_dir='/fact/raw',
@@ -32,36 +26,31 @@ def produce(
     max_jobs_in_qsub=256,
     runqstat_dummy=None,
 ):  
-    print('Start fact/raw to public/phs/obs.')
+    obs_dir = join(phs_dir, 'obs')
+    runstatus_path = join(obs_dir, 'runstatus.csv')
+    runstatus = rs.read(runstatus_path)
 
-    needs_processing = np.isnan(runstatus['IsOk'].values)
-    all_runjobs = runstatus[needs_processing]
-    print(str(len(all_runjobs))+' runs need processing.')
+    all_runjobs = runstatus[np.isnan(runstatus['PhsSize'])]
 
     if runqstat_dummy is None:
-        runqstat = ps.production.isdc.qstat.qstat(is_in_JB_name='phs_obs')
+        runqstat = ps.production.isdc.qstat.qstat(is_in_JB_name=QSUB_OBS_PRODUCE_PREFIX)
     else:
         runqstat = runqstat_dummy
 
     if len(runqstat) > max_jobs_in_qsub:
-        print('Stop. Qsub is busy. '+str(len(runqstat))+' jobs in the queue.')
         return
 
     runjobs = ri.remove_from_first_when_also_in_second(
         first=all_runjobs,
         second=runqstat,
     )
-    print(str(len(runjobs))+' runs need processing and are not yet in the queue.')
-    
+
     num_runs_for_qsub = max_jobs_in_qsub - len(runqstat)
-    print('Qsub is good to go for '+str(num_runs_for_qsub)+' of '+str(max_jobs_in_qsub)+' more jobs.')
 
     runjobs.sort_values(by=ri.ID_RUNINFO_KEYS , inplace=True, ascending=False)
 
     jobs, tree = prepare.jobs_and_directory_tree(
         phs_dir=phs_dir,
-        start_night=start_night,
-        end_night=end_night,
         only_a_fraction=only_a_fraction,
         fact_raw_dir=fact_raw_dir,
         fact_drs_dir=fact_drs_dir,
@@ -70,17 +59,17 @@ def produce(
         fact_tools_jar_path=fact_tools_jar_path,
         fact_tools_xml_path=fact_tools_xml_path,
         tmp_dir_base_name=tmp_dir_base_name,
-        runinfo=runjobs,
+        runstatus=runjobs,
     )
     prepare.output_tree(tree)
+
     i = 0
-    for job in tqdm(jobs, ascii=True, desc='qsub'):
+    for job in tqdm(jobs, desc='qsub'):
         if i > num_runs_for_qsub:
             break
         i += 1
         qsub(
             job=job, 
-            exe_path=worker_node_main_path,
+            exe_path=which('phs.isdc.obs.produce.worker'),
             queue=queue,
         )
-    print('Done. '+str(i)+' jobs have been submitted.')

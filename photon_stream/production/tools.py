@@ -5,6 +5,7 @@ from .runinfo import DRS_RUN_TYPE_KEY
 from ..EventListReader import EventListReader
 from fact.path import tree_path
 import numpy as np
+import json
 
 
 def touch(path):
@@ -37,4 +38,9 @@ def create_fake_fact_dir(path, runinfo):
             run_path = tree_path(night, run, prefix=fact_raw, suffix='.fits.fz')
             os.makedirs(os.path.dirname(run_path), exist_ok=True, mode=0o755)
             with open(run_path, 'w') as raw_file:
-                raw_file.write('I am a fake FACT raw observation file.')
+                dummy_run = {
+                    'fNight': night,
+                    'fRunID': run, 
+                    'NumExpectedPhsEvents': np.random.randint(0,25000),
+                }
+                raw_file.write(json.dumps(dummy_run))

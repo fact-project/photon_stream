@@ -5,8 +5,9 @@ from os import makedirs
 from os import remove
 from os.path import dirname
 
+QUEUE_NAME = 'fact_medium'
 
-def qsub(job, exe_path, queue):
+def qsub(job, exe_path, queue=QUEUE_NAME):
 
     o_path = job['o_path'] if job['o_path'] is not None else '/dev/null'
     e_path = job['e_path'] if job['e_path'] is not None else '/dev/null'
