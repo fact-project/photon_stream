@@ -13,6 +13,9 @@ def test_drs_run_assignment():
     ri = ps.production.runinfo.read(runinfo_path)
     ro = ps.production.drs_run.assign_drs_runs(ri)
 
+    ri = ri[(ri.fNight>20161229) & (ri.fNight<=20170102)]
+    ro = ro[(ro.fNight>20161229) & (ro.fNight<=20170102)]
+
     for i, row in ri.iterrows():
         assert row.fNight == ro.loc[i, 'fNight']
         assert row.fRunID == ro.loc[i, 'fRunID']

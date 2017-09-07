@@ -20,7 +20,9 @@ def _drs_fRunID_for_obs_run(runinfo, fNight, fRunID):
         DeprecationWarning
     )
 
-    ri = runinfo
+    ri = runinfo.copy()
+    ri.sort_values(inplace=True, ascending=False, by=ID_RUNINFO_KEYS)
+    
     drs_candidates = ri[
         (ri.fNight == fNight)&
         (ri.fDrsStep == DRS_STEP_KEY)&
@@ -28,7 +30,7 @@ def _drs_fRunID_for_obs_run(runinfo, fNight, fRunID):
         (ri.fRunID < fRunID)
     ]
     if len(drs_candidates) >= 1:
-        return drs_candidates.iloc[-1].fRunID
+        return drs_candidates.iloc[0].fRunID
     else:
         return np.nan
 
@@ -59,4 +61,5 @@ def assign_drs_runs(runinfo):
             if current_drs_fNight == raw[i,k['fNight']]:
                 raw[i,k['DrsRunID']] = current_drs_fRunID
     ri = pd.DataFrame(raw, columns=ri.keys().tolist())
+    ri.sort_values(inplace=True, ascending=False, by=ID_RUNINFO_KEYS)
     return ri
