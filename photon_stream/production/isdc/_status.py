@@ -48,46 +48,30 @@ def status(
 
             print('Add '+str(len(tmp_status))+' new stati')
 
-            max_it = max_status_iteration(runstatus)
-            all_at_max_it = np.all(runstatus['StatusIteration']==max_it)
-            if all_at_max_it:
-                it_for_not_checked = max_it + 1
-            else:
-                it_for_not_checked = max_it
-
-            nanPhsSize = np.isnan(runstatus.PhsSize)
-            no_status_yet = runstatus[nanPhsSize]
-            raw_status_iteration = runstatus['StatusIteration'].values
-            raw_status_iteration[np.invert(nanPhsSize)] = it_for_not_checked 
-            runstatus['StatusIteration'] = pd.Series(raw_status_iteration, index=runstatus.index)
-
-            print(np.invert(nanPhsSize).sum(),'are not checked again')
-            print(len(no_status_yet),'runs are checked now')
-
-            rs_qstat = qstat(is_in_JB_name=QSUB_OBS_STATUS_NAME_PREFIX)
-            no_status_yet = ri.remove_from_first_when_also_in_second(
-                first=no_status_yet,
-                second=rs_qstat,
+            runs_to_be_checked_now, runstatus = runs_to_be_checked_now_and_incremented_runstatus(
+                runstatus
             )
-            no_status_yet.sort_values(
+
+            print(len(runstatus)-len(runs_to_be_checked_now),'are not checked again')
+
+            runs_in_qstat = qstat(is_in_JB_name=QSUB_OBS_STATUS_NAME_PREFIX)
+            runs_to_be_checked_now = ri.remove_from_first_when_also_in_second(
+                first=runs_to_be_checked_now,
+                second=runs_in_qstat,
+            )
+            runs_to_be_checked_now.sort_values(
                 by=ri.ID_RUNINFO_KEYS , 
                 inplace=True,
                 ascending=False
             )
-            max_it = max_status_iteration(runstatus)
-            if np.all(runstatus['StatusIteration'] == max_it):
-                to_be_ckecked_now = no_status_yet
-            else:
-                to_be_ckecked_now = no_status_yet[no_status_yet['StatusIteration'] < max_it]
 
-            print(len(to_be_ckecked_now), 'runs with priority')
-
-            num_runs_for_qsub = max_jobs_in_qsub - len(rs_qstat)
-
+            print(len(runs_to_be_checked_now),'runs are checked now')
+            
+            num_runs_for_qsub = max_jobs_in_qsub - len(runs_in_qstat)
             runstatus = runstatus.set_index(ri.ID_RUNINFO_KEYS)
 
             i = 0
-            for index, row in to_be_ckecked_now.iterrows():
+            for index, row in runs_to_be_checked_now.iterrows():
                 if i > num_runs_for_qsub:
                     break
 
@@ -111,15 +95,16 @@ def status(
                 # PhsSize and NumActualPhsEvents
                 #-------------------------------
                 phs_path = tree_path(fNight, fRunID, prefix=obs_dir, suffix='.phs.jsonl.gz')
-           
                 if np.isnan(row.PhsSize):
-                    if exists_and_first_event_can_be_read(phs_path):
+                    if exists(phs_path):
+                        phs_size = os.stat(phs_path).st_size
+                        runstatus.set_value((fNight, fRunID), 'PhsSize', phs_size)
                         # Submitt the intense task of event counting to qsub, and 
                         # collect the output next time in phs/obs/.tmp_status
                         job = {
                             'name': template_to_path(fNight, fRunID, QSUB_OBS_STATUS_NAME_PREFIX+'_{N}_{R}'),
-                            'o_path': tree_path(fNight, fRunID, tmp_status_dir, '.o'),
-                            'e_path': tree_path(fNight, fRunID, tmp_status_dir, '.e'),
+                            'o_path': None, #tree_path(fNight, fRunID, tmp_status_dir, '.o'),
+                            'e_path': None, #tree_path(fNight, fRunID, tmp_status_dir, '.e'),
                             '--phs_path': phs_path,
                             '--status_path': tree_path(fNight, fRunID, prefix=tmp_status_dir, suffix='.json'),
                         }
@@ -136,6 +121,7 @@ def status(
                 runstatus.set_value((fNight, fRunID), 'StatusIteration', row['StatusIteration'] + 1)
 
             runstatus = runstatus.reset_index()
+            runstatus['StatusIteration'] -= runstatus['StatusIteration'].min()
             ri.write(runstatus, runstatus_path)
             print(i, 'status requests submitted to qsub')
     except Timeout:
@@ -143,28 +129,29 @@ def status(
     print('End')
 
 
-def exists_and_first_event_can_be_read(phs_path):
-    if exists(phs_path):
-        can_be_read = False
-        try:
-            event_list = EventListReader(phs_path)
-            first_event = next(event_list)
-            can_be_read = True
-        except:
-            pass
-        return can_be_read
+def runs_to_be_checked_now_and_incremented_runstatus(runstatus):
+    runstatus = runstatus.copy()
+    max_it = runstatus['StatusIteration'].max()
+    all_at_max_it = np.all(runstatus['StatusIteration'] == max_it)
+    if all_at_max_it:
+        it_for_runs_not_checked_yet = max_it + 1
     else:
-        return False
+        it_for_runs_not_checked_yet = max_it
+
+    nanPhsSize = np.isnan(runstatus.PhsSize)
+    runs_to_be_checked_now = runstatus[nanPhsSize]
+    raw_StatusIteration = runstatus['StatusIteration'].values
+    raw_StatusIteration[np.invert(nanPhsSize)] = it_for_runs_not_checked_yet
+    runstatus['StatusIteration'] = pd.Series(raw_StatusIteration, index=runstatus.index)
+    return runs_to_be_checked_now, runstatus
 
 
 def read_and_remove_tmp_status(tmp_status_dir):
-    tmp_status_paths = glob(join(tmp_status_dir,'*','*','*','*.json'))
     tmp_status_list = []
-    for tmp_status_path in tmp_status_paths:
+    for tmp_status_path in glob(join(tmp_status_dir,'*','*','*','*.json')):
         with open(tmp_status_path, 'rt') as fin:
             tmp_status_list.append(json.loads(fin.read()))
-        #os.remove(tmp_status_path)
-        shutil.move(tmp_status_path, tmp_status_path+'.u')
+        os.remove(tmp_status_path)
     if len(tmp_status_list) > 0:
         tmp_stauts = pd.DataFrame(tmp_status_list)
     else:
@@ -176,11 +163,5 @@ def read_and_remove_tmp_status(tmp_status_dir):
 def add_tmp_status_to_runstatus(tmp_status, runstatus):
     irs = runstatus.set_index(ri.ID_RUNINFO_KEYS)
     for i, row in tmp_status.iterrows():
-        for key in ['PhsSize', 'NumActualPhsEvents']:
-            irs.set_value((row['fNight'], row['fRunID']), key, row[key])
+        irs.set_value((row['fNight'], row['fRunID']), 'NumActualPhsEvents', row['NumActualPhsEvents'])
     return irs.reset_index()
-
-
-def max_status_iteration(runstatus):
-    return int(np.round(runstatus['StatusIteration'].max()))
-

@@ -23,12 +23,6 @@ def status(phs_path, status_path):
     stat['fNight'] = r['night']
     stat['fRunID'] = r['run']
 
-    # PhsSize
-    #--------
-    stat['PhsSize'] = np.nan
-    if exists(phs_path): 
-        stat['PhsSize'] = os.stat(phs_path).st_size
-
     # NumActualPhsEvents
     #-------------------
     stat['NumActualPhsEvents'] = np.nan
