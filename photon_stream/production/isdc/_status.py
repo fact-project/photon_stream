@@ -63,11 +63,6 @@ def status(
                 first=runs_to_be_checked_now,
                 second=runs_in_qstat,
             )
-            runs_to_be_checked_now.sort_values(
-                by=ri.ID_RUNINFO_KEYS , 
-                inplace=True,
-                ascending=False
-            )
 
             print(len(runs_to_be_checked_now),'runs are checked now')
             

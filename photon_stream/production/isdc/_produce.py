@@ -45,8 +45,6 @@ def produce(
 
     num_runs_for_qsub = max_jobs_in_qsub - len(runs_in_qstat)
 
-    runjobs.sort_values(by=ri.ID_RUNINFO_KEYS , inplace=True, ascending=False)
-
     jobs, tree = prepare.jobs_and_directory_tree(
         phs_dir=phs_dir,
         only_a_fraction=only_a_fraction,
