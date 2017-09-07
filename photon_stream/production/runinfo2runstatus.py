@@ -13,8 +13,8 @@ def runinfo2runstatus(runinfo):
     ri = drop_not_obs_runs(ri)
     ri = add_expected_phs_event_column(ri)
     ri = add_empty_runstatus_columns(ri)
-    ri['StatusIteration'] = pd.Series(0, index=riout.index)
-    ri['IsOk'] = pd.Series(0, index=riout.index)
+    ri['StatusIteration'] = pd.Series(0, index=ri.index)
+    ri['IsOk'] = pd.Series(0, index=ri.index)
     ri = drop_not_matching_keys(ri, RUNSTATUS_KEYS)
     ri.sort_values(by=ID_RUNINFO_KEYS, inplace=True, ascending=False)
     return ri
