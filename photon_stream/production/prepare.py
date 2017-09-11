@@ -66,8 +66,6 @@ def jobs_and_directory_tree(
                         worker nodes. (default 'fact_photon_stream_JOB_ID_')
     """
     
-    print('Make jobs and directory tree ...')
-
     phs_dir = abspath(phs_dir)
     fact_raw_dir = abspath(fact_raw_dir)
     fact_drs_dir = abspath(fact_drs_dir)
@@ -87,9 +85,6 @@ def jobs_and_directory_tree(
 
     fraction = np.random.uniform(size=runstatus.shape[0]) < only_a_fraction
 
-    print('Found '+str(fraction.sum())+' runs in runstatus.csv.')
-    print('Find overlap with runs accessible in "'+fact_raw_dir+'" ...')
-
     jobs = []
     for i, r in runstatus[fraction].iterrows():
         night = int(np.round(r.fNight))
@@ -100,7 +95,6 @@ def jobs_and_directory_tree(
             night, runid, prefix=fact_raw_dir, suffix='.fits.fz'
         )
         if not exists(job['--raw_path']):
-            print('not find obs: ', job['--raw_path'])
             continue
 
         if np.isnan(r.DrsRunID):
@@ -111,7 +105,6 @@ def jobs_and_directory_tree(
             night, drs_runid , prefix=fact_drs_dir, suffix='.drs.fits.gz'
         )
         if not exists(job['--drs_path']):
-            print('not find drs: ', job['--drs_path'])
             continue
 
         job['--aux_dir'] = dirname(tree_path(night, runid, prefix=fact_aux_dir, suffix=''))
@@ -125,7 +118,6 @@ def jobs_and_directory_tree(
         job['e_path'] = tree_path(night, runid, prefix=p['std_dir'], suffix='.e')
         jobs.append(job)
         
-    print('Found '+str(len(jobs))+' runs both in runstatus.csv and accesible in "'+fact_raw_dir+'".')
     return jobs, p
 
 
