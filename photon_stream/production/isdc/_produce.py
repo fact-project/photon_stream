@@ -33,6 +33,8 @@ def produce(
     max_jobs_in_qsub=256,
     runs_in_qstat=None,
 ):  
+    print('Start produce')
+
     obs_dir = join(phs_dir, 'obs')
     runstatus_path = join(obs_dir, 'runstatus.csv')
     
@@ -71,3 +73,5 @@ def produce(
             exe_path=which('phs.isdc.obs.produce.worker'),
             queue=queue,
         )
+    print(i, 'production requests submitted to qsub')
+    print('End')
