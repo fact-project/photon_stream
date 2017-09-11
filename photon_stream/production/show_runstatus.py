@@ -39,8 +39,6 @@ def runs_in_range_str(
         has_at_least_one_expected_trigger
     )
 
-    print(past_start.sum(), before_end.sum(), rate_below_max_trigger_rate.sum(), has_at_least_one_expected_trigger.sum())
-
     night_ids = rs['fNight'][valid]
     run_ids = rs['fRunID'][valid]
     expected_triggers = rs['NumExpectedPhsEvents'][valid]
