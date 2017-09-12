@@ -47,14 +47,44 @@ def status(
             runstatus = rs.read(runstatus_path)
             runstatus = add_tmp_status_to_runstatus(tmp_status, runstatus)
             ri.write(runstatus, runstatus_path)
-
             print('Add '+str(len(tmp_status))+' new stati')
 
+            # StdOutSize
+            #-----------
+            print('Collect StdOutSize')
+            no_stdout_yet = np.isnan(runstatus.StdOutSize)
+            for i, run in runstatus[no_stdout_yet].iterrows():
+                fNight = int(np.round(run.fNight))
+                fRunID = int(np.round(run.fRunID))
+                o_path = tree_path(fNight, fRunID, prefix=obs_std_dir, suffix='.o')
+                o_size = np.nan
+                if exists(o_path):
+                    o_size = os.stat(o_path).st_size
+                runstatus.set_value(i, 'StdOutSize', o_size)
+
+
+            # StdErrorSize
+            #-------------
+            print('Collect StdErrorSize')
+            no_stderr_yet = np.isnan(runstatus.StdErrorSize)
+            for i, run in runstatus[no_stderr_yet].iterrows():
+                fNight = int(np.round(run.fNight))
+                fRunID = int(np.round(run.fRunID))
+                e_path = tree_path(fNight, fRunID, prefix=obs_std_dir, suffix='.e')
+                e_size = np.nan
+                if exists(e_path):
+                    e_size = os.stat(e_path).st_size
+                runstatus.set_value(i, 'StdOutSize', e_size)
+
+
+            # PhsSize and NumActualPhsEvents
+            #-------------------------------
+            print('Collect NumActualPhsEvents')
             runs_to_be_checked_now, runstatus = runs_to_be_checked_now_and_incremented_runstatus(
                 runstatus
             )
 
-            print(len(runstatus)-len(runs_to_be_checked_now),'are not checked again')
+            print(len(runstatus)-len(runs_to_be_checked_now),'are not checked again for NumActualPhsEvents')
 
             if runs_in_qstat is None:
                 runs_in_qstat = qstat(is_in_JB_name=QSUB_OBS_STATUS_PREFIX)
@@ -64,37 +94,21 @@ def status(
                 second=runs_in_qstat,
             )
 
-            print(len(runs_to_be_checked_now),'runs are checked now')
+            print(len(runs_to_be_checked_now),'runs are checked now for NumActualPhsEvents')
             
             num_runs_for_qsub = max_jobs_in_qsub - len(runs_in_qstat)
             runstatus = runstatus.set_index(ri.ID_RUNINFO_KEYS)
 
             i = 0
-            for index, row in runs_to_be_checked_now.iterrows():
+            for index, run in runs_to_be_checked_now.iterrows():
                 if i > num_runs_for_qsub:
                     break
 
-                fNight = int(np.round(row.fNight))
-                fRunID = int(np.round(row.fRunID))
+                fNight = int(np.round(run.fNight))
+                fRunID = int(np.round(run.fRunID))
 
-                # StdOutSize and StdErrorSize
-                #----------------------------
-                o_path = tree_path(fNight, fRunID, prefix=obs_std_dir, suffix='.o')
-                o_size = np.nan
-                if exists(o_path):
-                    o_size = os.stat(o_path).st_size
-                runstatus.set_value((fNight, fRunID), 'StdOutSize', o_size)
-                e_path = tree_path(fNight, fRunID, prefix=obs_std_dir, suffix='.e')
-                e_size = np.nan
-                if exists(e_path):
-                    e_size = os.stat(e_path).st_size
-                runstatus.set_value((fNight, fRunID), 'StdErrorSize', e_size)
-
-
-                # PhsSize and NumActualPhsEvents
-                #-------------------------------
                 phs_path = tree_path(fNight, fRunID, prefix=obs_dir, suffix='.phs.jsonl.gz')
-                if np.isnan(row.PhsSize):
+                if np.isnan(run.PhsSize):
                     if exists(phs_path):
                         phs_size = os.stat(phs_path).st_size
                         runstatus.set_value((fNight, fRunID), 'PhsSize', phs_size)
@@ -117,7 +131,7 @@ def status(
                         runstatus.set_value((fNight, fRunID), 'PhsSize', np.nan)
                         runstatus.set_value((fNight, fRunID), 'NumActualPhsEvents', np.nan)
 
-                runstatus.set_value((fNight, fRunID), 'StatusIteration', row['StatusIteration'] + 1)
+                runstatus.set_value((fNight, fRunID), 'StatusIteration', run['StatusIteration'] + 1)
 
             runstatus = runstatus.reset_index()
             runstatus['StatusIteration'] -= runstatus['StatusIteration'].min()
@@ -125,7 +139,7 @@ def status(
             ri.write(runstatus, runstatus_path)
             print(i, 'status requests submitted to qsub')
     except Timeout:
-        print('Could not get the lock on '+runstatus_path)
+        print('Could not lock '+runstatus_path)
     print('End')
 
 
@@ -142,7 +156,10 @@ def runs_to_be_checked_now_and_incremented_runstatus(runstatus):
     runs_to_be_checked_now = runstatus[nanPhsSize]
     raw_StatusIteration = runstatus['StatusIteration'].values
     raw_StatusIteration[np.invert(nanPhsSize)] = it_for_runs_not_checked_yet
-    runstatus['StatusIteration'] = pd.Series(raw_StatusIteration, index=runstatus.index)
+    runstatus['StatusIteration'] = pd.Series(
+        raw_StatusIteration, 
+        index=runstatus.index
+    )
     return runs_to_be_checked_now, runstatus
 
 
@@ -162,8 +179,12 @@ def read_and_remove_tmp_status(tmp_status_dir):
 
 def add_tmp_status_to_runstatus(tmp_status, runstatus):
     irs = runstatus.set_index(ri.ID_RUNINFO_KEYS)
-    for i, row in tmp_status.iterrows():
-        irs.set_value((row['fNight'], row['fRunID']), 'NumActualPhsEvents', row['NumActualPhsEvents'])
+    for i, run in tmp_status.iterrows():
+        irs.set_value(
+            (run['fNight'], run['fRunID']), 
+            'NumActualPhsEvents', 
+            run['NumActualPhsEvents']
+        )
     return irs.reset_index()
 
 
