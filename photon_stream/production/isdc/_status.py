@@ -168,9 +168,8 @@ def add_tmp_status_to_runstatus(tmp_status, runstatus):
 
 
 def set_is_ok(runstatus):
-    rs = runstatus.copy()
     actual_eq_expected = (
-        rs['NumActualPhsEvents'] == rs['NumExpectedPhsEvents']
+        runstatus['NumActualPhsEvents'] == runstatus['NumExpectedPhsEvents']
     )
-    rs = rs.loc[actual_eq_expected, 'IsOk'] = 1
-    return rs
+    runstatus.loc[actual_eq_expected, 'IsOk'] = 1
+    return runstatus
