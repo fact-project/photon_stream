@@ -74,7 +74,7 @@ def status(
                 e_size = np.nan
                 if exists(e_path):
                     e_size = os.stat(e_path).st_size
-                runstatus.set_value(i, 'StdOutSize', e_size)
+                runstatus.set_value(i, 'StdErrorSize', e_size)
 
 
             # PhsSize and NumActualPhsEvents
