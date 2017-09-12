@@ -49,33 +49,29 @@ def status(
             ri.write(runstatus, runstatus_path)
             print('Add '+str(len(tmp_status))+' new stati')
 
-            # StdOutSize
-            #-----------
-            print('Collect StdOutSize')
-            no_stdout_yet = np.isnan(runstatus.StdOutSize)
-            for i, run in runstatus[no_stdout_yet].iterrows():
-                fNight = int(np.round(run.fNight))
-                fRunID = int(np.round(run.fRunID))
-                o_path = tree_path(fNight, fRunID, prefix=obs_std_dir, suffix='.o')
-                o_size = np.nan
-                if exists(o_path):
-                    o_size = os.stat(o_path).st_size
-                runstatus.set_value(i, 'StdOutSize', o_size)
+            std = [
+                {'key':'StdOutSize','suffix':'.o'},
+                {'key':'StdErrorSize','suffix':'.e'}
+            ]
 
-
-            # StdErrorSize
-            #-------------
-            print('Collect StdErrorSize')
-            no_stderr_yet = np.isnan(runstatus.StdErrorSize)
-            for i, run in runstatus[no_stderr_yet].iterrows():
-                fNight = int(np.round(run.fNight))
-                fRunID = int(np.round(run.fRunID))
-                e_path = tree_path(fNight, fRunID, prefix=obs_std_dir, suffix='.e')
-                e_size = np.nan
-                if exists(e_path):
-                    e_size = os.stat(e_path).st_size
-                runstatus.set_value(i, 'StdErrorSize', e_size)
-
+            # StdOutSize and StdErrorSize
+            #----------------------------
+            for s in std:
+                print('Collect', s['key'])
+                no_std_yet = np.isnan(runstatus[s['key']])
+                for i, run in runstatus[no_std_yet].iterrows():
+                    fNight = int(np.round(run.fNight))
+                    fRunID = int(np.round(run.fRunID))
+                    std_path = tree_path(
+                        fNight, 
+                        fRunID, 
+                        prefix=obs_std_dir, 
+                        suffix=s['suffix']
+                    )
+                    std_size = np.nan
+                    if exists(std_path):
+                        std_size = os.stat(std_path).st_size
+                    runstatus.set_value(i, s['key'], std_size)
 
             # PhsSize and NumActualPhsEvents
             #-------------------------------
