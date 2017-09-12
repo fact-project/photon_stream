@@ -2,90 +2,77 @@ import numpy as np
 import photon_stream as ps
 import pkg_resources
 import os
+import pandas as pd
 
 
-known_runs_path = pkg_resources.resource_filename(
+old_runstatus_path = pkg_resources.resource_filename(
     'photon_stream', 
-    os.path.join('tests','resources','known_runs_20110101.csv')
+    os.path.join('tests','resources','runstatus_20161115_to_20161231.csv')
+)
+
+new_runstatus_path = pkg_resources.resource_filename(
+    'photon_stream', 
+    os.path.join('tests','resources','runstatus_20161115_to_20170103.csv')
 )
 
 runinfo_path = pkg_resources.resource_filename(
     'photon_stream', 
-    os.path.join('tests','resources','runinfo_20120201.csv')
+    os.path.join('tests','resources','runinfo_20161115_to_20170103.csv')
 )
 
 
-def test_known_runs_20110101_has_correct_keys():
-    known_runs = ps.production.runinfo.read(known_runs_path)
-    for key in known_runs.keys():
-        assert key in (
-            ps.production.runinfo.ID_RUNINFO_KEYS + 
-            ps.production.runinfo.TYPE_RUNINFO_KEYS +
-            ps.production.runinfo.TRIGGER_NUMBER_RUNINFO_KEYS + 
-            ps.production.runinfo.PHS_RUNINFO_KEYS
-        )
+def test_old_runstatus_has_correct_keys():
+    rs = ps.production.runinfo.read(old_runstatus_path)
+    for key in rs.keys():
+        assert key in ps.production.runinfo.RUNSTATUS_KEYS
 
 
-def test_runinfo_20120201_has_correct_keys():
-    runinfo = ps.production.runinfo.read(runinfo_path)
-    for key in runinfo.keys():
-        assert key in (
-            ps.production.runinfo.ID_RUNINFO_KEYS + 
-            ps.production.runinfo.TYPE_RUNINFO_KEYS +
-            ps.production.runinfo.TRIGGER_NUMBER_RUNINFO_KEYS
-        )
+def test_new_runstatus_has_correct_keys():
+    rs = ps.production.runinfo.read(new_runstatus_path)
+    for key in rs.keys():
+        assert key in ps.production.runinfo.RUNSTATUS_KEYS
 
 
-def test_append_runinfo():
-    known_runs = ps.production.runinfo.read(known_runs_path)
-    runinfo = ps.production.runinfo.read(runinfo_path)
+def test_remove_from_first_when_also_in_second():
 
-    new_known_runs = ps.production.runinfo.append_runinfo_to_known_runs(
-        runinfo=runinfo,
-        known_runs=known_runs,
+    all_runjobs = pd.DataFrame(
+        [
+            {'fNight':100,'fRunID':1,'ffoo':1},
+            {'fNight':100,'fRunID':2,'ffoo':2},
+            {'fNight':100,'fRunID':3,'ffoo':3},
+            {'fNight':101,'fRunID':1,'ffoo':4}, #out
+            {'fNight':101,'fRunID':2,'ffoo':5}, 
+            {'fNight':101,'fRunID':3,'ffoo':6}, #out
+            {'fNight':102,'fRunID':1,'ffoo':7}, 
+            {'fNight':102,'fRunID':2,'ffoo':8}, #out
+            {'fNight':102,'fRunID':3,'ffoo':9},
+        ]
     )
 
-    runs_in_fresh_runinfo = runinfo.shape[0]
-    columns_in_known_runs = known_runs.shape[1]
-
-    assert new_known_runs.shape[0] == runs_in_fresh_runinfo
-    assert new_known_runs.shape[1] == columns_in_known_runs
-
-    for i, row in new_known_runs.iterrows():
-        if i < known_runs.shape[0]:
-            for id_key in ps.production.runinfo.ID_RUNINFO_KEYS:
-                assert new_known_runs[id_key][i] == known_runs[id_key][i]
-
-            for type_key in ps.production.runinfo.TYPE_RUNINFO_KEYS:
-                assert new_known_runs[type_key][i] == known_runs[type_key][i]
-
-            for phs_key in ps.production.runinfo.PHS_RUNINFO_KEYS:
-                assert new_known_runs[phs_key][i] == known_runs[phs_key][i]
-        else:
-            for phs_key in ps.production.runinfo.PHS_RUNINFO_KEYS:
-                assert new_known_runs[phs_key][i] == 0
-
-
-def test_expected_number_of_triggers():
-    known_runs = ps.production.runinfo.read(known_runs_path)
-
-    num_expected_phs_trigger = ps.production.runinfo.number_expected_phs_events(
-        known_runs
+    runqstat = pd.DataFrame(
+        [
+            {'fNight':101,'fRunID':1,'state':'a'},
+            {'fNight':101,'fRunID':3,'state':'b'},
+            {'fNight':102,'fRunID':2,'state':'c'},
+        ]
     )
 
-    num_actual_phs_trigger = known_runs['PhotonStreamNumEvents'].values
+    r = ps.production.runinfo.remove_from_first_when_also_in_second(
+        first=all_runjobs, 
+        second=runqstat
+    )
 
-    for i, row in known_runs.iterrows():
+    assert 'fNight' in r
+    assert 'fRunID' in r
+    assert 'ffoo' in r
 
-        if row['fRunTypeKey'] == ps.production.runinfo.OBSERVATION_RUN_TYPE_KEY:
-            manual_expected = (
-                row['fNumExt1Trigger'] + 
-                row['fNumExt2Trigger'] +
-                row['fNumPhysicsTrigger'] +
-                row['fNumPedestalTrigger']
-            )
+    mask = np.array([1,1,1,0,1,0,1,0,1], dtype=np.bool)
+    expected = all_runjobs[mask]
 
-            if np.isnan(manual_expected):
-                assert num_expected_phs_trigger[i] == 0
-            else:
-                assert num_expected_phs_trigger[i] == manual_expected
+    print('result\n',r)
+    print('expected\n',expected)
+
+    assert len(expected) == len(r)
+    for i in range(len(r)):
+        assert r['fNight'].values[i] == expected['fNight'].values[i]
+        assert r['fRunID'].values[i] == expected['fRunID'].values[i]

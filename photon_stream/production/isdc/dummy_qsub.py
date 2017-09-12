@@ -3,10 +3,11 @@ import numpy as np
 import json
 import subprocess
 import gzip
+import fact
+import json
 
-dummy_job_id = 0
 
-def dummy_qsub(command):
+def dummy_qsub(args):
     """
     Simulates a qsub service to enable unit testing of a qsub submitter.
     photon_stream.production.submit_to_qsub.submit_to_qsub(). It simulates 
@@ -15,49 +16,95 @@ def dummy_qsub(command):
 
     Parameters
     ----------
-    command         A qsub command list as it would be given to 
+    args         A qsub args list as it would be given to 
                     subprocess.call() in order to submitt to qsub.
     """
-    assert command[0] == 'qsub'
-    assert command[1] == '-q'
-    queue = command[2]
-    assert command[3] == '-o'
-    stdout_path = command[4]
-    assert command[5] == '-e'
-    stderr_path = command[6]
-    job_path = command[7]
-    assert os.path.exists(os.path.split(stdout_path)[0])
+    assert args[0] == 'qsub'
+    assert args[1] == '-q'
+    queue = args[2]
+    assert args[3] == '-o'
+    o_path = args[4]
+    assert args[5] == '-e'
+    e_path = args[6]
+    assert args[7] == '-N'
+    job_name = args[8]
+    exec_path = args[9]
+    assert exec_path is not None
+    assert os.path.exists(exec_path)
+    assert os.path.isabs(exec_path)
+    if  'phs.isdc.obs.status.worker' in exec_path:
+        assert 'phs_obs_status' in job_name 
+        dummy_status(args[9:], o_path, e_path)
+        return
+    elif 'phs.isdc.obs.produce.worker' in exec_path:
+        assert 'phs_obs' in job_name 
+        dummy_produce(args[9:], o_path, e_path)
+        return
+    print('exec_path: "'+exec_path+'"')
+    assert False
 
-    with open(stdout_path, 'w') as stdout:
-        stdout.write('Dummy qsub:\n')
-        stdout.write('stdout path: '+stdout_path+'\n')
-        stdout.write('stderr path: '+stderr_path+'\n')
-        stdout.write('job path: '+job_path+'\n')
 
-    with open(stderr_path, 'w') as stderr:
+def dummy_produce(args, o_path, e_path):
+    raw_path = ''
+    out_dir = ''
+    out_basename = ''
+    for i, key in enumerate(args):
+        if '--out_dir' in key:
+            out_dir = args[i+1]
+        if '--out_basename' in key:
+            out_basename = args[i+1]
+        if '--raw_path' in key:
+            raw_path = args[i+1]
+    assert len(out_dir) > 0
+    assert len(out_basename) > 0
+    assert len(raw_path) > 0
+
+    os.makedirs(out_dir, exist_ok=True, mode=0o777)
+    out_path = os.path.join(out_dir, out_basename)
+
+    with open(raw_path, 'r') as raw:
+        xi = json.loads(raw.read())
+
+    xo = {'NumExpectedPhsEvents': xi['NumExpectedPhsEvents']}
+    with gzip.open(out_path+'.phs.jsonl.gz', 'wt') as out:
+        out.write(json.dumps(xo))
+
+    with open(o_path, 'w') as stdout:
+        stdout.write('Here dummy fact-tools tells its tail of argony and pain...\n')
+        stdout.write('stdout path: '+o_path+'\n')
+        stdout.write('stderr path: '+e_path+'\n')
+
+    with open(e_path, 'w') as stderr:
         pass
 
-    out_dir, out_base_name = extract_out_path_from_worker_job(job_path)
-    os.makedirs(out_dir, exist_ok=True, mode=0o755)
-    out_path = os.path.join(out_dir, out_base_name)
 
-    with gzip.open(out_path+'.phs.jsonl.gz', 'wt') as out:
-        out.write('I am a dummy output photon stream\n')
+def dummy_status(args, o_path, e_path):
+    phs_path = ''
+    status_path = ''
+    for i, key in enumerate(args):
+        if '--phs_path' in key:
+            phs_path = args[i+1]
+        if '--status_path' in key:
+            status_path = args[i+1]
+    assert len(phs_path) > 0
+    assert len(status_path) > 0
 
-    global dummy_job_id
-    dummy_job_id += 1
-    return dummy_job_id
+    with gzip.open(phs_path, 'rt') as phs_in:
+        actual_events = json.loads(phs_in.read())['NumExpectedPhsEvents']
 
+    stat = {}
+    r = fact.path.parse(phs_path)
+    stat['fNight'] = r['night']
+    stat['fRunID'] = r['run']
+    stat['PhsSize'] = 1337
+    stat['NumActualPhsEvents'] = actual_events
 
-def extract_out_path_from_worker_job(job_path):
-    with open(job_path, 'r') as job:
-        out_base_name = ''
-        out_dir = ''
-        for line in job:
-            if '-Dout_path_basename=file:$TMP_DIR' in line:
-                out_base_name = line[38:38+(8+1+3)]
-            if 'mkdir -p' in line:
-                out_dir = line[9:]
-                if out_dir[-1] == '\n':
-                    out_dir = out_dir[:-1]
-    return [out_dir, out_base_name]
+    os.makedirs(os.path.dirname(status_path), exist_ok=True, mode=0o777)
+    with open(status_path, 'w') as fout:
+        json.dump(stat, fout)
+
+    with open(o_path, 'w') as o:
+        o.write('status stdout')
+
+    with open(e_path, 'w') as e:
+        e.write('status stderr')
