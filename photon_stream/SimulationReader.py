@@ -23,8 +23,8 @@ class SimulationReader(object):
         self.id_to_index = {}
         for idx in range(self.event_headers.shape[0]):
             event_id = self.event_headers[idx][IDX_EVTH_EVENT_NUMBER]
-            reuse_id = self.event_headers[idx][IDX_EVTH_REUSE_NUMBER]
-            self.id_to_index[(event_id, reuse_id)] = idx
+            #reuse_id = self.event_headers[idx][IDX_EVTH_REUSE_NUMBER]
+            self.id_to_index[event_id] = idx
         self.event_passed_trigger = np.zeros(self.event_headers.shape[0], dtype=np.bool8)
 
 
@@ -34,11 +34,11 @@ class SimulationReader(object):
     def __next__(self):
         event = next(self.reader)
         assert event.simulation_truth.run == self.run_header[IDX_RUNH_RUN_NUMBER]
-        idx = self.id_to_index[(event.simulation_truth.event, event.simulation_truth.reuse)]
+        idx = self.id_to_index[event.simulation_truth.event]
 
         assert event.simulation_truth.run == self.event_headers[idx][IDX_EVTH_RUN_NUMBER]
         assert event.simulation_truth.event == self.event_headers[idx][IDX_EVTH_EVENT_NUMBER]
-        assert event.simulation_truth.reuse == self.event_headers[idx][IDX_EVTH_REUSE_NUMBER]
+        assert event.simulation_truth.reuse <= self.event_headers[idx][IDX_EVTH_REUSE_NUMBER]
         self.event_passed_trigger[idx] = True
 
         event.simulation_truth.air_shower =  AirShowerTruth(
