@@ -21,11 +21,14 @@ class SimulationReader(object):
         self.mmcs_corsika_path = mmcs_corsika_path
         self._read_mmcs_corsika_headers()
         self.id_to_index = {}
+
+        number_of_events = 0
         for idx in range(self.event_headers.shape[0]):
             event_id = self.event_headers[idx][IDX_EVTH_EVENT_NUMBER]
-            #reuse_id = self.event_headers[idx][IDX_EVTH_REUSE_NUMBER]
             self.id_to_index[event_id] = idx
-        self.event_passed_trigger = np.zeros(self.event_headers.shape[0], dtype=np.bool8)
+            number_of_events += int(self.event_headers[idx][IDX_EVTH_REUSE_NUMBER])
+            
+        self.event_passed_trigger = np.zeros(number_of_events, dtype=np.bool8)
 
 
     def __iter__(self):
@@ -35,11 +38,14 @@ class SimulationReader(object):
         event = next(self.reader)
         assert event.simulation_truth.run == self.run_header[IDX_RUNH_RUN_NUMBER]
         idx = self.id_to_index[event.simulation_truth.event]
+        total_reuses = int(self.event_headers[idx][IDX_EVTH_REUSE_NUMBER])
 
         assert event.simulation_truth.run == self.event_headers[idx][IDX_EVTH_RUN_NUMBER]
         assert event.simulation_truth.event == self.event_headers[idx][IDX_EVTH_EVENT_NUMBER]
-        assert event.simulation_truth.reuse <= self.event_headers[idx][IDX_EVTH_REUSE_NUMBER]
-        self.event_passed_trigger[idx] = True
+        assert event.simulation_truth.reuse <= total_reuses
+        self.event_passed_trigger[
+            (idx*total_reuses) + (event.simulation_truth.reuse - 1)
+        ] = True
 
         event.simulation_truth.air_shower =  AirShowerTruth(
             raw_corsika_run_header=self.run_header,
