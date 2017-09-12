@@ -1,6 +1,6 @@
 from .Event import Event
 from .EventListReader import EventListReader
-from .simulation_truth.corsika_headers import read_corsika_headers
+from .simulation_truth.corsika_headers import read_corsika_headers_from_file
 from .simulation_truth.corsika_headers import IDX_RUNH_RUN_NUMBER
 from .simulation_truth.corsika_headers import IDX_EVTH_EVENT_NUMBER
 from .simulation_truth.corsika_headers import IDX_EVTH_REUSE_NUMBER
@@ -18,7 +18,7 @@ class SimulationReader(object):
         self.reader = EventListReader(photon_stream_path)
         self.mmcs_corsika_path = mmcs_corsika_path
         with open(self.mmcs_corsika_path, 'rb') as fin:
-            mmcs_corsika_headers = read_corsika_headers(fin)
+            mmcs_corsika_headers = read_corsika_headers_from_file(fin)
         self.run_header = mmcs_corsika_headers['run_header']
         self.event_headers = mmcs_corsika_headers['event_headers']
         self.id_to_index = {}

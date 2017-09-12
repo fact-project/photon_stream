@@ -18,7 +18,7 @@ IDX_EVTH_EVENT_NUMBER = 2-1
 IDX_EVTH_RUN_NUMBER = 44-1
 IDX_EVTH_REUSE_NUMBER = 98-1
 
-def read_corsika_headers(fin):
+def read_corsika_headers_from_file(fin):
     '''
     Read in a MMCS CORSIKA run and return the raw run header and the 
     raw event headers.
@@ -55,7 +55,7 @@ def read_corsika_headers(fin):
     }
 
 
-def write_corsika_headers(headers, fout):
+def append_corsika_headers_to_file(headers, fout):
     '''
     Write the headers read in by 'read_corsika_headers' to a file.
     '''
