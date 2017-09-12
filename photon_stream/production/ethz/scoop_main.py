@@ -9,10 +9,10 @@ Options:
     --fact_raw_dir=DIR          [default: /data/fact_data]
     --fact_drs_dir=DIR          [default: /data/fact_drs.fits]
     --fact_aux_dir=DIR          [default: /data/fact_aux]
-    --fact_tools_jar_path=PATH  [default: /home/relleums/fact-tools/target/fact-tools-0.18.0.jar]
+    --fact_tools_jar_path=PATH  [default: /home/relleums/fact-tools/target/fact-tools-0.18.1.jar]
     --fact_tools_xml_path=PATH  [default: /home/relleums/photon_stream/photon_stream/production/resources/observations_pass4.xml]
     --java_path=PATH            [default: /home/relleums/java8/jdk1.8.0_111]
-    --tmp_dir_base_name=BASE    [default: fact_photon_stream_]  
+    --tmp_dir_base_name=BASE    [default: phs_obs_]  
     --run_info_path=PATH
     --fact_password=PASSWORD
 """
@@ -62,8 +62,8 @@ def run_job(job):
 
             for intermediate_file_path in glob.glob(join(tmp, '*')):
                 if os.path.isfile(intermediate_file_path):
-                    os.makedirs(job['phs_yyyy_mm_nn_dir'], exist_ok=True, mode=0o755)
-                    shutil.copy(intermediate_file_path, job['phs_yyyy_mm_nn_dir'])
+                    os.makedirs(job['obs_yyyy_mm_nn_dir'], exist_ok=True, mode=0o755)
+                    shutil.copy(intermediate_file_path, job['obs_yyyy_mm_nn_dir'])
     return rc
 
 
@@ -79,7 +79,7 @@ def main():
             os.environ["FACT_PASSWORD"] = arguments['--fact_password']
             runinfo = ps.production.runinfo.download_latest()
 
-        job_structure = ps.production.prepare.make_job_list(
+        jobs, tree = ps.production.prepare.jobs_and_directory_tree(
             out_dir=arguments['--out_dir'],
             start_night=int(arguments['--start_night']),
             end_night=int(arguments['--end_night']),
@@ -93,10 +93,7 @@ def main():
             tmp_dir_base_name=arguments['--tmp_dir_base_name'],
             runinfo=runinfo,
         )
-        jobs = job_structure['jobs']
-        ps.production.prepare.prepare_directory_structure(job_structure['directory_structure'])
-        ps.production.prepare.copy_resources(job_structure['directory_structure'])
-
+        ps.production.prepare.output_tree(tree)
         job_return_codes = list(scoop.futures.map(run_job, jobs))
 
     except docopt.DocoptExit as e:

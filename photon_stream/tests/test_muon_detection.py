@@ -1,3 +1,4 @@
+import pytest
 import numpy as np
 import photon_stream as ps
 import tempfile
@@ -32,6 +33,7 @@ def test_ring_overlapp():
     assert overlapp == 0.0 
 
 
+@pytest.mark.slow
 def test_muon_detection():
 
     np.random.seed(seed=1)

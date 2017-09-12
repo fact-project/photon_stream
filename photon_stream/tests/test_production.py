@@ -6,129 +6,160 @@ from os.path import join
 from os.path import exists
 import pkg_resources
 import glob
+import pytest
+import fact
+import pandas as pd
 
 
-def test_production_write_worker_script():
-    with tempfile.TemporaryDirectory(prefix='photon_stream_test_production') as tmp:
-        worker_script_path = join(tmp, 'worker.sh')
-        ps.production.isdc.write_worker_script(worker_script_path)
-        assert os.path.exists(worker_script_path)
-        assert os.access(worker_script_path, os.X_OK)
+old_runstatus_path = pkg_resources.resource_filename(
+    'photon_stream', 
+    os.path.join('tests','resources','runstatus_20161115_to_20161231.csv')
+)
+
+new_runstatus_path = pkg_resources.resource_filename(
+    'photon_stream', 
+    os.path.join('tests','resources','runstatus_20161115_to_20170103.csv')
+)
+
+runinfo_path = pkg_resources.resource_filename(
+    'photon_stream', 
+    os.path.join('tests','resources','runinfo_20161115_to_20170103.csv')
+)
+
+qstat_xml_path = pkg_resources.resource_filename(
+    'photon_stream', 
+    os.path.join('tests','resources','qstat.xml')
+)
+with open(qstat_xml_path, 'rt') as fin:
+    qstat_xml = fin.read()
+    runs_in_qstat = ps.production.isdc.qstat.qstat(xml=qstat_xml)
 
 
-def test_production_run_collection():
-    with tempfile.TemporaryDirectory(prefix='photon_stream_run_collection') as tmp:
-
-        runinfo_path = pkg_resources.resource_filename(
-            'photon_stream', 
-            os.path.join('tests','resources','runinfo_2014Dec15_2015Jan15.csv')
-        )
-
-        runinfo = ps.production.runinfo.read(runinfo_path)
-
-        fact_dir = join(tmp, 'fact')
-        ps.production.runinfo.create_fake_fact_dir(fact_dir, runinfo)
-
-        my_fact_tools_jar_path = join(tmp, 'my_fact_tools.jar')
-        with open(my_fact_tools_jar_path, 'w') as fftools:
-            fftools.write('Hi, I am a fact tools dummy java jar!')
-
-        my_fact_tools_xml_path = join(tmp, 'observations_passX.xml')
-        with open(my_fact_tools_xml_path, 'w') as fxml:
-            fxml.write('Hi, I am a fact tools xml steering dummy!')
-
-        out_dir = join(tmp, 'passX')
-
-        # FIRST CHUNK
-        qsub2run_1 = ps.production.isdc.qsub(
-            out_dir=out_dir, 
-            start_night=20141215, 
-            end_night=20141229,
-            only_a_fraction=1.0,
-            fact_raw_dir=join(fact_dir, 'raw'),
-            fact_drs_dir=join(fact_dir, 'raw'),
-            fact_aux_dir=join(fact_dir, 'aux'),
-            java_path='/usr/java/jdk1.8.0_77/bin',
-            fact_tools_jar_path=my_fact_tools_jar_path,
-            fact_tools_xml_path=my_fact_tools_xml_path,
-            tmp_dir_base_name='fact_photon_stream_JOB_ID_',
-            queue='fact_medium', 
-            use_dummy_qsub=True,
-            runinfo=runinfo,
-        )
-
-        assert exists(join(tmp, 'passX', 'resources'))
-        all_dirs_in_resources = glob.glob(join(tmp, 'passX', 'resources', '*'))
-        assert len(all_dirs_in_resources) == 1
-        current_res_dir = all_dirs_in_resources[0]
-        assert exists(join(tmp, 'passX', 'resources', current_res_dir, 'observations_passX.xml'))
-        assert exists(join(tmp, 'passX', 'resources', current_res_dir, 'my_fact_tools.jar'))
-        assert qsub2run_1.shape[0] <= runinfo.shape[0]
-        assert qsub2run_1.shape[1] == 3
-        assert 'fNight' in qsub2run_1
-        assert 'fRunID' in qsub2run_1
-        assert 'QsubID' in qsub2run_1
-
-        #input('Take a look into '+tmp+' or press any key to continue')
-
-        my_2nd_fact_tools_jar_path = join(tmp, 'my_2nd_fact_tools.jar')
-        with open(my_2nd_fact_tools_jar_path, 'w') as fftools:
-            fftools.write('Hi, I am another fact tools dummy java jar!')    
-
-        # SECOND CHUNK with 2nd fact-tools.jar
-        qsub2run_2 = ps.production.isdc.qsub(
-            out_dir=out_dir, 
-            start_night=20141229, 
-            end_night=20150103,
-            only_a_fraction=1.0,
-            fact_raw_dir=join(fact_dir, 'raw'),
-            fact_drs_dir=join(fact_dir, 'raw'),
-            fact_aux_dir=join(fact_dir, 'aux'),
-            java_path='/usr/java/jdk1.8.0_77/bin',
-            fact_tools_jar_path=my_2nd_fact_tools_jar_path,
-            fact_tools_xml_path=my_fact_tools_xml_path,
-            tmp_dir_base_name='fact_photon_stream_JOB_ID_',
-            queue='fact_medium', 
-            use_dummy_qsub=True,
-            runinfo=runinfo,
-        )
-
-        all_dirs_in_resources = glob.glob(join(tmp, 'passX', 'resources', '*'))
-        assert len(all_dirs_in_resources) == 2
-        all_dirs_in_resources.sort()
-        current_res_dir = all_dirs_in_resources[1]
-        assert exists(join(tmp, 'passX', 'resources', current_res_dir, 'observations_passX.xml'))
-        assert exists(join(tmp, 'passX', 'resources', current_res_dir, 'my_2nd_fact_tools.jar'))
-        assert qsub2run_2.shape[0] <= runinfo.shape[0]
-        assert qsub2run_2.shape[1] == 3
-        assert 'fNight' in qsub2run_2
-        assert 'fRunID' in qsub2run_2
-        assert 'QsubID' in qsub2run_2
-
-        #input('Take a look into '+tmp+' or press any key to continue')
-
-def test_status_bar_string():
-
-    progress_bar_str = ps.production.status.progress(ratio=0.0, length=50)
-    assert len(progress_bar_str) < 50
-
-    progress_bar_str = ps.production.status.progress(ratio=1.0, length=50)
-    assert len(progress_bar_str) > 50    
-    assert len(progress_bar_str) < 60    
-
-    progress_bar_str = ps.production.status.progress(ratio=10.0, length=50)
-    assert len(progress_bar_str) > 50    
-    assert len(progress_bar_str) < 61  
-
-    progress_bar_str = ps.production.status.progress(ratio=100.0, length=50)
-    assert len(progress_bar_str) > 50    
-    assert len(progress_bar_str) < 62 
+def test_production_scenario(out_dir):
+    if out_dir is None:
+        with tempfile.TemporaryDirectory(prefix='phs_') as tmp:
+            run_production_scenario(out_dir=tmp)
+    else:
+        os.makedirs(out_dir, exist_ok=True)
+        run_production_scenario(out_dir=out_dir)
 
 
+def run_production_scenario(out_dir):
+    TEST_DUMMY_QUEUE_NAME = 'test_dummy'
 
-def test_qsub_job_id_parser():
-    qsub_str2id = ps.production.isdc.qsub_tools.qsub_job_id_from_qsub_stdout
+    fact_dir = join(out_dir, 'fact')
+    ri = ps.production.runinfo.read(runinfo_path)
+    ps.production.tools.create_fake_fact_dir(fact_dir, ri)
 
-    assert qsub_str2id('Your job 6174794 ("exec.sh") has been submitted') == 6174794
-    assert qsub_str2id('Your job 0 ("exec.sh") has been submitted') == 0
-    assert qsub_str2id('Your job 123456789123456789123456789 ("exec.sh") has been submitted') == 123456789123456789123456789
+
+    rs1 = ps.production.runstatus.read(old_runstatus_path)
+    my_fact_tools_jar_path = join(out_dir, 'my_fact_tools.jar')
+    with open(my_fact_tools_jar_path, 'w') as fftools:
+        fftools.write('Hi, I am a fact tools dummy java jar!')
+
+    my_fact_tools_xml_path = join(out_dir, 'observations_passX.xml')
+    with open(my_fact_tools_xml_path, 'w') as fxml:
+        fxml.write('Hi, I am a fact tools xml steering dummy!')
+
+    phs_dir = join(out_dir, 'phs')
+    obs_dir = join(phs_dir, 'obs')
+
+
+    ps.production.runstatus.init(
+        obs_dir=obs_dir, 
+        latest_runstatus=rs1
+    )
+
+    assert exists(phs_dir)
+    assert exists(join(phs_dir,'obs'))
+    assert exists(join(phs_dir,'obs','runstatus.csv'))
+    assert exists(join(phs_dir,'obs','.lock.runstatus.csv'))
+
+    ps.production.isdc.status(
+        obs_dir=obs_dir,
+        queue=TEST_DUMMY_QUEUE_NAME,
+        runs_in_qstat=runs_in_qstat
+    )
+
+    # FIRST CHUNK
+    ps.production.isdc.produce(
+        phs_dir=phs_dir, 
+        only_a_fraction=1.0,
+        fact_raw_dir=join(fact_dir, 'raw'),
+        fact_drs_dir=join(fact_dir, 'raw'),
+        fact_aux_dir=join(fact_dir, 'aux'),
+        java_path='/usr/java/jdk1.8.0_77/bin',
+        fact_tools_jar_path=my_fact_tools_jar_path,
+        fact_tools_xml_path=my_fact_tools_xml_path,
+        queue=TEST_DUMMY_QUEUE_NAME,
+        runs_in_qstat=runs_in_qstat,
+        max_jobs_in_qsub=1000,
+    )
+
+    t = len(glob.glob(join(obs_dir,'*','*','*','*phs.jsonl.gz')))
+    assert t == 952
+
+    ps.production.isdc.status(
+        obs_dir=obs_dir,
+        queue=TEST_DUMMY_QUEUE_NAME,
+        runs_in_qstat=runs_in_qstat,
+        max_jobs_in_qsub=500
+    )
+
+    """
+
+    # SECOND CHUNK
+    ps.production.isdc.produce(
+        phs_dir=phs_dir, 
+        only_a_fraction=1.0,
+        fact_raw_dir=join(fact_dir, 'raw'),
+        fact_drs_dir=join(fact_dir, 'raw'),
+        fact_aux_dir=join(fact_dir, 'aux'),
+        java_path='/usr/java/jdk1.8.0_77/bin',
+        fact_tools_jar_path=my_fact_tools_jar_path,
+        fact_tools_xml_path=my_fact_tools_xml_path,
+        queue=TEST_DUMMY_QUEUE_NAME, 
+        runqstat_dummy=runqstat,
+        max_jobs_in_qsub=1000,
+    )
+
+    ps.production.isdc.status(
+        obs_dir=obs_dir,
+        queue=TEST_DUMMY_QUEUE_NAME,
+        runstatus_qstat=runqstat
+    )
+
+    # THIRD CHUNK
+    rs2 = ps.production.runstatus.read(new_runstatus_path)
+    ps.production.isdc.produce(
+        phs_dir=phs_dir,
+        only_a_fraction=1.0,
+        fact_raw_dir=join(fact_dir, 'raw'),
+        fact_drs_dir=join(fact_dir, 'raw'),
+        fact_aux_dir=join(fact_dir, 'aux'),
+        java_path='/usr/java/jdk1.8.0_77/bin',
+        fact_tools_jar_path=my_fact_tools_jar_path,
+        fact_tools_xml_path=my_fact_tools_xml_path,
+        queue=TEST_DUMMY_QUEUE_NAME, 
+        runqstat_dummy=runqstat,
+        max_jobs_in_qsub=100,
+    )
+
+    ps.production.isdc.status(
+        obs_dir=obs_dir,
+        queue=TEST_DUMMY_QUEUE_NAME,
+        runstatus_qstat=runqstat
+    )
+    """
+
+
+def runs_in_obs_dir(obs_dir):
+    runs_produced_paths = glob.glob(join(obs_dir,'*','*','*','*phs.jsonl.gz'))
+    runs_produced = []
+    for run_produced_path in runs_produced_paths:
+        r = fact.path.parse(run_produced_path)
+        runs_produced.append({'fNight': r['night'], 'fRunID': r['run']})
+
+    runids = pd.DataFrame(runs_produced)
+    runids.sort_values(by=ps.production.runinfo.ID_RUNINFO_KEYS , inplace=True)
+    return runids
