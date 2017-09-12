@@ -18,13 +18,26 @@ from os.path import join
 import subprocess
 import tempfile
 import shutil
+import photon_stream as ps
 
 
 def run_corsika_header_extraction(
     corsika_run_path,
     corsika_run_header_path
 ):
-    
+    if ps.io.is_gzipped_file(corsika_run_path):
+        with gzip.open(corsika_run_path, 'rb') as fin:
+            headers = ps.simulation_truth.corsika_headers.read_corsika_headers_from_file(fin)
+    else:
+        with open(corsika_run_path, 'rb') as fin:
+            headers = ps.simulation_truth.corsika_headers.read_corsika_headers_from_file(fin)
+
+    with gzip.open(corsika_run_header_path, 'wb') as fout:
+        ps.simulation_truth.corsika_headers.append_corsika_headers_to_file(
+            headers=headers, 
+            fout=fout
+        )
+
 
 
 def run_single_pulse_extractor(
