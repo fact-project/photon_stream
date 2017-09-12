@@ -121,6 +121,7 @@ def status(
 
             runstatus = runstatus.reset_index()
             runstatus['StatusIteration'] -= runstatus['StatusIteration'].min()
+            runstatus = set_is_ok(runstatus)
             ri.write(runstatus, runstatus_path)
             print(i, 'status requests submitted to qsub')
     except Timeout:
@@ -164,3 +165,12 @@ def add_tmp_status_to_runstatus(tmp_status, runstatus):
     for i, row in tmp_status.iterrows():
         irs.set_value((row['fNight'], row['fRunID']), 'NumActualPhsEvents', row['NumActualPhsEvents'])
     return irs.reset_index()
+
+
+def set_is_ok(runstatus):
+    rs = runstatus.copy()
+    actual_eq_expected = (
+        rs['NumActualPhsEvents'] == rs['NumExpectedPhsEvents']
+    )
+    rs['IsOk'][actual_eq_expected] = 1
+    return rs
