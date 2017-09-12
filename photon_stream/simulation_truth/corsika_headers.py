@@ -47,7 +47,6 @@ def read_corsika_headers(path):
     start = (block_index+2)*273
     end = start + 273
     run_end = c[start:end]
-    assert run_end[0] == CORSIKA_RUN_END_MARKER
 
     return {
         'run_header': run_header, 
