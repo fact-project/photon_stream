@@ -5,20 +5,33 @@ from ...io import is_gzipped_file
 
 
 def extract_corsika_headers(
-    corsika_run_path,
-    corsika_run_header_path
+    in_path,
+    out_path
 ):
-    if is_gzipped_file(corsika_run_path):
-        with gzip.open(corsika_run_path, 'rb') as fin:
+    """
+    Reads a MMCS CORSIKA 'cer' file from in_path and extracts al headers:
+    run header, event header, and run end header (if present)
+    Then writes only the headers back into the out_path.
+    
+    Parameters
+    ----------
+    in_path=PATH    Input MMCS CORSIKA run path with (or without) the Cherenkov
+                    photon blocks.
+
+    out_path=PATH   Output path to the new header only MMCS CORSIKA run without
+                    the Cherenkov photon blocks.
+    """
+    if is_gzipped_file(in_path):
+        with gzip.open(in_path, 'rb') as fin:
             headers = read_corsika_headers_from_file(fin)
     else:
-        with open(corsika_run_path, 'rb') as fin:
+        with open(in_path, 'rb') as fin:
             headers = read_corsika_headers_from_file(fin)
 
-    if '.gz' in corsika_run_header_path:
-        with gzip.open(corsika_run_header_path, 'wb') as fout:
+    if '.gz' in out_path:
+        with gzip.open(out_path, 'wb') as fout:
             append_corsika_headers_to_file(headers=headers, fout=fout)
     else:
-        with open(corsika_run_header_path, 'wb') as fout:
+        with open(out_path, 'wb') as fout:
             append_corsika_headers_to_file(headers=headers, fout=fout)
 

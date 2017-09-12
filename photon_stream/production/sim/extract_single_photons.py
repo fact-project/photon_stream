@@ -27,6 +27,18 @@ def extract_single_photons(
     mc_drs_path=mc_drs_path,
     tmp_dir_prefix='phs_sim_produce_',
 ):
+    """
+    Apply the fact-tools single pulse extractor to a simulation run.
+    Creates a phs (photon-stream) file and a baseline offset file which is 
+    hopefully useless.
+
+    ceres_path      The FACT raw simulation fits file with the instrument 
+                    responses.
+
+    out_dir         The output directory to collect the results.
+
+    out_basename    The basename e.g. run number of the output files.
+    """
     with tempfile.TemporaryDirectory(prefix=tmp_dir_prefix) as tmp:
 
         my_env = os.environ.copy()
