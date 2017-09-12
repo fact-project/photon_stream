@@ -17,7 +17,8 @@ class SimulationReader(object):
     def __init__(self, photon_stream_path, mmcs_corsika_path):
         self.reader = EventListReader(photon_stream_path)
         self.mmcs_corsika_path = mmcs_corsika_path
-        mmcs_corsika_headers = read_corsika_headers(mmcs_corsika_path)
+        with open(self.mmcs_corsika_path, 'rb') as fin:
+            mmcs_corsika_headers = read_corsika_headers(fin)
         self.run_header = mmcs_corsika_headers['run_header']
         self.event_headers = mmcs_corsika_headers['event_headers']
         self.id_to_index = {}
