@@ -172,5 +172,5 @@ def set_is_ok(runstatus):
     actual_eq_expected = (
         rs['NumActualPhsEvents'] == rs['NumExpectedPhsEvents']
     )
-    rs['IsOk'][actual_eq_expected] = 1
+    rs.loc[actual_eq_expected, 'IsOk'] = 1
     return rs
