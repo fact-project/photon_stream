@@ -1,10 +1,8 @@
 import os
-from glob import glob
 from os.path import join
-import shutil
-import photon_stream as ps
-
-RUN_NUMBER_DIGITS = 5
+from .extract_single_photons import extract_single_photons
+from .extract_corsika_headers import extract_corsika_headers
+from .produce_full_simulation_pass import RUN_NUMBER_DIGITS
 
 
 def produce_single_simulation_run(
@@ -28,12 +26,12 @@ def produce_single_simulation_run(
 
     corsika_header_path = join(out_dir, corsika_header_path)
 
-    ps.production.sim.extract_corsika_headers(
+    extract_corsika_headers(
         in_path=corsika_path,
         out_path=corsika_header_path
     )
 
-    ps.production.sim.extract_single_photons(
+    extract_single_photons(
         ceres_path=ceres_events_path,
         out_dir=out_dir,
         out_basename=phs_basename,

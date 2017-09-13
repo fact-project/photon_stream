@@ -47,6 +47,8 @@ setup(
         
         'phs.isdc.obs.status = photon_stream.production.isdc.status_main:main',
         'phs.isdc.obs.status.worker = photon_stream.production.isdc.worker_node_status:main',
+
+        'phs.sim.produce.worker = photon_stream.production.sim.worker_node_produce:main'
     ]},
     zip_safe=False,
 )
