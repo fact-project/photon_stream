@@ -2,6 +2,7 @@ import gzip
 from ...simulation_truth.corsika_headers import read_corsika_headers_from_file
 from ...simulation_truth.corsika_headers import append_corsika_headers_to_file
 from ...io import is_gzipped_file
+import shutil
 
 
 def extract_corsika_headers(
@@ -28,10 +29,14 @@ def extract_corsika_headers(
         with open(in_path, 'rb') as fin:
             headers = read_corsika_headers_from_file(fin)
 
+    tmp_out_path = out_path+'.part'
+
     if '.gz' in out_path:
-        with gzip.open(out_path, 'wb') as fout:
+        with gzip.open(tmp_out_path, 'wb') as fout:
             append_corsika_headers_to_file(headers=headers, fout=fout)
     else:
-        with open(out_path, 'wb') as fout:
+        with open(tmp_out_path, 'wb') as fout:
             append_corsika_headers_to_file(headers=headers, fout=fout)
+
+    shutil.move(tmp_out_path, out_path)
 
