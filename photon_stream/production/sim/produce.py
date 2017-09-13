@@ -41,7 +41,7 @@ def process_sim_run(
     ceres_events_path, 
     corsika_path, 
     out_dir,
-    fact_tools_jar_path,
+    fact_tools_jar_path='/net/big-tank/POOL/projects/fact/smueller/fact-tools/target/fact-tools-0.18.1.jar',
 ):
     ceres_basename = os.path.basename(ceres_events_path)
     corsika_basename = os.path.basename(corsika_path)
