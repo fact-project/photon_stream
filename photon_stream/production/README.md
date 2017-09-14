@@ -89,3 +89,33 @@ This also runs the unit tests and should end with:
 git clone https://github.com/fact-project/photon_stream.git
 pip install -e photon_stream/
 ```
+
+# Publish on web server
+
+https://ihp-pc41.ethz.ch/public/phs/
+
+login to ihp-pc41 as user: factshifthelper
+
+stop the running nginx webserver docker container
+
+```bash
+docker stop data_nginx
+```
+
+remove the former container
+
+```bash
+docker rm data_nginx
+```
+
+apply changes as needed to the config files in:
+
+- index.html
+- start_nginx.sh
+- default.conf
+
+build the updated docker container:
+
+```bash
+./start_nginx.sh
+```
