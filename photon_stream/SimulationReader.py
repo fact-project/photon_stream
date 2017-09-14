@@ -20,9 +20,9 @@ class SimulationReader(object):
     def __init__(self, photon_stream_path, mmcs_corsika_path=None):
         self._phs_reader = EventListReader(photon_stream_path)
         if mmcs_corsika_path is None:
-            self.mmcs_corsika_path = self._guess_corresponding_mmcs_corsika_path(photon_stream_path)
+            self._mmcs_corsika_path = self._guess_corresponding_mmcs_corsika_path(photon_stream_path)
         else:
-            self.mmcs_corsika_path = mmcs_corsika_path
+            self._mmcs_corsika_path = mmcs_corsika_path
         self._read_mmcs_corsika_headers()
         self._event_to_idx = {}
         for idx in range(self.event_headers.shape[0]):
@@ -51,11 +51,11 @@ class SimulationReader(object):
 
 
     def _read_mmcs_corsika_headers(self):
-        if is_gzipped_file(self.mmcs_corsika_path):
-            with gzip.open(self.mmcs_corsika_path, 'rb') as fin:
+        if is_gzipped_file(self._mmcs_corsika_path):
+            with gzip.open(self._mmcs_corsika_path, 'rb') as fin:
                 headers = read_corsika_headers_from_file(fin)
         else:
-            with open(self.mmcs_corsika_path, 'rb') as fin:
+            with open(self._mmcs_corsika_path, 'rb') as fin:
                 headers = read_corsika_headers_from_file(fin)
         self.run_header = headers['run_header']
         self.event_headers = headers['event_headers']
@@ -95,6 +95,6 @@ class SimulationReader(object):
     def __repr__(self):
         out = '{}('.format(self.__class__.__name__)
         out += "photon-stream '" + self._phs_reader.path + "', "
-        out += "CORSIKA '" + self.mmcs_corsika_path + "'"
+        out += "CORSIKA '" + self._mmcs_corsika_path + "'"
         out += ')\n'
         return out
