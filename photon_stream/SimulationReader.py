@@ -18,44 +18,24 @@ class SimulationReader(object):
     headers. Returns merged events with full and raw CORSIKA simulation truth.
     '''
     def __init__(self, photon_stream_path, mmcs_corsika_path=None):
-        self.reader = EventListReader(photon_stream_path)
+        self._phs_reader = EventListReader(photon_stream_path)
         if mmcs_corsika_path is None:
             self.mmcs_corsika_path = self._guess_corresponding_mmcs_corsika_path(photon_stream_path)
         else:
             self.mmcs_corsika_path = mmcs_corsika_path
         self._read_mmcs_corsika_headers()
-        self.id_to_index = {}
+        self._event_to_idx = {}
         for idx in range(self.event_headers.shape[0]):
             event_id = self.event_headers[idx][IDX_EVTH_EVENT_NUMBER]
-            self.id_to_index[event_id] = idx
-
-    def thrown_events(self): 
-        _thrown_events = []
-        for evtidx in range(self.event_headers.shape[0]):
-            for reuseidx in range(int(self.event_headers[evtidx][IDX_EVTH_REUSE_NUMBER])):
-                evt = {
-                    'run': self.event_headers[evtidx][IDX_EVTH_RUN_NUMBER],
-                    'event': self.event_headers[evtidx][IDX_EVTH_EVENT_NUMBER],
-                    'reuse': reuseidx,
-                    'particle': self.event_headers[evtidx][3-1],
-                    'energy': self.event_headers[evtidx][4-1],
-                    'theta': self.event_headers[evtidx][11-1],
-                    'phi': self.event_headers[evtidx][12-1],
-                    'impact_x': self.event_headers[evtidx][98+int(1+reuseidx)-1],
-                    'impact_y': self.event_headers[evtidx][118+int(1+reuseidx)-1],
-                    'starting_altitude': self.event_headers[evtidx][5-1],
-                    'hight_of_first_interaction': self.event_headers[evtidx][7-1],
-                }
-                _thrown_events.append(evt)
-        return _thrown_events
+            self._event_to_idx[event_id] = idx
         
     def __iter__(self):
         return self
 
     def __next__(self):
-        event = next(self.reader)
+        event = next(self._phs_reader)
         assert event.simulation_truth.run == self.run_header[IDX_RUNH_RUN_NUMBER]
-        idx = self.id_to_index[event.simulation_truth.event]
+        idx = self._event_to_idx[event.simulation_truth.event]
         total_reuses = int(self.event_headers[idx][IDX_EVTH_REUSE_NUMBER])
 
         assert event.simulation_truth.run == self.event_headers[idx][IDX_EVTH_RUN_NUMBER]
@@ -87,9 +67,30 @@ class SimulationReader(object):
         return os.path.join(dirname, '{run:06d}.ch.gz'.format(run=run_number))
 
 
+    def thrown_events(self): 
+        _thrown_events = []
+        for evtidx in range(self.event_headers.shape[0]):
+            for reuseidx in range(int(self.event_headers[evtidx][IDX_EVTH_REUSE_NUMBER])):
+                evt = {
+                    'run': self.event_headers[evtidx][IDX_EVTH_RUN_NUMBER],
+                    'event': self.event_headers[evtidx][IDX_EVTH_EVENT_NUMBER],
+                    'reuse': reuseidx,
+                    'particle': self.event_headers[evtidx][3-1],
+                    'energy': self.event_headers[evtidx][4-1],
+                    'theta': self.event_headers[evtidx][11-1],
+                    'phi': self.event_headers[evtidx][12-1],
+                    'impact_x': self.event_headers[evtidx][98+int(1+reuseidx)-1],
+                    'impact_y': self.event_headers[evtidx][118+int(1+reuseidx)-1],
+                    'starting_altitude': self.event_headers[evtidx][5-1],
+                    'hight_of_first_interaction': self.event_headers[evtidx][7-1],
+                }
+                _thrown_events.append(evt)
+        return _thrown_events
+
+
     def __repr__(self):
         out = '{}('.format(self.__class__.__name__)
-        out += "photon-stream '" + self.reader.path + "', "
+        out += "photon-stream '" + self._phs_reader.path + "', "
         out += "CORSIKA '" + self.mmcs_corsika_path + "'"
         out += ')\n'
         return out

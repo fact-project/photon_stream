@@ -51,5 +51,3 @@ def test_read_in_full_CORSIKA_simulation_truth():
     events = []
     for event in simread:
         events.append(event)
-
-    assert len(events) == simread.event_passed_trigger.sum()
