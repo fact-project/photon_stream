@@ -63,13 +63,11 @@ class AirShowerTruth(object):
         return self.raw_corsika_event_header[11-1]
 
     @property
-    def reuse(self):
+    def total_reuse(self):
         return self.raw_corsika_event_header[98-1]
 
-    @property
-    def impact_x(self):
-        return self.raw_corsika_event_header[98+int(self.reuse)-1]
+    def impact_x(self, reuse):
+        return self.raw_corsika_event_header[98+int(reuse)-1]
 
-    @property
-    def impact_y(self):
-        return self.raw_corsika_event_header[118+int(self.reuse)-1]
+    def impact_y(self, reuse):
+        return self.raw_corsika_event_header[118+int(reuse)-1]

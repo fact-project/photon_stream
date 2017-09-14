@@ -18,12 +18,12 @@ IDX_EVTH_EVENT_NUMBER = 2-1
 IDX_EVTH_RUN_NUMBER = 44-1
 IDX_EVTH_REUSE_NUMBER = 98-1
 
-def read_corsika_headers(path):
+def read_corsika_headers_from_file(fin):
     '''
     Read in a MMCS CORSIKA run and return the raw run header and the 
     raw event headers.
     '''
-    c = np.fromfile(path, dtype=np.float32)
+    c = np.fromstring(fin.read(), dtype=np.float32)
 
     # RUN HEADER
     run_header = c[0:273]
@@ -47,7 +47,6 @@ def read_corsika_headers(path):
     start = (block_index+2)*273
     end = start + 273
     run_end = c[start:end]
-    assert run_end[0] == CORSIKA_RUN_END_MARKER
 
     return {
         'run_header': run_header, 
@@ -56,12 +55,11 @@ def read_corsika_headers(path):
     }
 
 
-def write_corsika_headers(headers, path):
+def append_corsika_headers_to_file(headers, fout):
     '''
-    Write the headers read in by 'read_corsika_headers' to a file at path.
+    Write the headers read in by 'read_corsika_headers' to a file.
     '''
-    with open(path, 'wb') as fout:
-        fout.write(headers['run_header'])
-        for event_header in headers['event_headers']:
-            fout.write(event_header)
-        fout.write(headers['run_end'])
+    fout.write(headers['run_header'])
+    for event_header in headers['event_headers']:
+        fout.write(event_header)
+    fout.write(headers['run_end'])

@@ -7,3 +7,4 @@ from . import ethz
 from . import isdc
 from . import drs_run
 from . import show_runstatus
+from . import sim

@@ -10,28 +10,26 @@ mmcs_corsika_path = pkg_resources.resource_filename(
 )
 
 def test_read_MMCS_CORSIKA_headers():
-    headers = ps.simulation_truth.corsika_headers.read_corsika_headers(
-        mmcs_corsika_path
-    )
+    with open(mmcs_corsika_path, 'rb') as fin:
+        headers = ps.simulation_truth.corsika_headers.read_corsika_headers_from_file(fin)
     assert 'run_header' in headers
     assert 'event_headers' in headers
     assert 'run_end' in headers
 
 
 def test_read_and_write_MMCS_CORSIKA_headers():
-    headers_in = ps.simulation_truth.corsika_headers.read_corsika_headers(
-        path=mmcs_corsika_path
-    )
+    with open(mmcs_corsika_path, 'rb') as fin:
+        headers_in = ps.simulation_truth.corsika_headers.read_corsika_headers_from_file(fin)
 
     with tempfile.TemporaryDirectory(prefix='photon_stream_test_corsika') as tmp:
-        ps.simulation_truth.corsika_headers.write_corsika_headers(
-            headers=headers_in,
-            path=os.path.join(tmp,'headers_out')
-        )
+        with open(os.path.join(tmp,'headers_out'), 'wb') as fout:
+            ps.simulation_truth.corsika_headers.append_corsika_headers_to_file(
+                headers=headers_in,
+                fout=fout
+            )
 
-        headers_back = ps.simulation_truth.corsika_headers.read_corsika_headers(
-            path=os.path.join(tmp,'headers_out')
-        )
+        with open(os.path.join(tmp,'headers_out'), 'rb') as fin:
+            headers_back = ps.simulation_truth.corsika_headers.read_corsika_headers_from_file(fin)
 
     np.testing.assert_equal(headers_back['run_header'], headers_in['run_header'])
     np.testing.assert_equal(headers_back['event_headers'], headers_in['event_headers'])

@@ -1,6 +1,8 @@
 from .Event import Event
 from .EventListReader import EventListReader
-from .simulation_truth.corsika_headers import read_corsika_headers
+from .io import is_gzipped_file
+import gzip
+from .simulation_truth.corsika_headers import read_corsika_headers_from_file
 from .simulation_truth.corsika_headers import IDX_RUNH_RUN_NUMBER
 from .simulation_truth.corsika_headers import IDX_EVTH_EVENT_NUMBER
 from .simulation_truth.corsika_headers import IDX_EVTH_REUSE_NUMBER
@@ -17,15 +19,16 @@ class SimulationReader(object):
     def __init__(self, photon_stream_path, mmcs_corsika_path):
         self.reader = EventListReader(photon_stream_path)
         self.mmcs_corsika_path = mmcs_corsika_path
-        mmcs_corsika_headers = read_corsika_headers(mmcs_corsika_path)
-        self.run_header = mmcs_corsika_headers['run_header']
-        self.event_headers = mmcs_corsika_headers['event_headers']
+        self._read_mmcs_corsika_headers()
         self.id_to_index = {}
+
+        number_of_events = 0
         for idx in range(self.event_headers.shape[0]):
             event_id = self.event_headers[idx][IDX_EVTH_EVENT_NUMBER]
-            reuse_id = self.event_headers[idx][IDX_EVTH_REUSE_NUMBER]
-            self.id_to_index[(event_id, reuse_id)] = idx
-        self.event_passed_trigger = np.zeros(self.event_headers.shape[0], dtype=np.bool8)
+            self.id_to_index[event_id] = idx
+            number_of_events += int(self.event_headers[idx][IDX_EVTH_REUSE_NUMBER])
+            
+        self.event_passed_trigger = np.zeros(number_of_events, dtype=np.bool8)
 
 
     def __iter__(self):
@@ -34,12 +37,15 @@ class SimulationReader(object):
     def __next__(self):
         event = next(self.reader)
         assert event.simulation_truth.run == self.run_header[IDX_RUNH_RUN_NUMBER]
-        idx = self.id_to_index[(event.simulation_truth.event, event.simulation_truth.reuse)]
+        idx = self.id_to_index[event.simulation_truth.event]
+        total_reuses = int(self.event_headers[idx][IDX_EVTH_REUSE_NUMBER])
 
         assert event.simulation_truth.run == self.event_headers[idx][IDX_EVTH_RUN_NUMBER]
         assert event.simulation_truth.event == self.event_headers[idx][IDX_EVTH_EVENT_NUMBER]
-        assert event.simulation_truth.reuse == self.event_headers[idx][IDX_EVTH_REUSE_NUMBER]
-        self.event_passed_trigger[idx] = True
+        assert event.simulation_truth.reuse <= total_reuses
+        self.event_passed_trigger[
+            (idx*total_reuses) + (event.simulation_truth.reuse - 1)
+        ] = True
 
         event.simulation_truth.air_shower =  AirShowerTruth(
             raw_corsika_run_header=self.run_header,
@@ -47,6 +53,18 @@ class SimulationReader(object):
         )
 
         return event
+
+
+    def _read_mmcs_corsika_headers(self):
+        if is_gzipped_file(self.mmcs_corsika_path):
+            with gzip.open(self.mmcs_corsika_path, 'rb') as fin:
+                headers = read_corsika_headers_from_file(fin)
+        else:
+            with open(self.mmcs_corsika_path, 'rb') as fin:
+                headers = read_corsika_headers_from_file(fin)
+        self.run_header = headers['run_header']
+        self.event_headers = headers['event_headers']
+
 
     def __repr__(self):
         out = '{}('.format(self.__class__.__name__)

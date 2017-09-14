@@ -14,6 +14,7 @@ setup(
         'photon_stream.production',
         'photon_stream.production.ethz',
         'photon_stream.production.isdc',
+        'photon_stream.production.sim',
         'photon_stream.muons',
         'photon_stream.simulation_truth',
         'photon_stream.muons.isdc_production',
@@ -47,6 +48,8 @@ setup(
         
         'phs.isdc.obs.status = photon_stream.production.isdc.status_main:main',
         'phs.isdc.obs.status.worker = photon_stream.production.isdc.worker_node_status:main',
+
+        'phs.sim.produce.worker = photon_stream.production.sim.worker_node_produce:main'
     ]},
     zip_safe=False,
 )
