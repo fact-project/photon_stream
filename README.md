@@ -21,10 +21,11 @@ plt.show()
 Read in the full CORSIKA simulation truth and estimate instrument response functions:
 ```python
 import photon_stream as ps
+import pandas as pd
 
 sim_reader = ps.SimulationReader(
-    photon_stream_path='tests/resources/cer011014.phs.jsonl.gz', 
-    mmcs_corsika_path='tests/resources/cer011014'
+    photon_stream_path='tests/resources/011014.phs.jsonl.gz', 
+    mmcs_corsika_path='tests/resources/011014.ch'
 )
 
 for event in sim_reader:
@@ -33,7 +34,7 @@ for event in sim_reader:
     # do deep learning ...
     pass
 
-sim_reader.event_passed_trigger
+thrown_events = pd.DataFrame(sim_reader.thrown_events())
 ```
 
 

@@ -62,9 +62,13 @@ class SimulationReader(object):
 
 
     def _guess_corresponding_mmcs_corsika_path(self, photon_stream_path):
-        run_number = int(photon_stream_path.split('.')[0])
+        run_number = int(os.path.basename(photon_stream_path).split('.')[0])
         dirname = os.path.dirname(photon_stream_path)
-        return os.path.join(dirname, '{run:06d}.ch.gz'.format(run=run_number))
+        ch_path = os.path.join(dirname, '{run:06d}.ch'.format(run=run_number))
+        if os.path.exists(ch_path):
+            return ch_path
+        else:
+            return ch_path+'.gz'
 
 
     def thrown_events(self): 
