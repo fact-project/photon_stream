@@ -2,7 +2,8 @@ import os
 from os.path import join
 from .extract_single_photons import extract_single_photons
 from .extract_corsika_headers import extract_corsika_headers
-from .produce_full_simulation_pass import RUN_NUMBER_DIGITS
+
+RUN_NUMBER_DIGITS = 5
 
 
 def produce_single_simulation_run(
@@ -15,14 +16,14 @@ def produce_single_simulation_run(
     corsika_basename = os.path.basename(corsika_path)
 
     ceres_run = int(ceres_basename.split('.')[0])
-    corsika_run = int(cor_basename[3:3+RUN_NUMBER_DIGITS+1])
+    corsika_run = int(corsika_basename[3:3+RUN_NUMBER_DIGITS+1])
 
     assert ceres_run == corsika_run
 
     os.makedirs(out_dir, exist_ok=True, mode=0o755)
 
-    corsika_header_path = '{5:d}.ch.gz'.format(ceres_run)
-    phs_basename = '{5:d}'.format(ceres_run)
+    corsika_header_path = '{run:06d}.ch.gz'.format(run=ceres_run)
+    phs_basename = '{run:06d}'.format(run=ceres_run)
 
     corsika_header_path = join(out_dir, corsika_header_path)
 
@@ -36,4 +37,6 @@ def produce_single_simulation_run(
         out_dir=out_dir,
         out_basename=phs_basename,
         fact_tools_jar_path=fact_tools_jar_path,
+        o_path=join(out_dir, '{run:06d}.o'.format(run=ceres_run)),
+	e_path=join(out_dir, '{run:06d}.e'.format(run=ceres_run)),
     )

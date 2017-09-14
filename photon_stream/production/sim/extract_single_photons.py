@@ -21,6 +21,8 @@ def extract_single_photons(
     ceres_path,
     out_dir,
     out_basename,
+    o_path,
+    e_path,
     fact_tools_jar_path='/net/big-tank/POOL/projects/fact/smueller/fact-tools/target/fact-tools-0.18.1.jar',
     fact_tools_xml_path=fact_tools_xml_path,
     mc_drs_path=mc_drs_path,
@@ -39,22 +41,25 @@ def extract_single_photons(
     out_basename    The basename e.g. run number of the output files.
     """
     with tempfile.TemporaryDirectory(prefix=tmp_dir_prefix) as tmp:
+        with open(o_path, 'w') as o, open(e_path, 'w') as e:
+            subprocess.call([
+                'java',
+           	'-XX:MaxHeapSize=1024m',
+           	'-XX:InitialHeapSize=512m', 
+                '-XX:CompressedClassSpaceSize=64m',
+                '-XX:MaxMetaspaceSize=128m',
+                '-XX:+UseConcMarkSweepGC',
+                '-XX:+UseParNewGC',
+                '-jar', fact_tools_jar_path, fact_tools_xml_path,
+                '-Dinfile=file:'+ceres_path,
+                '-Ddrsfile=file:'+mc_drs_path,
+                '-Dout_path_basename='+join(tmp, out_basename),
+                ],
+                stdout=o, 
+                stderr=e,
+            )
 
-        subprocess.call([
-            'java',
-            '-XX:MaxHeapSize=1024m',
-            '-XX:InitialHeapSize=512m',
-            '-XX:CompressedClassSpaceSize=64m',
-            '-XX:MaxMetaspaceSize=128m',
-            '-XX:+UseConcMarkSweepGC',
-            '-XX:+UseParNewGC',
-            '-jar', fact_tools_jar_path, fact_tools_xml_path,
-            '-Dinfile=file:'+ceres_path,
-            '-Ddrsfile=file:'+mc_drs_path,
-            '-Dout_path_basename='+join(tmp, out_basename),
-        ])
-
-        for tmp_path in glob(join(tmp, '*')):
-            if os.path.isfile(tmp_path):
-                os.makedirs(out_dir, exist_ok=True, mode=0o755)
-                shutil.copy(tmp_path, out_dir)
+            for tmp_path in glob(join(tmp, '*')):
+                if os.path.isfile(tmp_path):
+                    os.makedirs(out_dir, exist_ok=True, mode=0o755)
+                    shutil.copy(tmp_path, out_dir)
