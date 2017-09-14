@@ -82,6 +82,7 @@ def jobs_and_directory_tree(
     p['fact_tools_xml_path'] = fact_tools_xml_path
 
     p['phs_readme_path'] = join(p['phs_dir'], 'README.md')
+    p['phs_introduction_path'] = join(p['phs_dir'], 'phs_introduction.pdf')
 
     fraction = np.random.uniform(size=runstatus.shape[0]) < only_a_fraction
 
@@ -123,10 +124,17 @@ def jobs_and_directory_tree(
 
 def output_tree(tree):
     os.makedirs(tree['phs_dir'], exist_ok=True, mode=0o755)
+    
     readme_input_path = pkg_resources.resource_filename(
         'photon_stream', 
         join('production','resources','phs_readme.md')
     ) 
     shutil.copy(readme_input_path, tree['phs_readme_path'])
+
+    introduction_input_path = pkg_resources.resource_filename(
+        'photon_stream', 
+        join('production','resources','phs_introduction.pdf')
+    ) 
+    shutil.copy(introduction_input_path, tree['phs_introduction_path'])
     os.makedirs(tree['obs_dir'], exist_ok=True, mode=0o755)
     os.makedirs(tree['std_dir'], exist_ok=True, mode=0o755)

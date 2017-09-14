@@ -13,7 +13,7 @@ phs_jsonl_gz_paths = [
     ),
     pkg_resources.resource_filename(
         'photon_stream', 
-        os.path.join('tests','resources','cer011014.phs.jsonl.gz')
+        os.path.join('tests','resources','011014.phs.jsonl.gz')
     )
 ]
 

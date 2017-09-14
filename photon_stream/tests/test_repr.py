@@ -35,12 +35,12 @@ def test_PhotonTimeLineCluster():
 
 sim_path = pkg_resources.resource_filename(
     'photon_stream',
-    os.path.join('tests','resources','cer011014.phs.jsonl.gz')
+    os.path.join('tests','resources','011014.phs.jsonl.gz')
 )
 
 sim_corsika_path = pkg_resources.resource_filename(
     'photon_stream',
-    os.path.join('tests','resources','cer011014')
+    os.path.join('tests','resources','011014.ch')
 )
 
 sim_reader = ps.SimulationReader(sim_path, sim_corsika_path)

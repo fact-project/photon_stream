@@ -6,7 +6,12 @@ import os
 
 mmcs_corsika_path = pkg_resources.resource_filename(
     'photon_stream',
-    os.path.join('tests','resources','cer011014')
+    os.path.join('tests','resources','011014.ch')
+)
+
+photon_stream_path = pkg_resources.resource_filename(
+    'photon_stream',
+    os.path.join('tests','resources','011014.phs.jsonl.gz')
 )
 
 def test_read_MMCS_CORSIKA_headers():
@@ -38,11 +43,6 @@ def test_read_and_write_MMCS_CORSIKA_headers():
 
 
 def test_read_in_full_CORSIKA_simulation_truth():
-    photon_stream_path = pkg_resources.resource_filename(
-        'photon_stream',
-        os.path.join('tests','resources','cer011014.phs.jsonl.gz')
-    )
-
     simread = ps.SimulationReader(
         photon_stream_path=photon_stream_path, 
         mmcs_corsika_path=mmcs_corsika_path
@@ -52,4 +52,12 @@ def test_read_in_full_CORSIKA_simulation_truth():
     for event in simread:
         events.append(event)
 
-    assert len(events) == simread.event_passed_trigger.sum()
+
+def test_guess_corsika_header_path():
+    simread = ps.SimulationReader(
+        photon_stream_path=photon_stream_path
+    )
+
+    events = []
+    for event in simread:
+        events.append(event)

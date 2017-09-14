@@ -137,7 +137,7 @@ def test_Descriptor_io():
 def test_io_simulation_events():
     photon_stream_path = pkg_resources.resource_filename(
         'photon_stream',
-        os.path.join('tests','resources','cer011014.phs.jsonl.gz')
+        os.path.join('tests','resources','011014.phs.jsonl.gz')
     )
 
     run = ps.EventListReader(photon_stream_path)
@@ -148,7 +148,7 @@ def test_io_simulation_events():
         run_in.append(event)
 
     with tempfile.TemporaryDirectory(prefix='phs_sim_io_test') as tmp:
-        binary_path = os.path.join(tmp, 'cer011014.phs.gz')
+        binary_path = os.path.join(tmp, '011014.phs.gz')
 
         with gzip.open(binary_path, 'wb') as fout:
             for event in run_in:
