@@ -134,11 +134,6 @@ def jobs_and_directory_tree(
 
 def output_tree(tree):
     os.makedirs(tree['phs_dir'], exist_ok=True, mode=0o755)
-    
-    rsync_ethz_lock_path = join(tree['phs_dir'], '.rsync.ethz.lock')
-    if not exists(rsync_ethz_lock_path):
-        tools.touch(rsync_ethz_lock_path)
-
     readme_input_path = pkg_resources.resource_filename(
         'photon_stream', 
         join('production','resources','phs_readme.md')
