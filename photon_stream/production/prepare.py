@@ -8,6 +8,8 @@ import numpy as np
 import pkg_resources
 import fact
 from fact.path import tree_path
+from functools import lru_cache
+from glob import glob
 
 from .isdc._produce import QSUB_OBS_PRODUCE_PREFIX
 from .runinfo import OBSERVATION_RUN_TYPE_KEY
@@ -96,9 +98,11 @@ def jobs_and_directory_tree(
             night, runid, prefix=fact_raw_dir, suffix='.fits.fz'
         )
         if not exists(job['--raw_path']):
+            print(night, runid, 'raw path', job['--raw_path'], 'does not exist.')
             continue
 
         if np.isnan(r.DrsRunID):
+            print(night, runid, 'no drs run assigned.')
             continue
         else:
             drs_runid = int(np.round(r.DrsRunID))
@@ -106,9 +110,15 @@ def jobs_and_directory_tree(
             night, drs_runid , prefix=fact_drs_dir, suffix='.drs.fits.gz'
         )
         if not exists(job['--drs_path']):
+            print(night, runid, 'drs path', job['--drs_path'], 'does not exist.')
             continue
 
-        job['--aux_dir'] = dirname(tree_path(night, runid, prefix=fact_aux_dir, suffix=''))
+        aux_dir = dirname(tree_path(night, runid, prefix=fact_aux_dir, suffix=''))
+        if not is_aux_dir_pointing_complete(aux_dir):
+            print(night, runid, 'aux dir', aux_dir, 'is not complete yet.')
+            continue
+
+        job['--aux_dir'] = aux_dir
         job['--out_basename'] = fact.path.template_to_path(night, runid,'{N}_{R}')
         job['--out_dir'] = dirname(tree_path(night, runid, prefix=p['obs_dir'], suffix=''))
         job['--tmp_dir_basename'] = QSUB_OBS_PRODUCE_PREFIX
@@ -138,3 +148,15 @@ def output_tree(tree):
     shutil.copy(introduction_input_path, tree['phs_introduction_path'])
     os.makedirs(tree['obs_dir'], exist_ok=True, mode=0o755)
     os.makedirs(tree['std_dir'], exist_ok=True, mode=0o755)
+
+
+@lru_cache(maxsize=128)
+def is_aux_dir_pointing_complete(aux_dir):
+    if not exists(aux_dir):
+        return False
+    ok = np.zeros(3, dtype=np.bool)
+    for aux_file in glob(join(aux_dir,'*')):
+        if 'DRIVE_CONTROL_SOURCE_POSITION' in aux_file: ok[0] = 1
+        if 'DRIVE_CONTROL_TRACKING_POSITION' in aux_file: ok[1] = 1
+        if 'DRIVE_CONTROL_POINTING_POSITION' in aux_file: ok[2] = 1
+    return np.all(ok)
