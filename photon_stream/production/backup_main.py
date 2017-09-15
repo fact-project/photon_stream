@@ -10,24 +10,47 @@ Options:
 """
 import docopt
 from os.path import join
+import os
 from filelock import FileLock
 from filelock import Timeout
 import subprocess as sp
 
 
-def backup(
-    from_here=join('/','gpfs0','fact','processing','public','phs/'),
-    to_there='relleums@ethz:'+join('/','data','fact_public','phs/')
+def folder_wise_rsync_a(
+    destination_path,
+    source_path, 
+    source_host='', 
+    destination_host='', 
 ):
-"""
-rsync -av /gpfs0/fact/processing/public/phs/ relleums@ethz:/data/fact_public/phs/
-"""
+    if destination_host:
+        destination_host+=':'
+    if source_host:
+        source_host+=':'
+
+    for dirname, subdirs, files in os.walk(source_path):
+        rel_path = os.path.relpath(dirname, source_path)
+        fr = rel_path+'/'
+        to = destination_host + destination_path
+        cmd = "rsync -lptgodD -v --relative " + fr + " " + to  
+        print('\n', cmd, '\n')
+        sp.call(cmd, shell=True, cwd=source_path)
+
+
+def backup():    
     print('Start backup to ETH Zurich')
-    rsync_lock_path = join(from_here, '.rsync.ethz.lock')
+    rsync_lock_path = join('/','home','guest','relleums','.phs.isdc.backup.to.ethz.lock')
+    if not os.path.exists(rsync_lock_path):
+        with open(rsync_lock_path, 'a') as out:
+            os.utime(rsync_lock_path)
     try:
         rsync_lock = FileLock(rsync_lock_path)
-        with runstatus_lock.acquire(timeout=3600):
-            sp.call(['rsync', '-av', from_here, to_there,])
+        with rsync_lock.acquire(timeout=3600):
+            folder_wise_rsync_a(
+                source_host='',
+                source_path=join('/','gpfs0','fact','processing','public','phs/'),
+                destination_host='relleums@ihp-pc41.ethz.ch',
+                destination_path=join('/','data','fact_public','phs/'),
+            )
     except Timeout:
         print('Could not lock '+rsync_lock_path)
     print('End backup')
