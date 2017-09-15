@@ -154,9 +154,8 @@ def output_tree(tree):
 def is_aux_dir_pointing_complete(aux_dir):
     if not exists(aux_dir):
         return False
-    ok = np.zeros(3, dtype=np.bool)
+    ok = np.zeros(len(tools.DRIVE_AUX_FILE_KEYS), dtype=np.bool)
     for aux_file in glob(join(aux_dir,'*')):
-        if 'DRIVE_CONTROL_SOURCE_POSITION' in aux_file: ok[0] = 1
-        if 'DRIVE_CONTROL_TRACKING_POSITION' in aux_file: ok[1] = 1
-        if 'DRIVE_CONTROL_POINTING_POSITION' in aux_file: ok[2] = 1
+        for i, aux_drive_key in enumerate(tools.DRIVE_AUX_FILE_KEYS):
+            if aux_drive_key in aux_file: ok[i] = 1
     return np.all(ok)
