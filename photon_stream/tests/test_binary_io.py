@@ -10,6 +10,8 @@ run_path = pkg_resources.resource_filename(
     os.path.join('tests','resources','20170119_229_pass4_100events.phs.jsonl.gz')
 )
 
+modes = ['phs', 'nput']
+
 def test_binary_check():
     with tempfile.TemporaryDirectory(prefix='phs') as tmp:
         path = os.path.join(tmp, 'run.phs.gz')
@@ -59,36 +61,33 @@ def test_binary_io():
 
 def test_jsonl2binary():
 
-    run_path = pkg_resources.resource_filename(
-        'photon_stream',
-        os.path.join('tests','resources','20170119_229_pass4_100events.phs.jsonl.gz')
-    )
+    for mode in modes:
 
-    run = ps.EventListReader(run_path)
-    run_in = []
-    run_back = []
-    for event in run:
-        run_in.append(event)
+        run = ps.EventListReader(run_path)
+        run_in = []
+        run_back = []
+        for event in run:
+            run_in.append(event)
 
-    with tempfile.TemporaryDirectory(prefix='phs_test_binary') as tmp:
+        with tempfile.TemporaryDirectory(prefix='phs_test_binary') as tmp:
 
-        binary_path = os.path.join(tmp, '20170119_229.phs.bin')
+            binary_path = os.path.join(tmp, '20170119_229.phs.bin')
 
-        with gzip.open(binary_path, 'wb') as fout:
-            for event in run_in:
-                ps.io.binary.append_event_to_file(event, fout)
+            with gzip.open(binary_path, 'wb') as fout:
+                for event in run_in:
+                    ps.io.binary.append_event_to_file(event, fout, mode=mode)
 
-        with gzip.open(binary_path, 'rb') as fin:
-            while True:
-                try:
-                    run_back.append(ps.io.binary.read_event_from_file(fin))
-                except StopIteration:
-                    break
+            with gzip.open(binary_path, 'rb') as fin:
+                while True:
+                    try:
+                        run_back.append(ps.io.binary.read_event_from_file(fin, mode=mode))
+                    except StopIteration:
+                        break
 
-    for i in range(len(run_in)):
-        evt_in = run_in[i]
-        evt_ba = run_back[i]
-        assert evt_in == evt_ba
+        for i in range(len(run_in)):
+            evt_in = run_in[i]
+            evt_ba = run_back[i]
+            assert evt_in == evt_ba
 
 
 def test_Descriptor_io():

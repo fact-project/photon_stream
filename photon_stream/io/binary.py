@@ -5,6 +5,8 @@ from ..simulation_truth import SimulationTruth
 from . import magic_constants as magic
 from array import array
 import numpy as np
+from .binary_nput import append_nput_photonstream_to_file
+from .binary_nput import read_nput_photonstream_from_file
 
 LINEBREAK = np.array([np.iinfo(np.uint8).max], dtype=np.uint8)
 OBSERVATION_EVENT_TYPE_KEY = 0
@@ -205,7 +207,7 @@ def read_saturated_pixels_from_file(fin):
     return saturated_pixels_raw
 
 
-def append_event_to_file(event, fout):
+def append_event_to_file(event, fout, mode='phs'):
     if hasattr(event, 'observation_info'):
         descriptor = Descriptor()
         descriptor.event_type = OBSERVATION_EVENT_TYPE_KEY
@@ -220,11 +222,14 @@ def append_event_to_file(event, fout):
     else:
         raise
     append_pointing_to_file(event, fout)
-    append_photonstream_to_file(event.photon_stream, fout)
+    if mode == 'phs':
+        append_photonstream_to_file(event.photon_stream, fout)
+    elif mode == 'nput':
+        append_nput_photonstream_to_file(event.photon_stream, fout)
     append_saturated_pixels_to_file(event.photon_stream.saturated_pixels, fout)
 
 
-def read_event_from_file(fin):
+def read_event_from_file(fin, mode='phs'):
     try:
         descriptor = read_Descriptor_from_file(fin)
         event = Event()
@@ -240,7 +245,10 @@ def read_event_from_file(fin):
         else:
             raise
         read_pointing_from_file(event, fin)
-        event.photon_stream = read_photonstream_from_file(fin)  
+        if mode == 'phs':
+            event.photon_stream = read_photonstream_from_file(fin)
+        elif mode == 'nput':
+            event.photon_stream = read_nput_photonstream_from_file(fin)
         event.photon_stream.saturated_pixels = read_saturated_pixels_from_file(fin)
         return event
     except:
