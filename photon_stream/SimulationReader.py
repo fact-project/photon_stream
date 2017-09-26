@@ -83,10 +83,10 @@ class SimulationReader(object):
                     'energy': self.event_headers[evtidx][4-1],
                     'theta': self.event_headers[evtidx][11-1],
                     'phi': self.event_headers[evtidx][12-1],
-                    'impact_x': self.event_headers[evtidx][98+int(1+reuseidx)-1],
-                    'impact_y': self.event_headers[evtidx][118+int(1+reuseidx)-1],
-                    'starting_altitude': self.event_headers[evtidx][5-1],
-                    'hight_of_first_interaction': self.event_headers[evtidx][7-1],
+                    'impact_x': self.event_headers[evtidx][98+int(1+reuseidx)-1]/1e2,
+                    'impact_y': self.event_headers[evtidx][118+int(1+reuseidx)-1]/1e2,
+                    'starting_altitude': self.event_headers[evtidx][5-1]/1e2,
+                    'hight_of_first_interaction': self.event_headers[evtidx][7-1]/1e2,
                 }
                 _thrown_events.append(evt)
         return _thrown_events
