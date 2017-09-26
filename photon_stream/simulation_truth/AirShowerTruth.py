@@ -66,6 +66,14 @@ class AirShowerTruth(object):
     def total_reuse(self):
         return self.raw_corsika_event_header[98-1]
 
+    @property
+    def starting_altitude(self):
+        return self.raw_corsika_event_header[5-1]
+
+    @property
+    def hight_of_first_interaction(self):
+        return self.raw_corsika_event_header[7-1]
+
     def impact_x(self, reuse):
         return self.raw_corsika_event_header[98+int(reuse)-1]
 
