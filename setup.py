@@ -28,7 +28,7 @@ setup(
     install_requires=[
         'docopt',
         'scipy',
-        'sklearn',
+        'scikit-learn',
         'scikit-image',
         'matplotlib',
         'pyfact',
