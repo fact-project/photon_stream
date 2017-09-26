@@ -68,14 +68,14 @@ class AirShowerTruth(object):
 
     @property
     def starting_altitude(self):
-        return self.raw_corsika_event_header[5-1]
+        return self.raw_corsika_event_header[5-1]/1e2
 
     @property
     def hight_of_first_interaction(self):
-        return self.raw_corsika_event_header[7-1]
+        return self.raw_corsika_event_header[7-1]/1e2
 
     def impact_x(self, reuse):
-        return self.raw_corsika_event_header[98+int(reuse)-1]
+        return self.raw_corsika_event_header[98+int(reuse)-1]/1e2
 
     def impact_y(self, reuse):
-        return self.raw_corsika_event_header[118+int(reuse)-1]
+        return self.raw_corsika_event_header[118+int(reuse)-1]/1e2
