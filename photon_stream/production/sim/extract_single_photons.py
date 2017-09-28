@@ -23,6 +23,7 @@ def extract_single_photons(
     out_basename,
     o_path,
     e_path,
+    java_path='/net/big-tank/POOL/projects/fact/smueller/java',
     fact_tools_jar_path='/net/big-tank/POOL/projects/fact/smueller/fact-tools/target/fact-tools-0.18.1.jar',
     fact_tools_xml_path=fact_tools_xml_path,
     mc_drs_path=mc_drs_path,
@@ -43,7 +44,7 @@ def extract_single_photons(
     with tempfile.TemporaryDirectory(prefix=tmp_dir_prefix) as tmp:
         with open(o_path, 'w') as o, open(e_path, 'w') as e:
             subprocess.call([
-                'java',
+                os.path.join(java_path, 'bin', 'java'),
            	'-XX:MaxHeapSize=1024m',
            	'-XX:InitialHeapSize=512m', 
                 '-XX:CompressedClassSpaceSize=64m',
