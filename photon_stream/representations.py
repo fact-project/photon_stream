@@ -79,7 +79,7 @@ def raw_phs_to_image_sequence(raw_phs):
 
 def raw_phs_to_image(raw_phs):
     image = np.zeros(
-        io.magic_constants.NUMBER_OF_PIXELS
+        io.magic_constants.NUMBER_OF_PIXELS,
         dtype=np.int16,
     )
     pixel_chid = 0
