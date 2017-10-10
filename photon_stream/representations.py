@@ -75,3 +75,23 @@ def raw_phs_to_image_sequence(raw_phs):
             ] += 1 
 
     return image_sequence
+
+
+def masked_raw_phs(mask, raw_phs):
+    number_photons = mask.sum()
+    raw_masked_phs = np.zeros(
+        number_photons + io.magic_constants.NUMBER_OF_PIXELS, 
+        dtype=np.uint8,
+    )
+    photon = 0
+    symbol_out = 0
+    for s in raw_phs:
+        if s == io.binary.LINEBREAK:
+            raw_masked_phs[symbol_out] = io.binary.LINEBREAK
+            symbol_out += 1
+        else:
+            if mask[photon]:
+                raw_masked_phs[symbol_out] = s
+                symbol_out += 1
+            photon += 1
+    return raw_masked_phs
