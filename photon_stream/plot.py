@@ -20,31 +20,39 @@ def event(event, mask=None):
 
 def add_event_2_ax(event, ax, mask=None, color='b'):
     xyt = event.photon_stream.flatten()
-
-    xyt[:,2] *= 1e9
-    min_time = xyt[:,2].min()
-    max_time = xyt[:,2].max()
-
     if mask is not None:
         xyt = xyt[mask]
-
     ax.set_title(event._info())
-    fovR = event.photon_stream.geometry['fov_radius']
-    add_ring_2_ax(x=0.0, y=0.0, z=min_time, r=fovR, ax=ax)
-    ax.set_xlim(-fovR, fovR)
-    ax.set_ylim(-fovR, fovR)
+    fov_radius = event.photon_stream.geometry['fov_radius']
+    add_point_cloud_2_ax(
+        point_cloud=xyt,
+        fov_radius=fov_radius,
+        ax=ax, 
+        color=color
+    )
+
+
+def add_point_cloud_2_ax(point_cloud, fov_radius, ax, color='b'):
+    point_cloud[:,2] *= 1e9
+    min_time = point_cloud[:,2].min()
+    max_time = point_cloud[:,2].max()
+
+    add_ring_2_ax(x=0.0, y=0.0, z=min_time, r=fov_radius, ax=ax)
+    ax.set_xlim(-fov_radius, fov_radius)
+    ax.set_ylim(-fov_radius, fov_radius)
     ax.set_zlim(min_time, max_time)
     ax.set_xlabel('x/deg')
     ax.set_ylabel('y/deg')
     ax.set_zlabel('t/ns')
     ax.scatter(
-        xyt[:,0],
-        xyt[:,1],
-        xyt[:,2],
+        point_cloud[:,0],
+        point_cloud[:,1],
+        point_cloud[:,2],
         lw=0,
         alpha=0.075,
         s=55.,
-        c=color)
+        c=color
+    )
 
 
 def add_ring_2_ax(x,y,z,r, ax, color='k', line_width=1.0):
