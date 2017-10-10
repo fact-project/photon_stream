@@ -6,6 +6,8 @@ import gzip
 import os
 import json
 
+rad2deg = np.rad2deg(1)
+
 header_dtype = np.dtype([
     ('Night', np.uint32),
     ('Run', np.uint32),
@@ -89,9 +91,9 @@ def extract_muons_from_run(input_run_path, output_run_path, output_run_header_pa
                     head2 = np.zeros(8, dtype=np.float32)
                     head2[0] = event.zd
                     head2[1] = event.az
-                    head2[2] = muon_features['muon_ring_cx']
-                    head2[3] = muon_features['muon_ring_cy']
-                    head2[4] = muon_features['muon_ring_r']
+                    head2[2] = muon_features['muon_ring_cx']*rad2deg
+                    head2[3] = muon_features['muon_ring_cy']*rad2deg
+                    head2[4] = muon_features['muon_ring_r']*rad2deg
                     head2[5] = mean_arrival_time_muon_cluster
                     head2[6] = muon_features['muon_ring_overlapp_with_field_of_view']
                     head2[7] = muon_features['number_of_photons']

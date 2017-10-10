@@ -2,21 +2,22 @@ from sklearn.cluster import DBSCAN
 import numpy as np
 
 
-def normalized_photon_stream_cloud_repr(photon_stream, deg_over_s=0.35e9):
+def normalized_photon_stream_cloud_repr(photon_stream, rad_over_s):
     xyt = photon_stream.flatten()
     if xyt.shape[0] == 0:
         return xyt
     fov_radius = photon_stream.geometry['fov_radius']
     xyt[:,0:2] /= (fov_radius*2.0)
-    xyt[:,2] /= (fov_radius*2.0)/deg_over_s
+    xyt[:,2] /= (fov_radius*2.0)/rad_over_s
     return xyt
 
 
 class PhotonStreamCluster(object):
     def __init__(self, photon_stream, eps=0.1, min_samples=20, deg_over_s=0.35e9):
+        rad_over_s = np.deg2rad(deg_over_s)
         self.xyt = normalized_photon_stream_cloud_repr(
             photon_stream=photon_stream,
-            deg_over_s=deg_over_s,
+            rad_over_s=rad_over_s,
         )
 
         if self.xyt.shape[0] == 0:

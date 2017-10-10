@@ -7,6 +7,8 @@ from .tools import circle_overlapp
 from .tools import tight_circle_on_off_region
 from .tools import xy2polar
 
+deg2rad = np.deg2rad(1)
+
 def detection(
     event, 
     clusters,
@@ -33,6 +35,12 @@ def detection(
 
     clusters    Photons-stream cluster of the event.
     """
+    initial_circle_model_residual_threshold *= deg2rad
+    density_circle_model_residual_threshold *= deg2rad
+    min_muon_ring_radius *= deg2rad
+    max_muon_ring_radius *= deg2rad
+    min_circumference_of_muon_ring_in_field_of_view *= deg2rad
+
 
     ret = {}
     ret['is_muon'] = False
@@ -144,7 +152,7 @@ def detection(
         
     # continues ring population
     # -------------------------
-    min_ring_circumfance = 2.5
+    min_ring_circumfance = 2.5*deg2rad
     ring_circumfance = 2*r*np.pi
     min_ring_fraction = min_ring_circumfance/ring_circumfance
 

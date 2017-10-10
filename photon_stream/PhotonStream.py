@@ -7,9 +7,9 @@ pixels = fact.instrument.get_pixel_dataframe()
 pixels.sort_values('CHID', inplace=True)
 
 geometry = {
-    'x_angle': pixels.x_angle.as_matrix(),
-    'y_angle': pixels.y_angle.as_matrix(),
-    'fov_radius': fact.instrument.camera.FOV_RADIUS,
+    'x_angle': np.deg2rad(pixels.x_angle.as_matrix()),
+    'y_angle': np.deg2rad(pixels.y_angle.as_matrix()),
+    'fov_radius': np.deg2rad(fact.instrument.camera.FOV_RADIUS),
 }
 
 MAX_RESIDUAL_SLICE_DURATION_NS = 1e-9
