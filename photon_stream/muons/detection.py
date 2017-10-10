@@ -45,7 +45,7 @@ def detection(
     ret = {}
     ret['is_muon'] = False
 
-    field_of_view_radius = event.photon_stream.geometry['fov_radius']
+    field_of_view_radius = event.photon_stream.geometry.fov_radius
 
     full_cluster_mask = clusters.labels>=0
     number_of_photons = full_cluster_mask.sum()
