@@ -6,6 +6,7 @@ from matplotlib.patches import Circle
 import os
 import tempfile
 import subprocess
+from .geometry import GEOMETRY
 
 
 def event(event, mask=None):
@@ -23,7 +24,7 @@ def add_event_2_ax(event, ax, mask=None, color='b'):
     if mask is not None:
         xyt = xyt[mask]
     ax.set_title(event._info())
-    fov_radius = event.photon_stream.geometry['fov_radius']
+    fov_radius = event.photon_stream.geometry.fov_radius
     add_point_cloud_2_ax(
         point_cloud=xyt,
         fov_radius=fov_radius,
@@ -32,7 +33,18 @@ def add_event_2_ax(event, ax, mask=None, color='b'):
     )
 
 
-def add_point_cloud_2_ax(point_cloud, fov_radius, ax, color='b'):
+def point_cloud(point_cloud):
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+    add_point_cloud_2_ax(point_cloud=point_cloud, ax=ax) 
+
+
+def add_point_cloud_2_ax(
+    point_cloud,
+    ax,
+    fov_radius=GEOMETRY.fov_radius, 
+    color='b'
+):
     fov_radius_deg = np.rad2deg(fov_radius)
     pcl = point_cloud.copy()
     pcl[:,0] = np.rad2deg(pcl[:,0]) # to deg
