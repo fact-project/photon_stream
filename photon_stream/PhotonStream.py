@@ -1,7 +1,8 @@
-from math import nan
-from copy import deepcopy
 import fact
 import numpy as np
+from .io import magic_constants
+from .representations import raw_phs_to_point_cloud
+from .representations import raw_phs_to_list_of_lists
 
 pixels = fact.instrument.get_pixel_dataframe()
 pixels.sort_values('CHID', inplace=True)
@@ -15,88 +16,47 @@ geometry = {
 MAX_RESIDUAL_SLICE_DURATION_NS = 1e-9
 
 class PhotonStream(object):
-    def __init__(self, time_lines=None, slice_duration=nan):
-        self.slice_duration = slice_duration
+    def __init__(self):
+        self.slice_duration = magic_constants.TIME_SLICE_DURATION_S
         self.geometry = geometry
-        if time_lines is None:
-            self.time_lines = []
-        else:
-            self.time_lines = time_lines
-
-
-    @property
-    def photon_count(self):
-        return np.array(
-            [len(tl) for tl in self.time_lines], 
-            dtype=np.int64)
+        self.raw = None
 
     @property
     def number_photons(self):
-        return self.photon_count.sum()
+        return len(self.raw) - magic_constants.NUMBER_OF_PIXELS
 
     @property
-    def min_arrival_slice(self):
-        if self.number_photons > 0:
-            return min(min(tl) for tl in self.time_lines if tl)
-        else:
-            return nan
-
-    @property
-    def max_arrival_slice(self):
-        if self.number_photons > 0:
-            return max(max(tl) for tl in self.time_lines if tl)
-        else:
-            return nan
-
-    def truncated_time_lines(self, start_time, end_time):
-        ''' return new PhotonStream with truncated time_lines
-        containing only arrival slices contained
-        in (start_time, end_time]
-        '''
-        tmp = PhotonStream(
-            time_lines=deepcopy(self.time_lines),
-            slice_duration=self.slice_duration
-        )
-        tmp._truncate_time_lines(start_time, end_time)
-        return tmp
-
-    def _truncate_time_lines(self, start_time, end_time):
-        ''' truncate self.time_lines
-        to contain only arrival slices within (start_time, end_time]
-        '''
-        for time_line in self.time_lines:
-            for arrival_slice in time_line[:]:
-                arrival_time = arrival_slice * self.slice_duration
-                if arrival_time < start_time:
-                    time_line.remove(arrival_slice)
-                if arrival_time >= end_time:
-                    time_line.remove(arrival_slice)
-
-    def flatten(self):
+    def point_cloud(self):
         ''' Returns a Nx3 matrix for N photons in the stream. Each row
-        represents a photon in the three dimensinal space of x-direction [deg],
-        y-direction [deg], and arrival time [s].
+        represents a photon in the three dimensinal space of x-direction [rad],
+        y-direction [rad], and arrival time [s].
 
         This is an alternative, but equally complete representation of the raw
         photon-stream. It is useful for e.g. directly plotting the photon stream
         into its 3 dimensional space, or for density clustering in the stream.
         '''
-        xyt = []
-        for px, pixel_photons in enumerate(self.time_lines):
-            for photon_slice in pixel_photons:
-                    xyt.append([
-                        geometry['x_angle'][px],
-                        geometry['y_angle'][px],
-                        photon_slice * self.slice_duration
-                        ])
-        return np.array(xyt)
+        return raw_phs_to_point_cloud(
+            self.raw,
+            cx=self.geometry['x_angle'],
+            cy=self.geometry['y_angle'],
+        )
+
+    @property
+    def list_of_lists(self):
+        '''
+        Returns a list along all pixels of lists for each photon arrival time slice. 
+        '''
+        return raw_phs_to_list_of_lists(self.raw)
+
+
+    @property
+    def image_sequence(self):
+        return raw_phs_to_image_sequence(self.raw) 
 
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
             if not np.abs(self.slice_duration - other.slice_duration) < MAX_RESIDUAL_SLICE_DURATION_NS: return False
-            if not self.number_photons == other.number_photons: return False
-            if not len(self.time_lines) == len(other.time_lines): return False
 
             # Saturated Pixels
             if not len(self.saturated_pixels) == len(other.saturated_pixels): return False            
@@ -104,16 +64,11 @@ class PhotonStream(object):
                 if not saturated_pixel_in == other.saturated_pixels[i]: return False
 
             # Raw Photon-Stream
-            for pixel in range(len(self.time_lines)):
-                number_of_photons_in_pixel_in = len(self.time_lines[pixel])
-                number_of_photons_in_pixel_ba = len(other.time_lines[pixel])
+            if not self.raw.shape[0] == other.raw.shape[0]:
+                return False
 
-                if not number_of_photons_in_pixel_in == number_of_photons_in_pixel_ba:
-                    return False
-
-                for photon in range(number_of_photons_in_pixel_in):
-                    if not self.time_lines[pixel][photon] == other.time_lines[pixel][photon]:
-                        return False
+            if not np.all(self.raw == other.raw):
+                return False
 
             return True
         else:
@@ -121,8 +76,7 @@ class PhotonStream(object):
 
 
     def _info(self):
-        info  = str(len(self.time_lines)) + ' time lines, '
-        info += str(self.number_photons) + ' photons'
+        info = str(self.number_photons) + ' photons'
         return info
 
 

@@ -3,29 +3,6 @@ import pkg_resources
 import os
 
 
-def test_run_inspection():
-    run_path = pkg_resources.resource_filename(
-        'photon_stream',
-        os.path.join('tests','resources','20170119_229_pass4_100events.phs.jsonl.gz')
-    )
-
-    inspection = ps.EventListReader.inspect(run_path)
-    assert len(inspection) == 100
-
-
-def test_run_can_open_file_and_inspect_it():
-
-    run_path = pkg_resources.resource_filename(
-        'photon_stream',
-        os.path.join('tests','resources','20170119_229_pass4_100events.phs.jsonl.gz')
-    )
-
-    inspection = ps.EventListReader.inspect(run_path)
-    inspection_event_26 = inspection.loc[26]
-    assert inspection_event_26.total_number_of_photons == 4625
-    assert inspection_event_26.number_of_saturated_pixels == 0
-
-
 def test_run_can_iterate_over_file():
     run_path = pkg_resources.resource_filename(
         'photon_stream',

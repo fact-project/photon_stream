@@ -123,22 +123,9 @@ def read_pointing_from_file(event, fout):
 def append_photonstream_to_file(phs, fout):
 
     # Write number of pixels plus number of photons
-    number_of_pixels_and_photons = len(phs.time_lines) + phs.number_photons
+    number_of_pixels_and_photons = len(phs.raw)
     fout.write(np.uint32(number_of_pixels_and_photons).tobytes())
-
-    # WRITE PHOTON ARRIVAL SLICES
-    raw_time_lines = np.zeros(
-        number_of_pixels_and_photons, 
-        dtype=np.uint8
-    )
-    pos = 0
-    for time_line in phs.time_lines:
-        for photon_arrival in time_line:
-            raw_time_lines[pos] = photon_arrival
-            pos += 1
-        raw_time_lines[pos] = LINEBREAK
-        pos += 1
-    fout.write(raw_time_lines.tobytes())
+    fout.write(phs.raw.tobytes())
 
 
 def read_photonstream_from_file(fin):
@@ -153,30 +140,10 @@ def read_photonstream_from_file(fin):
     )[0]
 
     # read photon-stream
-    raw_time_lines = np.fromstring(
+    phs.raw = np.fromstring(
         fin.read(number_of_pixels_and_photons),
         dtype=np.uint8
     )
-
-    """
-    The following conversion is the dominant limit for the event rate during 
-    reading.
-    Without: 9430Hz
-    With: 118Hz
-    """
-
-    phs.time_lines = []
-    if len(raw_time_lines) > 0:
-        phs.time_lines.append(array('B'))
-
-    pixel = 0
-    for i, symbol in enumerate(raw_time_lines):
-        if symbol == LINEBREAK:
-            pixel += 1
-            if i+1 < len(raw_time_lines):
-                phs.time_lines.append(array('B'))
-        else:
-            phs.time_lines[pixel].append(symbol)
     return phs
 
 

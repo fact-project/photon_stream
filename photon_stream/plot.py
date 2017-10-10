@@ -19,7 +19,7 @@ def event(event, mask=None):
 
 
 def add_event_2_ax(event, ax, mask=None, color='b'):
-    xyt = event.photon_stream.flatten()
+    xyt = event.photon_stream.point_cloud
     if mask is not None:
         xyt = xyt[mask]
     ax.set_title(event._info())

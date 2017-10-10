@@ -31,12 +31,14 @@ def test_binary_io():
             for evt in run:
                 run_ps.append(evt.photon_stream)
                 ps.io.binary.append_photonstream_to_file(evt.photon_stream, bf)
+                ps.io.binary.append_saturated_pixels_to_file(evt.photon_stream.saturated_pixels, bf)
 
         run_ps_back = []
         with open(bin_run_path, 'rb') as bf:
             while True:
                 try:
                     phs = ps.io.binary.read_photonstream_from_file(bf)
+                    phs.saturated_pixels = ps.io.binary.read_saturated_pixels_from_file(bf)
                     run_ps_back.append(phs)
                 except:
                     break
@@ -48,14 +50,7 @@ def test_binary_io():
             phst1 = run_ps_back[run_index]
 
             assert np.abs(phst0.slice_duration - phst1.slice_duration) < 1e-15
-            assert len(phst0.time_lines) == len(phst1.time_lines)
-
-
-            for i in range(len(phst0.time_lines)):
-                assert len(phst0.time_lines[i]) == len(phst1.time_lines[i])
-
-                for s in range(len(phst0.time_lines[i])):
-                    assert phst0.time_lines[i][s] == phst1.time_lines[i][s]
+            assert phst0 == phst1
 
 
 def test_jsonl2binary():

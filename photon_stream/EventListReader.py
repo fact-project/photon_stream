@@ -52,25 +52,3 @@ class EventListReader:
         out += "path '" + self.path + "'"
         out += ')\n'
         return out
-
-
-
-    @staticmethod
-    def inspect(path):
-        """
-        Returns a pandas DataFrame() containing a summarized statistics of this
-        run.
-        """
-        reader = EventListReader(path)
-        inspection = pd.DataFrame([{
-            'number_of_saturated_pixels': len(event.photon_stream.saturated_pixels),
-            'total_number_of_photons': event.photon_stream.number_photons,
-            'zd': event.zd,
-            'az': event.az,
-        } for event in reader])
-        """
-        'trigger_type': event.trigger_type,
-        'time': event.time,
-        'id': event.id,
-        """
-        return inspection

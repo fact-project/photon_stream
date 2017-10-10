@@ -54,7 +54,7 @@ def detection(
     if number_of_photons < initial_circle_model_min_samples:
         return ret
 
-    flat_photon_stream = event.photon_stream.flatten()
+    flat_photon_stream = clusters.point_cloud
     full_clusters_fps = flat_photon_stream[full_cluster_mask]
 
     circle_model, inliers = ransac(
@@ -91,6 +91,8 @@ def detection(
     ret['arrival_time_stddev'] = arrival_time_stddev
     if arrival_time_stddev > max_arrival_time_stddev:
         return ret
+
+    ret['mean_arrival_time_muon_cluster'] = full_clusters_fps[:,2].mean()
 
     number_of_ring_photons = inliers.sum()
     initial_circle_model_photon_ratio = number_of_ring_photons/number_of_photons

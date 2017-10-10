@@ -77,10 +77,6 @@ def extract_muons_from_run(input_run_path, output_run_path, output_run_header_pa
                     f_muon_run.write('\n')
 
                     # EXPORT EVENT header
-                    all_photons_in_event = event.photon_stream.flatten()
-                    muon_cluster = all_photons_in_event[photon_clusters.labels>=0]
-                    mean_arrival_time_muon_cluster = muon_cluster[:,2].mean()
-
                     head1 = np.zeros(5, dtype=np.uint32)
                     head1[0] = event.observation_info.night
                     head1[1] = event.observation_info.run
@@ -94,7 +90,7 @@ def extract_muons_from_run(input_run_path, output_run_path, output_run_header_pa
                     head2[2] = muon_features['muon_ring_cx']*rad2deg
                     head2[3] = muon_features['muon_ring_cy']*rad2deg
                     head2[4] = muon_features['muon_ring_r']*rad2deg
-                    head2[5] = mean_arrival_time_muon_cluster
+                    head2[5] = muon_features['mean_arrival_time_muon_cluster']
                     head2[6] = muon_features['muon_ring_overlapp_with_field_of_view']
                     head2[7] = muon_features['number_of_photons']
 

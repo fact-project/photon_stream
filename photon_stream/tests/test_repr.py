@@ -25,12 +25,13 @@ def test_ObservationInfo():
     print(event.observation_info.__repr__())
 
 def test_PhotonStreamCluster():
-    phs = ps.PhotonStreamCluster(event.photon_stream)
-    print(phs.__repr__())
+    phc = ps.PhotonStreamCluster(event.photon_stream)
+    print(phc.__repr__())
 
 def test_PhotonTimeLineCluster():
-    phs = ps.PhotonTimeLineCluster(event.photon_stream.time_lines[0])
-    print(phs.__repr__())
+    lol = ps.representations.raw_phs_to_list_of_lists(event.photon_stream.raw)
+    phc = ps.PhotonTimeLineCluster(lol[0])
+    print(phc.__repr__())
 
 
 sim_path = pkg_resources.resource_filename(

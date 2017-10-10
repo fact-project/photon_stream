@@ -6,6 +6,8 @@ from . import magic_constants as magic
 import ujson as json
 import numpy as np
 from array import array
+from ..representations import list_of_lists_to_raw_phs
+from ..representations import raw_phs_to_list_of_lists
 
 
 def read_event_from_dict(event_dict):
@@ -66,9 +68,8 @@ def append_ObservationInformation_to_dict(obs, event_dict):
 def read_PhotonStream_from_dict(event_dict):
     ps = PhotonStream()
     ps.slice_duration = np.float32(magic.TIME_SLICE_DURATION_S)
-    ps.time_lines = []
-    for time_line in event_dict['PhotonArrivals_500ps']:
-        ps.time_lines.append(array('B', time_line))
+    lol = event_dict['PhotonArrivals_500ps']
+    ps.raw = list_of_lists_to_raw_phs(lol)
     ps.saturated_pixels = np.array(
         event_dict['SaturatedPixels'],
         dtype=np.uint16
@@ -77,10 +78,8 @@ def read_PhotonStream_from_dict(event_dict):
 
 
 def append_PhotonStream_to_dict(phs, event_dict):
-    time_lines = []
-    for time_line in phs.time_lines:
-        time_lines.append(time_line.tolist())
-    event_dict['PhotonArrivals_500ps'] = time_lines
+    lol = raw_phs_to_list_of_lists(phs.raw)
+    event_dict['PhotonArrivals_500ps'] = lol
     event_dict['SaturatedPixels'] = phs.saturated_pixels.tolist()
     return event_dict
 
