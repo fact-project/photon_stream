@@ -1,24 +1,15 @@
-import fact
 import numpy as np
 from .io import magic_constants
 from .representations import raw_phs_to_point_cloud
 from .representations import raw_phs_to_list_of_lists
-
-pixels = fact.instrument.get_pixel_dataframe()
-pixels.sort_values('CHID', inplace=True)
-
-geometry = {
-    'x_angle': np.deg2rad(pixels.x_angle.as_matrix()),
-    'y_angle': np.deg2rad(pixels.y_angle.as_matrix()),
-    'fov_radius': np.deg2rad(fact.instrument.camera.FOV_RADIUS),
-}
+from .geometry import GEOMETRY
 
 MAX_RESIDUAL_SLICE_DURATION_NS = 1e-9
 
 class PhotonStream(object):
     def __init__(self):
         self.slice_duration = magic_constants.TIME_SLICE_DURATION_S
-        self.geometry = geometry
+        self.geometry = GEOMETRY
         self.raw = None
 
     @property
@@ -37,8 +28,8 @@ class PhotonStream(object):
         '''
         return raw_phs_to_point_cloud(
             self.raw,
-            cx=self.geometry['x_angle'],
-            cy=self.geometry['y_angle'],
+            cx=self.geometry.x_angle,
+            cy=self.geometry.y_angle,
         )
 
     @property

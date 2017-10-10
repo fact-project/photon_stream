@@ -13,7 +13,7 @@ class PhotonStreamCluster(object):
             self.number = 0
             return
 
-        fov_radius = photon_stream.geometry['fov_radius']
+        fov_radius = photon_stream.geometry.fov_radius
         abs_eps = eps * (2.0*fov_radius)
 
         dbscan = DBSCAN(eps=abs_eps, min_samples=min_samples).fit(self.xyt)
