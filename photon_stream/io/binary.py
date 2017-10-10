@@ -8,7 +8,7 @@ import numpy as np
 from .binary_nput import append_nput_photonstream_to_file
 from .binary_nput import read_nput_photonstream_from_file
 
-LINEBREAK = np.array([np.iinfo(np.uint8).max], dtype=np.uint8)
+LINEBREAK = np.uint8(np.iinfo(np.uint8).max)
 OBSERVATION_EVENT_TYPE_KEY = 0
 SIMULATION_EVENT_TYPE_KEY = 1
 
