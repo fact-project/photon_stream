@@ -2,6 +2,7 @@ import numpy as np
 from ..EventListReader import EventListReader
 from .detection import detection
 from ..PhotonCluster import PhotonStreamCluster
+from ..io.jsonl import event_to_dict
 import gzip
 import os
 import json
@@ -72,7 +73,7 @@ def extract_muons_from_run(input_run_path, output_run_path, output_run_header_pa
                 if muon_features['is_muon']:
 
                     # EXPORT EVENT in JSON
-                    event_dict = event.to_dict()
+                    event_dict = event_to_dict(event)
                     json.dump(event_dict, f_muon_run)
                     f_muon_run.write('\n')
 
