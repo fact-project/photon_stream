@@ -1,0 +1,7 @@
+# Photon-Stream for FACT
+# ----------------------
+# To be run at ISDC Geneva on a 'nx' node which has internet access
+
+# 'Backup' the isdc photon-stream files to ETH-Zurich
+# ---------------------------------------------------
+37 18 * * *  /home/guest/relleums/anaconda3/bin/phs.isdc.backup.to.ethz >> /home/guest/relleums/.phs.isdc.backup.to.ethz.log
