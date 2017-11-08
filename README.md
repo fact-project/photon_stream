@@ -1,4 +1,10 @@
 # The FACT Photon-Stream [![Build Status](https://travis-ci.org/fact-project/photon_stream.svg?branch=master)](https://travis-ci.org/fact-project/photon_stream)
+
+ - [All FACT events (observations and simulations)](https://ihp-pc41.ethz.ch/public/phs/)
+ - [White Paper ICRC2017](https://pos.sissa.it/301/801/pdf)
+ - [Video presentation](https://www.youtube.com/watch?v=F0C2tcj1rb8)
+ - [C++ reader and writer](https://github.com/fact-project/photon_stream_cpp)
+
 The photon-stream is based on the [single photon extractor](https://github.com/fact-project/single_photon_extractor). The events of the FACT Imaging Atmospheric Cherenkov Telecope (IACT) can be represented as a list of lists of arrival times of individual night-sky-background and air-shower photons. We call this list of lists the photon-stream.
 This python package collects tools to produce, visualize and analyse photon-stream (phs) events.
 
