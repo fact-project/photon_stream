@@ -2,6 +2,7 @@ import numpy as np
 from .io import magic_constants
 from .representations import raw_phs_to_point_cloud
 from .representations import raw_phs_to_list_of_lists
+from .representations import raw_phs_to_image_sequence
 from .geometry import GEOMETRY
 
 MAX_RESIDUAL_SLICE_DURATION_NS = 1e-9
