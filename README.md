@@ -48,7 +48,20 @@ The photon-stream format is already fully calibrated and does not need additiona
 
 The photon-stream format is intended and optimized to do __astronomy__. We belive, that for effective physics analysis it is crucial to have the observed events as small in storage space as any possible. We want to enable a Bachelor student to analyse years of FACT observations on her notebook! We want to enable our students to transfer a full 5min FACT observation run via email. We want to give our students something that they are familiar with, i.e. the concept of single photons instead of readout calibration and artifact foo. We want to keep as much of the air shower physics as possible and even gain additional knowledge which was not accessible with our current 'one arrival time only' policy which is still a heritage of our PMT based ancestors. Finally, we want to reveal, for the first time ever, the true potential of an SIPM based IACT. This is the FACT photon-stream.
 
-# Json-Lines format
+# Memory representations
+Depending on the computaional task, the information in the photon-stream can be represented in different ways in memory which can ease the processing. 
+
+## List-of-lists
+The list-of-lists in-memory representation is an outer list of all pixels (CHID ordering) that loops over the extracted arrival time lists for each pixel. The list-of-lists in-memory representation is the most compact one. We use the list-of-lists in-memory representation for permanent storage.
+
+## Image-sequence
+A three dimensional histogram along the the arrival time slices and the pixel directions. Each bin counts the number of single photons arriving at its corresponding pixel and corresponding arrival time slice. The image-sequence in-memory representation is suitable when a fixed event size is preferred. The histogram is always the same size in memory regardless of the number or structure of the photons. Slicing and integrating along the time axis can produce classic images with one intensity for each pixel.
+
+## Point-cloud
+A list of three dimensional direction and time coordinates of all photons in the stream of an event. Two of the three dimensions describe the angular incoming direction of a photon, which correspond to a specific pixel. The third dimension is the arrival time of the photon. This point-cloud in-memory representation is ideal for plotting the 3D point cloud, or to perform the density based clustering to tell apart air-shower photons from night-sky-background photons.
+
+
+# Storage: Json-Lines format
 This human readable format is easy to understand and used as widely as the internet is wide. Fortunately gzipped Json-Lines is only ```15%``` to ```35%``` larger than the smallest custom binary format we could come up with. The read and right speed is sufficient for physics analysis (DBSCAN clustering).
 ```json
 {"Night":20170119,"Run":229,"Event":1,"UnixTime_s_us":[1484895178,532244],"Trigger":4,"Az_deg":-63.253664797474336,"Zd_deg":33.06900475126648,"PhotonArrivals_500ps":[[59,84],[102,93,103],[58],[65,79,97],[],[125,43,68],[102],[68,100,123],[52,52,79,113,61,78,112,87]],"SaturatedPixels":[]}
@@ -110,7 +123,7 @@ Since a single photon is now defined by only one sharp arrival time in contrast 
 ```
 A list of pixels in ```CHID``` to indicate that the corresponding pixel had an saturated analog time line out of the raw DRS4 chip. The maximim number of saturated pixels is ```100```, as the event is skipped then anyhow. Usually this list is empty. Such saturations happen not only for ultra high energy air showers, but also when the DRS4 calibration was not possible or is broken elseway.
 
-# phs binary format
+# Storage: phs binary format
 The ```phs``` format is a binary format with exactly the same content as the Json-Lines ```phs.jsonl``` format. 
 The binary format is about ```15%``` to ```35%``` smaller than the Json-Lines and allows much higher read speeds.
 There is no run header of footer. This is just a list of events. Each event hat its full ID.
