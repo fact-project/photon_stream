@@ -49,7 +49,7 @@ The photon-stream format is already fully calibrated and does not need additiona
 The photon-stream format is intended and optimized to do __astronomy__. We belive, that for effective physics analysis it is crucial to have the observed events as small in storage space as any possible. We want to enable a Bachelor student to analyse years of FACT observations on her notebook! We want to enable our students to transfer a full 5min FACT observation run via email. We want to give our students something that they are familiar with, i.e. the concept of single photons instead of readout calibration and artifact foo. We want to keep as much of the air shower physics as possible and even gain additional knowledge which was not accessible with our current 'one arrival time only' policy which is still a heritage of our PMT based ancestors. Finally, we want to reveal, for the first time ever, the true potential of an SIPM based IACT. This is the FACT photon-stream.
 
 # Memory representations
-Depending on the computaional task, the information in the photon-stream can be represented in different ways in memory which can ease the processing. 
+Depending on the computaional task, the information in the photon-stream can be represented in different ways in memory which can ease the processing. These different representations can be converted into each other without information losses.
 
 ## List-of-lists
 The list-of-lists in-memory representation is an outer list of all pixels (CHID ordering) that loops over the extracted arrival time lists for each pixel. The list-of-lists in-memory representation is the most compact one. We use the list-of-lists in-memory representation for permanent storage.
