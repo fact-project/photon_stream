@@ -14,8 +14,8 @@ import matplotlib.pyplot as plt
 
 reader = ps.EventListReader('20151001_011.phs.jsonl.gz')
 event = next(reader)
-event.plot()
 
+ps.plot.event(event)
 plt.show()
 ```
 Read in the full CORSIKA simulation truth and estimate instrument response functions:
