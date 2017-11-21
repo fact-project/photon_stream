@@ -1,6 +1,6 @@
-from ..PhotonStream import PhotonStream
-from ..Event import Event
-from ..ObservationInformation import ObservationInformation
+from ..photon_stream import PhotonStream
+from ..event import Event
+from ..observation_information import ObservationInformation
 from ..simulation_truth import SimulationTruth
 from . import magic_constants as magic
 import ujson as json
@@ -49,7 +49,7 @@ def read_ObservationInformation_from_dict(event_dict):
         time_unix_us=event_dict['UnixTime_s_us'][1]
     )
     obs.trigger_type = np.uint32(event_dict['Trigger'])
-    return obs    
+    return obs
 
 
 def append_ObservationInformation_to_dict(obs, event_dict):
@@ -89,7 +89,7 @@ def read_SimulationTruth_from_dict(event_dict):
     truth.run = np.uint32(event_dict['Run'])
     truth.event = np.uint32(event_dict['Event'])
     truth.reuse = np.uint32(event_dict['Reuse'])
-    return truth    
+    return truth
 
 
 def append_SimulationTruth_to_dict(truth, event_dict):

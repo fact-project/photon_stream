@@ -1,6 +1,6 @@
-from ..PhotonStream import PhotonStream
-from ..Event import Event
-from ..ObservationInformation import ObservationInformation
+from ..photon_stream import PhotonStream
+from ..event import Event
+from ..observation_information import ObservationInformation
 from ..simulation_truth import SimulationTruth
 from . import magic_constants as magic
 from array import array
@@ -33,7 +33,7 @@ class Descriptor():
 
 
 def append_Descriptor_to_file(descriptor, fout):
-    d = descriptor  
+    d = descriptor
     fout.write(np.uint8(d.magic_1).tobytes())
     fout.write(np.uint8(d.magic_2).tobytes())
     fout.write(np.uint8(d.magic_3).tobytes())
@@ -60,8 +60,8 @@ def append_simulation_id_to_file(simulation_truth, fout):
 
 def read_simulation_id_from_file(simulation_truth, fin):
     raw_id = np.fromstring(
-        fin.read(12), 
-        dtype=np.uint32, 
+        fin.read(12),
+        dtype=np.uint32,
         count=3
     )
     simulation_truth.run = raw_id[0]
@@ -77,8 +77,8 @@ def append_observation_id_to_file(observation_info, fout):
 
 def read_observation_id_from_file(observation_info, fin):
     raw_id = np.fromstring(
-        fin.read(12), 
-        dtype=np.uint32, 
+        fin.read(12),
+        dtype=np.uint32,
         count=3
     )
     observation_info.night = raw_id[0]
@@ -94,12 +94,12 @@ def append_observation_info_to_file(observation_info, fout):
 
 def read_observation_info_from_file(observation_info, fin):
     raw_info = np.fromstring(
-        fin.read(12), 
-        dtype=np.uint32, 
+        fin.read(12),
+        dtype=np.uint32,
         count=3
     )
     observation_info.set_time_unix(
-        time_unix_s=raw_info[0], 
+        time_unix_s=raw_info[0],
         time_unix_us=raw_info[1],
     )
     observation_info.trigger_type = raw_info[2]
@@ -112,8 +112,8 @@ def append_pointing_to_file(event, fout):
 
 def read_pointing_from_file(event, fout):
     raw_pointing= np.fromstring(
-        fout.read(8), 
-        dtype=np.float32, 
+        fout.read(8),
+        dtype=np.float32,
         count=2
     )
     event.zd = raw_pointing[0]

@@ -1,10 +1,10 @@
 import numpy as np
-from . import io 
+from . import io
 
 
 def list_of_lists_to_raw_phs(lol):
     number_photons = number_photons_in_list_of_list(lol)
-    number_symbols = number_photons + io.magic_constants.NUMBER_OF_PIXELS 
+    number_symbols = number_photons + io.magic_constants.NUMBER_OF_PIXELS
     raw = np.zeros(number_symbols, dtype=np.uint8)
     i = 0
     for time_series in lol:
@@ -40,7 +40,7 @@ def number_photons_in_list_of_list(lol):
     return number_photons
 
 
-def raw_phs_to_point_cloud(raw_phs, cx, cy):
+def raw_phs_to_xyt(raw_phs, cx, cy):
     number_photons = len(raw_phs) - io.magic_constants.NUMBER_OF_PIXELS
     cloud = np.zeros(shape=(number_photons,3))
     pixel_chid = 0
@@ -70,9 +70,9 @@ def raw_phs_to_image_sequence(raw_phs):
             pixel_chid += 1
         else:
             image_sequence[
-                s - io.magic_constants.NUMBER_OF_TIME_SLICES_OFFSET_AFTER_BEGIN_OF_ROI, 
+                s - io.magic_constants.NUMBER_OF_TIME_SLICES_OFFSET_AFTER_BEGIN_OF_ROI,
                 pixel_chid
-            ] += 1 
+            ] += 1
 
     return image_sequence
 
@@ -87,14 +87,14 @@ def raw_phs_to_image(raw_phs):
         if s == io.binary.LINEBREAK:
             pixel_chid += 1
         else:
-            image[pixel_chid] += 1 
+            image[pixel_chid] += 1
     return image
 
 
 def masked_raw_phs(mask, raw_phs):
     number_photons = mask.sum()
     raw_masked_phs = np.zeros(
-        number_photons + io.magic_constants.NUMBER_OF_PIXELS, 
+        number_photons + io.magic_constants.NUMBER_OF_PIXELS,
         dtype=np.uint8,
     )
     photon = 0

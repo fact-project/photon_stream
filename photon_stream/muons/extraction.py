@@ -1,7 +1,7 @@
 import numpy as np
-from ..EventListReader import EventListReader
+from ..event_list_reader import EventListReader
 from .detection import detection
-from ..PhotonCluster import PhotonStreamCluster
+from ..photon_cluster import PhotonStreamCluster
 from ..io.jsonl import event_to_dict
 import gzip
 import os
@@ -62,11 +62,11 @@ def extract_muons_from_run(input_run_path, output_run_path, output_run_header_pa
     """
     run = EventListReader(input_run_path)
     with gzip.open(output_run_path, 'wt') as f_muon_run, open(output_run_header_path, 'wb') as f_muon_run_header:
-       
+
         for event in run:
-            
-            if event.observation_info.trigger_type == FACT_PHYSICS_SELF_TRIGGER: 
-                
+
+            if event.observation_info.trigger_type == FACT_PHYSICS_SELF_TRIGGER:
+
                 photon_clusters = PhotonStreamCluster(event.photon_stream)
                 muon_features = detection(event, photon_clusters)
 

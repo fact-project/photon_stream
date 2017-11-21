@@ -4,8 +4,8 @@ import numpy as np
 
 class PhotonStreamCluster(object):
     def __init__(self, photon_stream, eps=0.1, min_samples=20, deg_over_s=0.35e9):
-        self.point_cloud = photon_stream.point_cloud
-        self.xyt = self.point_cloud.copy()
+        self.xyt = photon_stream.xyt
+        self.xyt = self.xyt.copy()
         self.xyt[:,2] *= np.deg2rad(deg_over_s)
 
         if self.xyt.shape[0] == 0:

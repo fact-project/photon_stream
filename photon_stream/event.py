@@ -1,7 +1,7 @@
 import datetime as dt
 import numpy as np
-from .PhotonStream import PhotonStream
-from .ObservationInformation import ObservationInformation
+from .photon_stream import PhotonStream
+from .observation_information import ObservationInformation
 from .simulation_truth.SimulationTruth import SimulationTruth
 from math import isclose
 
@@ -22,7 +22,7 @@ class Event(object):
     photon_stream       The photon-stream of all photons detected by all pixels
                         in this event.
 
-    simulation_truth    [optional] 
+    simulation_truth    [optional]
 
     observation_info    [optional]
     """
@@ -36,7 +36,7 @@ class Event(object):
             out += 'observation, ' + self.observation_info._info()
         if hasattr(self, 'simulation_truth'):
             out += 'simulation, ' + self.simulation_truth._info()
-        return out        
+        return out
 
 
     def __repr__(self):
