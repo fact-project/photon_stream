@@ -4,7 +4,7 @@ from os.path import join
 import fact
 from .runinfo import OBSERVATION_RUN_TYPE_KEY
 from .runinfo import DRS_RUN_TYPE_KEY
-from ..EventListReader import EventListReader
+from ..event_list_reader import EventListReader
 from fact.path import tree_path
 import numpy as np
 import json
@@ -59,8 +59,7 @@ def create_fake_fact_dir(path, runinfo):
             with open(run_path, 'w') as raw_file:
                 dummy_run = {
                     'fNight': night,
-                    'fRunID': run, 
+                    'fRunID': run,
                     'NumExpectedPhsEvents': np.random.randint(0,25000),
                 }
                 raw_file.write(json.dumps(dummy_run))
-

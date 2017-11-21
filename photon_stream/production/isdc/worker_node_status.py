@@ -14,7 +14,7 @@ import shutil
 import numpy as np
 import json
 import fact
-from photon_stream.EventListReader import EventListReader
+from photon_stream.event_list_reader import event_list_reader
 
 
 def status(phs_path, status_path):
@@ -29,7 +29,7 @@ def status(phs_path, status_path):
     if exists(phs_path):
         i = 0
         try:
-            for evt in EventListReader(phs_path):
+            for evt in event_list_reader(phs_path):
                 i += 1
         except:
             pass
@@ -45,7 +45,7 @@ def main():
     try:
         args = docopt.docopt(__doc__)
         status(
-            phs_path=args['--phs_path'], 
+            phs_path=args['--phs_path'],
             status_path=args['--status_path'],
         )
     except docopt.DocoptExit as e:

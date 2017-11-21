@@ -10,7 +10,7 @@ from .tools import xy2polar
 deg2rad = np.deg2rad(1)
 
 def detection(
-    event, 
+    event,
     clusters,
     initial_circle_model_min_samples=3,
     initial_circle_model_residual_threshold=0.25,
@@ -54,14 +54,14 @@ def detection(
     if number_of_photons < initial_circle_model_min_samples:
         return ret
 
-    flat_photon_stream = clusters.point_cloud
+    flat_photon_stream = clusters.xyt
     full_clusters_fps = flat_photon_stream[full_cluster_mask]
 
     circle_model, inliers = ransac(
         data=full_clusters_fps[:,0:2], # only cx and cy not the time
-        model_class=CircleModel, 
-        min_samples=initial_circle_model_min_samples, 
-        residual_threshold=initial_circle_model_residual_threshold, 
+        model_class=CircleModel,
+        min_samples=initial_circle_model_min_samples,
+        residual_threshold=initial_circle_model_residual_threshold,
         max_trials=initial_circle_model_max_trails)
 
     cx = circle_model.params[0]
@@ -73,11 +73,11 @@ def detection(
     ret['muon_ring_r'] = r
 
     muon_ring_overlapp_with_field_of_view = circle_overlapp(
-        cx1=0.0, 
-        cy1=0.0, 
-        r1=field_of_view_radius, 
-        cx2=cx, 
-        cy2=cy, 
+        cx1=0.0,
+        cy1=0.0,
+        r1=field_of_view_radius,
+        cx2=cx,
+        cy2=cy,
         r2=r)
 
     if r < min_muon_ring_radius or r > max_muon_ring_radius:
@@ -98,7 +98,7 @@ def detection(
     initial_circle_model_photon_ratio = number_of_ring_photons/number_of_photons
     ret['initial_circle_model_photon_ratio'] = initial_circle_model_photon_ratio
     if initial_circle_model_photon_ratio < initial_circle_model_min_photon_ratio:
-        return ret     
+        return ret
 
     visible_ring_circumfance = r*2*np.pi*muon_ring_overlapp_with_field_of_view
     ret['visible_muon_ring_circumfance'] = visible_ring_circumfance
@@ -109,10 +109,10 @@ def detection(
     # -------------------------
 
     onoff = tight_circle_on_off_region(
-        cx=cx, 
-        cy=cy, 
-        r=r, 
-        residual_threshold=density_circle_model_residual_threshold, 
+        cx=cx,
+        cy=cy,
+        r=r,
+        residual_threshold=density_circle_model_residual_threshold,
         xy=full_clusters_fps[:,0:2])
 
     on_density = onoff['on'].sum()/onoff['area_on']
@@ -122,7 +122,7 @@ def detection(
     off_density = (outer_off_density + inner_off_density)/2
     on_off_ratio = on_density/off_density
 
-    ret['density_circle_model_on_off_ratio'] = on_off_ratio 
+    ret['density_circle_model_on_off_ratio'] = on_off_ratio
     if on_off_ratio < density_circle_model_min_on_off_ratio:
         return ret
 
@@ -133,25 +133,25 @@ def detection(
         return ret
 
     # ring population
-    #----------------    
+    #----------------
     xy_relative_to_ring_center = full_clusters_fps
     xy_relative_to_ring_center[:,0] -= cx
     xy_relative_to_ring_center[:,1] -= cy
 
-    rphi = xy2polar(xy=xy_relative_to_ring_center[:,0:2]) 
+    rphi = xy2polar(xy=xy_relative_to_ring_center[:,0:2])
 
     number_bins = 3*int(np.ceil(np.sqrt(number_of_photons)))
     phi_bin_edgeds = np.linspace(-np.pi, np.pi, number_bins)
     ring_population_hist, phi_bin_edgeds = np.histogram(
-        rphi[:,1], 
+        rphi[:,1],
         bins=phi_bin_edgeds)
 
     phi_bin_centers = phi_bin_edgeds[:-1]
     bin_pos_x = np.cos(phi_bin_centers)*r + cx
     bin_pos_y = np.sin(phi_bin_centers)*r + cy
     bins_inside_fov = np.sqrt(bin_pos_x**2 + bin_pos_y**2) < field_of_view_radius
-    mean_photons = ring_population_hist[bins_inside_fov].mean()    
-        
+    mean_photons = ring_population_hist[bins_inside_fov].mean()
+
     # continues ring population
     # -------------------------
     min_ring_circumfance = 2.5*deg2rad
@@ -168,7 +168,7 @@ def detection(
     most_even_population_std = 1e99
     for i in range(ring_population_hist.shape[0]):
         section = np.take(
-            ring_population_hist, 
+            ring_population_hist,
             range(i,i+number_of_fraction_bins),
             mode='wrap')
 

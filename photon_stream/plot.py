@@ -11,7 +11,7 @@ from .geometry import GEOMETRY
 
 def event(event, mask=None):
     """
-    Creates a new figure with 3D axes to show the photon-stream of the 
+    Creates a new figure with 3D axes to show the photon-stream of the
     event.
     """
     fig = plt.figure()
@@ -20,33 +20,33 @@ def event(event, mask=None):
 
 
 def add_event_2_ax(event, ax, mask=None, color='b'):
-    xyt = event.photon_stream.point_cloud
+    xyt = event.photon_stream.xyt
     if mask is not None:
         xyt = xyt[mask]
     ax.set_title(event._info())
     fov_radius = event.photon_stream.geometry.fov_radius
-    add_point_cloud_2_ax(
-        point_cloud=xyt,
+    add_xyt_2_ax(
+        xyt=xyt,
         fov_radius=fov_radius,
-        ax=ax, 
+        ax=ax,
         color=color
     )
 
 
-def point_cloud(point_cloud):
+def xyt(xyt):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
-    add_point_cloud_2_ax(point_cloud=point_cloud, ax=ax) 
+    add_xyt_2_ax(xyt=xyt, ax=ax)
 
 
-def add_point_cloud_2_ax(
-    point_cloud,
+def add_xyt_2_ax(
+    xyt,
     ax,
-    fov_radius=GEOMETRY.fov_radius, 
+    fov_radius=GEOMETRY.fov_radius,
     color='b'
 ):
     fov_radius_deg = np.rad2deg(fov_radius)
-    pcl = point_cloud.copy()
+    pcl = xyt.copy()
     pcl[:,0] = np.rad2deg(pcl[:,0]) # to deg
     pcl[:,1] = np.rad2deg(pcl[:,1]) # to deg
     pcl[:,2] *= 1e9 # to nano seconds
@@ -79,11 +79,11 @@ def add_ring_2_ax(x,y,z,r, ax, color='k', line_width=1.0):
 
 
 def save_image_sequence(
-    event, 
+    event,
     path,
-    steps=27, 
-    start_number=0, 
-    start_azimuth=0.0, 
+    steps=27,
+    start_number=0,
+    start_azimuth=0.0,
     end_azimuth=360.0,
     mask=None,
     image_format='png'):
@@ -102,24 +102,24 @@ def save_image_sequence(
         plt.subplots_adjust(left=0.01, right=0.99, top=0.99, bottom=0.01)
         plt.savefig(
             os.path.join(
-                path, 
-                '3D_'+str(step).zfill(6) + '.' + image_format), 
+                path,
+                '3D_'+str(step).zfill(6) + '.' + image_format),
             dpi=180)
         step += 1
 
     plt.close()
 
 def save_video(
-    event, 
-    outpath, 
-    mask=None, 
-    steps=12, 
-    fps=25, 
-    threads='auto', 
+    event,
+    outpath,
+    mask=None,
+    steps=12,
+    fps=25,
+    threads='auto',
     work_dir=None):
     """
-    Saves a H264 1080p video of a 3D rendering of a photon-stream event to the 
-    outputpath. In the 3D rendering the event is rotated 360 degrees around the 
+    Saves a H264 1080p video of a 3D rendering of a photon-stream event to the
+    outputpath. In the 3D rendering the event is rotated 360 degrees around the
     optical axis of the telescope.
 
     Parameters
@@ -127,12 +127,12 @@ def save_video(
 
     event       The photon-stream event.
 
-    outpath     The output path of the video file. 
+    outpath     The output path of the video file.
 
-    mask        A photon-stream mask. If the mask is not None, the rendering 
-                will alternatingly in 10 degree intervalls show the full 
+    mask        A photon-stream mask. If the mask is not None, the rendering
+                will alternatingly in 10 degree intervalls show the full
                 photon-stream and only the masked part of the photon-stream.
-                (Default is None) 
+                (Default is None)
 
     steps       The number of images used within an 10 degree intervall.
                 (Default is 12, which results in 12*36=432 images for the video)
@@ -140,13 +140,13 @@ def save_video(
     threads     Tells the avconv video converter to use multiple threads or not.
                 (Default is avconv's 'auto' option)
 
-    work_dir    The intermediate working directory to host the raw images of the 
-                video sequence. If work_dir is None, a temporary directory is 
+    work_dir    The intermediate working directory to host the raw images of the
+                video sequence. If work_dir is None, a temporary directory is
                 created automatically, otherwise the work_dir remains after the
                 video processing to access the raw images.
                 (Default is None)
-    """         
-    
+    """
+
     if work_dir is None:
         work_dir_instance = tempfile.TemporaryDirectory(
             prefix='photon_stream_video')
@@ -156,7 +156,7 @@ def save_video(
         os.mkdir(work_dir)
         work_dir_has_to_be_removed_again = False
 
-        
+
     azimuths = np.linspace(0, 360, 10, endpoint=False)
     for i, az in enumerate(azimuths):
 
@@ -168,7 +168,7 @@ def save_video(
             end_azimuth=az+18,
             start_number=(i*steps*2),
             mask=mask)
-        
+
         save_image_sequence(
             event=event,
             path=work_dir,

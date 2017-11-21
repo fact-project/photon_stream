@@ -1,5 +1,5 @@
 import numpy as np
-from .PhotonCluster import PhotonTimeLineCluster
+from .photon_cluster import PhotonTimeLineCluster
 import tqdm
 import json
 
@@ -21,7 +21,7 @@ def finger_histogram(time_series, max_multiplicity=20):
         else:
             print('Warning, found cluster of', number_of_photons_in_cluster, 'p.e, but max_multiplicity is only ', max_multiplicity)
     return counts
-    
+
 
 def finger_histogram_of_event(event, max_multiplicity=20):
     counts = np.zeros(max_multiplicity, dtype=np.int64)
@@ -47,7 +47,7 @@ def finger_event(event, max_multiplicity=20):
     finger_event['EventNum'] = event.id
     finger_event['TriggerType'] = event.trigger_type
     finger_event['NIGHT'] = event.run.night
-    
+
     fhist = finger_histogram_of_event(
         event=event,
         max_multiplicity=max_multiplicity)
