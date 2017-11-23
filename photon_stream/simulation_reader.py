@@ -1,5 +1,5 @@
-from .Event import Event
-from .EventListReader import EventListReader
+from .event import Event
+from .event_list_reader import EventListReader
 from .io import is_gzipped_file
 import gzip
 import os
@@ -8,7 +8,7 @@ from .simulation_truth.corsika_headers import IDX_RUNH_RUN_NUMBER
 from .simulation_truth.corsika_headers import IDX_EVTH_EVENT_NUMBER
 from .simulation_truth.corsika_headers import IDX_EVTH_REUSE_NUMBER
 from .simulation_truth.corsika_headers import IDX_EVTH_RUN_NUMBER
-from .simulation_truth.AirShowerTruth import AirShowerTruth
+from .simulation_truth.air_shower_truth import AirShowerTruth
 import numpy as np
 
 

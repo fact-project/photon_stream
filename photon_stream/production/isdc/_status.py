@@ -9,7 +9,7 @@ import pandas as pd
 import numpy as np
 from .. import runstatus as rs
 from .. import runinfo as ri
-from ...EventListReader import EventListReader
+from ...event_list_reader import EventListReader
 from .qstat import qstat
 from fact.path import template_to_path
 from fact.path import tree_path

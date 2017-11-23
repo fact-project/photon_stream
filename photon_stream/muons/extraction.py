@@ -1,7 +1,7 @@
 import numpy as np
-from ..EventListReader import EventListReader
+from ..event_list_reader import EventListReader
 from .detection import detection
-from ..PhotonCluster import PhotonStreamCluster
+from ..photon_cluster import PhotonStreamCluster
 from ..io.jsonl import event_to_dict
 import gzip
 import os

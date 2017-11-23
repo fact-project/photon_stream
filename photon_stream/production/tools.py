@@ -4,7 +4,7 @@ from os.path import join
 import fact
 from .runinfo import OBSERVATION_RUN_TYPE_KEY
 from .runinfo import DRS_RUN_TYPE_KEY
-from ..EventListReader import EventListReader
+from ..event_list_reader import EventListReader
 from fact.path import tree_path
 import numpy as np
 import json
