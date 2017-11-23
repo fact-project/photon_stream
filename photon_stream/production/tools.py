@@ -59,7 +59,7 @@ def create_fake_fact_dir(path, runinfo):
             with open(run_path, 'w') as raw_file:
                 dummy_run = {
                     'fNight': night,
-                    'fRunID': run, 
+                    'fRunID': run,
                     'NumExpectedPhsEvents': np.random.randint(0,25000),
                 }
                 raw_file.write(json.dumps(dummy_run))

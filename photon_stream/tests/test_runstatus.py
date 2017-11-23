@@ -18,12 +18,12 @@ def test_number_of_events_in_file():
 
 
 old_runstatus_path = pkg_resources.resource_filename(
-    'photon_stream', 
+    'photon_stream',
     os.path.join('tests','resources','runstatus_20161115_to_20161231.csv')
 )
 
 new_runstatus_path = pkg_resources.resource_filename(
-    'photon_stream', 
+    'photon_stream',
     os.path.join('tests','resources','runstatus_20161115_to_20170103.csv')
 )
 

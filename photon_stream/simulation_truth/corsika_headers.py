@@ -20,7 +20,7 @@ IDX_EVTH_REUSE_NUMBER = 98-1
 
 def read_corsika_headers_from_file(fin):
     '''
-    Read in a MMCS CORSIKA run and return the raw run header and the 
+    Read in a MMCS CORSIKA run and return the raw run header and the
     raw event headers.
     '''
     c = np.fromstring(fin.read(), dtype=np.float32)
@@ -52,8 +52,8 @@ def read_corsika_headers_from_file(fin):
     run_end = c[start:end]
 
     return {
-        'run_header': run_header, 
-        'event_headers': event_headers, 
+        'run_header': run_header,
+        'event_headers': event_headers,
         'run_end': run_end
     }
 

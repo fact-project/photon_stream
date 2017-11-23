@@ -31,17 +31,17 @@ def produce_full_simulation_pass(
             for cer_path in all_ceres:
                 if run_number_str in cer_path:
                     break
-            
+
             all_in_cer_path = glob(join(cer_path,'*'))
             for cer_sub_path in all_in_cer_path:
                 if 'Events.fits.gz' in cer_sub_path:
-                    break   
+                    break
 
             print(corsika_path, ' + ', cer_sub_path)
             args.append(
                 (cer_sub_path, corsika_path, out_dir)
-            )   
-    
+            )
+
         except:
             pass
 

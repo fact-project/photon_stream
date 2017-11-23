@@ -5,7 +5,7 @@ import qstat as qstat2dict
 
 
 qstat_xml_path = pkg_resources.resource_filename(
-    'photon_stream', 
+    'photon_stream',
     os.path.join('tests','resources','qstat.xml')
 )
 
@@ -23,7 +23,7 @@ def test_jobs_2_run_ids():
         qstat_xml = fin.read()
     queue_info, job_info = qstat2dict._tools.xml2queue_and_job_info(qstat_xml)
     ids = ps.production.isdc.qstat.q_jobs_2_runqstat(
-        queue_info + job_info, 
+        queue_info + job_info,
         is_in_JB_name='phs_obs'
     )
     assert 'fNight' in ids
@@ -34,7 +34,7 @@ def test_jobs_2_run_ids():
 def test_empty_jobs_2_run_ids():
     all_jobs = []
     ids = ps.production.isdc.qstat.q_jobs_2_runqstat(
-        all_jobs, 
+        all_jobs,
         is_in_JB_name='phs_obs'
     )
     assert 'fNight' in ids

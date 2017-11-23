@@ -44,7 +44,7 @@ def test_read_and_write_MMCS_CORSIKA_headers():
 
 def test_read_in_full_CORSIKA_simulation_truth():
     simread = ps.SimulationReader(
-        photon_stream_path=photon_stream_path, 
+        photon_stream_path=photon_stream_path,
         mmcs_corsika_path=mmcs_corsika_path
     )
 

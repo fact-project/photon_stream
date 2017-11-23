@@ -4,7 +4,7 @@ def is_gzipped_file(path):
     """
     Check for gzip file, see https://tools.ietf.org/html/rfc1952#page-5
 
-    Reads in the first two bytes of a file and compares with the gzip magic 
+    Reads in the first two bytes of a file and compares with the gzip magic
     numbers.
     """
     with open(path, 'rb') as fin:

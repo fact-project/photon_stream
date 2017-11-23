@@ -45,7 +45,7 @@ def main():
     try:
         args = docopt.docopt(__doc__)
         status(
-            phs_path=args['--phs_path'], 
+            phs_path=args['--phs_path'],
             status_path=args['--status_path'],
         )
     except docopt.DocoptExit as e:

@@ -4,19 +4,19 @@ import numpy as np
 def circle_overlapp(cx1, cy1, r1, cx2, cy2, r2):
     """
     Returns the fraction [0,1] of the circumference of circle 2 with circle 1.
-    
+
     Parameter
     ---------
     cx1         x position of center of circle 1.
 
     cy1         y position of center of circle 1.
-    
+
     r1          radius of circle 1.
 
     cx2         x position of center of circle 2.
 
     cy2         y position of center of circle 2.
-    
+
     r2          radius of circle 2.
     """
     d = np.sqrt((cx2 - cx1)**2 + (cy2 - cy1)**2)
@@ -46,12 +46,12 @@ def circle_overlapp(cx1, cy1, r1, cx2, cy2, r2):
 
 def tight_circle_on_off_region(cx, cy, r, residual_threshold, xy):
     """
-    Returns masks for the 2D points in 'xy' whether they belong to the 
+    Returns masks for the 2D points in 'xy' whether they belong to the
     circle model or not.
     """
     x = xy[:,0] - cx
     y = xy[:,1] - cy
-    R = np.sqrt(x*x + y*y)    
+    R = np.sqrt(x*x + y*y)
 
     r_inner_off_start = r - 1.5*residual_threshold
     r_on_start = r - 0.5*residual_threshold

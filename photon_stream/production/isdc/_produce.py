@@ -14,7 +14,7 @@ from .qstat import qstat
 QSUB_OBS_PRODUCE_PREFIX = 'phs_obs_produce'
 
 fact_tools_xml_path = pkg_resources.resource_filename(
-    'photon_stream', 
+    'photon_stream',
     os.path.join('production','resources','observations_pass4.xml')
 )
 
@@ -32,12 +32,12 @@ def produce(
     queue=QUEUE_NAME,
     max_jobs_in_qsub=256,
     runs_in_qstat=None,
-):  
+):
     print('Start produce')
 
     obs_dir = join(phs_dir, 'obs')
     runstatus_path = join(obs_dir, 'runstatus.csv')
-    
+
     if runs_in_qstat is None:
         runs_in_qstat = qstat(is_in_JB_name=QSUB_OBS_PRODUCE_PREFIX )
 
@@ -69,7 +69,7 @@ def produce(
             break
         i += 1
         qsub(
-            job=job, 
+            job=job,
             exe_path=which('phs.isdc.obs.produce.worker'),
             queue=queue,
         )

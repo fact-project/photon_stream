@@ -11,7 +11,7 @@ def overview_str(runstatus, max_trigger_rate=120):
 
     Parameters
     ----------
-    info                The extended FACT run-info-database of 'known runs'. 
+    info                The extended FACT run-info-database of 'known runs'.
                         Created by photon_stream.production.status.status().
 
     max_trigger_rate    Cuts all runs with less then 300*max_trigger_rate events
@@ -37,7 +37,7 @@ def overview_str(runstatus, max_trigger_rate=120):
     out += '    '+table_header_str()
     out += '    '+table_line_str()
     out += '    '+table_row_str(
-        actual_events=total_actual_events, 
+        actual_events=total_actual_events,
         expected_events=total_expected_events)
     out += '\n'
 
@@ -57,10 +57,10 @@ def overview_str(runstatus, max_trigger_rate=120):
         actual_triggers_in_year = int(rs.NumActualPhsEvents[valid&is_in_year].sum())
         out += '    {year:04d}'.format(year=year)
         out += '  ' + table_row_str(
-            expected_events=expected_triggers_in_year, 
+            expected_events=expected_triggers_in_year,
             actual_events=actual_triggers_in_year
         )
-    
+
     out += '\n'
     out += 'cuts\n'
     out += '----\n'
@@ -72,10 +72,10 @@ def overview_str(runstatus, max_trigger_rate=120):
 
 
 def table_header_str():
-    #       0        1         2         3         4          5         6         7    
+    #       0        1         2         3         4          5         6         7
     #       12345678901234567890123456789012345678901234567898012345678901234567890
     out =  'phs-events           [#]  raw-events      [#]  ratio [%]\n'
-    return out 
+    return out
 
 
 def table_line_str():
@@ -87,7 +87,7 @@ def table_row_str(actual_events, expected_events):
     out =  '{actual_events:>24d}  {expected_events:>19d}'.format(
         actual_events=actual_events,
         expected_events=expected_events)+'  '+progress(actual_events/expected_events)+'\n'
-    return out    
+    return out
 
 
 def progress(ratio, length=20):

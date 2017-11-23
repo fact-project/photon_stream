@@ -8,11 +8,11 @@ import shutil
 
 phs_jsonl_gz_paths = [
     pkg_resources.resource_filename(
-        'photon_stream', 
+        'photon_stream',
         os.path.join('tests','resources','20170119_229_pass4_100events.phs.jsonl.gz')
     ),
     pkg_resources.resource_filename(
-        'photon_stream', 
+        'photon_stream',
         os.path.join('tests','resources','011014.phs.jsonl.gz')
     )
 ]
@@ -20,7 +20,7 @@ phs_jsonl_gz_paths = [
 
 def do_gunzip(inpath, outpath):
     with gzip.open(inpath, 'rb') as f_in, open(outpath, 'wb') as f_out:
-        shutil.copyfileobj(f_in, f_out)    
+        shutil.copyfileobj(f_in, f_out)
 
 
 def assert_event_lists_in_files_are_equal(path1, path2):

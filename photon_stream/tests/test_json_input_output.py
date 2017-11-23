@@ -9,7 +9,7 @@ import json
 
 def test_run_inspection():
     run_path = pkg_resources.resource_filename(
-        'photon_stream', 
+        'photon_stream',
         os.path.join('tests','resources','20170119_229_pass4_100events.phs.jsonl.gz')
     )
 

@@ -59,7 +59,7 @@ def _append_new_runstatus(old_runstatus, new_runstatus):
 
 def _download_latest():
     """
-    Download the latest runinfo from FACT on La Palma and convert it to     
+    Download the latest runinfo from FACT on La Palma and convert it to
     a runstatus.
 
     Return

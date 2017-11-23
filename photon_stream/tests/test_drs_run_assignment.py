@@ -4,7 +4,7 @@ import pkg_resources
 import os
 
 runinfo_path = pkg_resources.resource_filename(
-    'photon_stream', 
+    'photon_stream',
     os.path.join('tests','resources','runinfo_20161115_to_20170103.csv')
 )
 
@@ -26,7 +26,7 @@ def test_drs_run_assignment():
                 runinfo=ri, fNight=row.fNight, fRunID=row.fRunID
             )
             second_method_drs_run_id = ro.loc[i, 'DrsRunID']
-                
+
             if np.isnan(first_method_drs_run_id):
                 assert np.isnan(second_method_drs_run_id)
             else:

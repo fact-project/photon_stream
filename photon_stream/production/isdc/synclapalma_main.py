@@ -11,7 +11,7 @@ Options:
 """
 import docopt
 import photon_stream as ps
-import os 
+import os
 
 
 def main():

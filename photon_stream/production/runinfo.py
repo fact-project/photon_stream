@@ -55,9 +55,9 @@ def read(path='runinfo.csv'):
 
 def write(runinfo, path='runinfo.csv'):
     runinfo.to_csv(
-        path+'.part', 
-        index=False, 
-        na_rep='nan', 
+        path+'.part',
+        index=False,
+        na_rep='nan',
         float_format='%.0f',
         sep='\t'
     )
@@ -76,8 +76,8 @@ def download_latest():
 def remove_from_first_when_also_in_second(first, second):
     m = pd.merge(
         first,
-        second, 
-        how='outer', 
+        second,
+        how='outer',
         indicator=True,
         on=ID_RUNINFO_KEYS,
     )

@@ -6,17 +6,17 @@ import pandas as pd
 
 
 old_runstatus_path = pkg_resources.resource_filename(
-    'photon_stream', 
+    'photon_stream',
     os.path.join('tests','resources','runstatus_20161115_to_20161231.csv')
 )
 
 new_runstatus_path = pkg_resources.resource_filename(
-    'photon_stream', 
+    'photon_stream',
     os.path.join('tests','resources','runstatus_20161115_to_20170103.csv')
 )
 
 runinfo_path = pkg_resources.resource_filename(
-    'photon_stream', 
+    'photon_stream',
     os.path.join('tests','resources','runinfo_20161115_to_20170103.csv')
 )
 
@@ -41,9 +41,9 @@ def test_remove_from_first_when_also_in_second():
             {'fNight':100,'fRunID':2,'ffoo':2},
             {'fNight':100,'fRunID':3,'ffoo':3},
             {'fNight':101,'fRunID':1,'ffoo':4}, #out
-            {'fNight':101,'fRunID':2,'ffoo':5}, 
+            {'fNight':101,'fRunID':2,'ffoo':5},
             {'fNight':101,'fRunID':3,'ffoo':6}, #out
-            {'fNight':102,'fRunID':1,'ffoo':7}, 
+            {'fNight':102,'fRunID':1,'ffoo':7},
             {'fNight':102,'fRunID':2,'ffoo':8}, #out
             {'fNight':102,'fRunID':3,'ffoo':9},
         ]
@@ -58,7 +58,7 @@ def test_remove_from_first_when_also_in_second():
     )
 
     r = ps.production.runinfo.remove_from_first_when_also_in_second(
-        first=all_runjobs, 
+        first=all_runjobs,
         second=runqstat
     )
 

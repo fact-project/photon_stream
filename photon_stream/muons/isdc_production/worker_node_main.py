@@ -6,7 +6,7 @@ Options:
     -o --out_path=OUT_PATH
 
 Extracts muon events from the FACT photon stream. Writes two output files.
-    
+
     1) A run of only muon like events.
         out_path + '_muons.phs.jsonl.gz'
 
@@ -17,7 +17,7 @@ The output directories are created on the fly if not existing.
 """
 import docopt
 import os
-import shutil 
+import shutil
 import tempfile
 from ..extraction import extract_muons_from_run
 import datetime as dt
@@ -59,7 +59,7 @@ def main():
         if out_dir:
             os.makedirs(out_dir, exist_ok=True, mode=0o755)
             print(tdi.info('Output directory was created.'))
-        
+
         with tempfile.TemporaryDirectory(prefix='relleums_fact_') as tmp:
             print(tdi.info("Temp. dir was created on worker node: '"+tmp+"'"))
 
@@ -69,17 +69,17 @@ def main():
             shutil.copy(input_run_path, tmp_input_run_path)
 
             tmp_out_muon_run_path = join(
-                tmp, 
+                tmp,
                 input_run_base + '_muons.phs.jsonl.gz')
             tmp_out_muon_run_info_path = join(
-                tmp, 
+                tmp,
                 input_run_base + '_muons.info')
 
             print(tdi.info('Input run was copied to worker node temp. dir.'))
 
             extract_muons_from_run(
-                input_run_path=tmp_input_run_path, 
-                output_run_path=tmp_out_muon_run_path, 
+                input_run_path=tmp_input_run_path,
+                output_run_path=tmp_out_muon_run_path,
                 output_run_header_path=tmp_out_muon_run_info_path)
 
             print(tdi.info('Muons have been extracted.'))
