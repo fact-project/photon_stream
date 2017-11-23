@@ -14,7 +14,7 @@ import shutil
 import numpy as np
 import json
 import fact
-from photon_stream.EventListReader import EventListReader
+from photon_stream.event_list_reader import EventListReader
 
 
 def status(phs_path, status_path):

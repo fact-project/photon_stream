@@ -1,5 +1,5 @@
 import numpy as np
-from .PhotonCluster import PhotonTimeLineCluster
+from .photon_cluster import PhotonTimeLineCluster
 import tqdm
 import json
 

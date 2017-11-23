@@ -1,6 +1,6 @@
-from ..PhotonStream import PhotonStream
-from ..Event import Event
-from ..ObservationInformation import ObservationInformation
+from ..photon_stream import PhotonStream
+from ..event import Event
+from ..observation_information import ObservationInformation
 from ..simulation_truth import SimulationTruth
 from . import magic_constants as magic
 from array import array

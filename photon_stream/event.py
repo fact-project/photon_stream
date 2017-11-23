@@ -1,8 +1,8 @@
 import datetime as dt
 import numpy as np
-from .PhotonStream import PhotonStream
-from .ObservationInformation import ObservationInformation
-from .simulation_truth.SimulationTruth import SimulationTruth
+from .photon_stream import PhotonStream
+from .observation_information import ObservationInformation
+from .simulation_truth.simulation_truth import SimulationTruth
 from math import isclose
 
 

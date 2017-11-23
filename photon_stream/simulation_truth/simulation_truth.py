@@ -1,6 +1,6 @@
 import numpy as np
 from math import isclose
-from .AirShowerTruth import AirShowerTruth
+from .air_shower_truth import AirShowerTruth
 
 
 class SimulationTruth(object):
