@@ -2,7 +2,7 @@ import numpy as np
 import photon_stream as ps
 from math import isclose
 
-runh = np.array([  
+runh = np.array([
      2.11285281e+05,   1.10140000e+04,   1.30702000e+05,
      6.50000000e+00,   1.00000000e+00,   2.20000000e+05,
      0.00000000e+00,   0.00000000e+00,   0.00000000e+00,
@@ -95,7 +95,7 @@ runh = np.array([
      7.33384188e+05,   1.25051935e+10,   0.00000000e+00,
      0.00000000e+00,   0.00000000e+00,   2.00000000e+02], dtype=np.float32)
 
-evth = np.array([  
+evth = np.array([
      2.17433078e+05,   1.00000000e+00,   1.00000000e+00,
      2.78059418e+02,   0.00000000e+00,   0.00000000e+00,
      4.26011350e+06,   8.45676422e+00,   0.00000000e+00,
@@ -192,7 +192,7 @@ evth = np.array([
 
 def test_constructor():
     ast = ps.simulation_truth.AirShowerTruth(
-        raw_corsika_run_header=runh, 
+        raw_corsika_run_header=runh,
         raw_corsika_event_header=evth
     )
 

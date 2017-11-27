@@ -1,8 +1,8 @@
 """
-DRS runs are calibration runs performed by FACT to calibrate the 
+DRS runs are calibration runs performed by FACT to calibrate the
 Domini Ring Sampler (DRS4) which samples the electric input signal with 2 Giga
 samples per second. To convert a raw run into a photon-stream run, the raw run
-first needs to be calibrated using a DRS run. So each observation raw run 
+first needs to be calibrated using a DRS run. So each observation raw run
 is assigned the latest DRS run.
 """
 import warnings
@@ -16,13 +16,13 @@ from .runinfo import DRS_STEP_KEY
 def _drs_fRunID_for_obs_run(runinfo, fNight, fRunID):
     warnings.warn(
         'This drs run locater function was replaced with "assign_drs_runs()"'
-        'This function is still kept for unit testing the new one.', 
+        'This function is still kept for unit testing the new one.',
         DeprecationWarning
     )
 
     ri = runinfo.copy()
     ri.sort_values(inplace=True, ascending=False, by=ID_RUNINFO_KEYS)
-    
+
     drs_candidates = ri[
         (ri.fNight == fNight)&
         (ri.fDrsStep == DRS_STEP_KEY)&
@@ -52,7 +52,7 @@ def assign_drs_runs(runinfo):
     current_drs_fNight = np.nan
     for i in range(raw.shape[0]):
         if (
-            raw[i,k['fRunTypeKey']]==DRS_RUN_TYPE_KEY and 
+            raw[i,k['fRunTypeKey']]==DRS_RUN_TYPE_KEY and
             raw[i,k['fDrsStep']]==DRS_STEP_KEY
         ):
             current_drs_fRunID = raw[i,k['fRunID']]

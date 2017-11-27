@@ -47,9 +47,9 @@ def main():
             all_ceres_sub_dir = glob(join(ceres_sub_dir, '*'))
             for ceres_sub_path in all_ceres_sub_dir:
                 if 'Events.fits.gz' in ceres_sub_path:
-                    break  
+                    break
 
-            run_number_str = '{:06d}'.format(run_number) 
+            run_number_str = '{:06d}'.format(run_number)
             job = {
                 'ceres_path': ceres_sub_path,
                 'out_basename': run_number_str,

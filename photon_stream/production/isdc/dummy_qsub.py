@@ -10,13 +10,13 @@ import json
 def dummy_qsub(args):
     """
     Simulates a qsub service to enable unit testing of a qsub submitter.
-    photon_stream.production.submit_to_qsub.submit_to_qsub(). It simulates 
-    further simulates fact-tools and its output. Asserts that the qsub 
+    photon_stream.production.submit_to_qsub.submit_to_qsub(). It simulates
+    further simulates fact-tools and its output. Asserts that the qsub
     parameters are valid and creates a dummy output based on the input.
 
     Parameters
     ----------
-    args         A qsub args list as it would be given to 
+    args         A qsub args list as it would be given to
                     subprocess.call() in order to submitt to qsub.
     """
     assert args[0] == 'qsub'
@@ -33,11 +33,11 @@ def dummy_qsub(args):
     assert os.path.exists(exec_path)
     assert os.path.isabs(exec_path)
     if  'phs.isdc.obs.status.worker' in exec_path:
-        assert 'phs_obs_status' in job_name 
+        assert 'phs_obs_status' in job_name
         dummy_status(args[9:], o_path, e_path)
         return
     elif 'phs.isdc.obs.produce.worker' in exec_path:
-        assert 'phs_obs' in job_name 
+        assert 'phs_obs' in job_name
         dummy_produce(args[9:], o_path, e_path)
         return
     print('exec_path: "'+exec_path+'"')

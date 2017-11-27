@@ -29,7 +29,7 @@ def drop_not_obs_runs(runinfo):
 def add_expected_phs_event_column(runinfo):
     riout = runinfo.copy()
     riout['NumExpectedPhsEvents'] = pd.Series(
-        number_expected_phs_events(riout), 
+        number_expected_phs_events(riout),
         index=riout.index
     )
     return riout

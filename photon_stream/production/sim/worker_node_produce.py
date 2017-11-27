@@ -14,8 +14,8 @@ def main():
     try:
         arguments = docopt.docopt(__doc__)
         ps.production.sim.produce_single_simulation_run(
-            ceres_events_path=arguments['--ceres_events_path'], 
-            corsika_path=arguments['--corsika_path'], 
+            ceres_events_path=arguments['--ceres_events_path'],
+            corsika_path=arguments['--corsika_path'],
             out_dir=arguments['--out_dir'],
         )
     except docopt.DocoptExit as e:

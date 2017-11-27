@@ -12,6 +12,6 @@ def test_properties():
     assert event.photon_stream.number_photons == 4984
     assert event.photon_stream.point_cloud.shape == (4984, 3)
     assert event.photon_stream.image_sequence.shape == (
-        ps.io.magic_constants.NUMBER_OF_TIME_SLICES, 
+        ps.io.magic_constants.NUMBER_OF_TIME_SLICES,
         ps.io.magic_constants.NUMBER_OF_PIXELS
-    ) 
+    )

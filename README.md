@@ -30,7 +30,7 @@ import photon_stream as ps
 import pandas as pd
 
 sim_reader = ps.SimulationReader(
-    photon_stream_path='tests/resources/011014.phs.jsonl.gz', 
+    photon_stream_path='tests/resources/011014.phs.jsonl.gz',
     mmcs_corsika_path='tests/resources/011014.ch'
 )
 
@@ -130,7 +130,7 @@ Since a single photon is now defined by only one sharp arrival time in contrast 
 A list of pixels in ```CHID``` to indicate that the corresponding pixel had an saturated analog time line out of the raw DRS4 chip. The maximim number of saturated pixels is ```100```, as the event is skipped then anyhow. Usually this list is empty. Such saturations happen not only for ultra high energy air showers, but also when the DRS4 calibration was not possible or is broken elseway.
 
 # Storage: phs binary format
-The ```phs``` format is a binary format with exactly the same content as the Json-Lines ```phs.jsonl``` format. 
+The ```phs``` format is a binary format with exactly the same content as the Json-Lines ```phs.jsonl``` format.
 The binary format is about ```15%``` to ```35%``` smaller than the Json-Lines and allows much higher read speeds.
 There is no run header of footer. This is just a list of events. Each event hat its full ID.
 Binary run files are named ```YYYYmmnn_RRR.phs.gz```.
@@ -165,7 +165,7 @@ The content of the differnt event types is as follows:
     +--------+
     |VERSION |
     +--------+
-    - VERSION == 4 is pass4 
+    - VERSION == 4 is pass4
 
     uint8
     +--------+
@@ -176,7 +176,7 @@ The content of the differnt event types is as follows:
 
 
 ### Observation Event Identifier (12 Byte)
-        
+
     uint32
     +--------+--------+--------+--------+
     |              Night Id             |
@@ -186,12 +186,12 @@ The content of the differnt event types is as follows:
     +--------+--------+--------+--------+
     |               Run Id              |
     +--------+--------+--------+--------+
-    
+
     uint32
     +--------+--------+--------+--------+
     |             Event Id              |
     +--------+--------+--------+--------+
-    
+
 ### Simulation Event Identifier (12 Byte)
 
     uint32
@@ -215,7 +215,7 @@ The content of the differnt event types is as follows:
     +--------+--------+--------+--------+
     |       Zenith Distance [Deg]       |
     +--------+--------+--------+--------+
-    
+
     float32
     +--------+--------+--------+--------+
     |         Azimuth  [Deg]            |
@@ -233,15 +233,15 @@ The content of the differnt event types is as follows:
     +--------+--------+--------+--------+
     |      UNIX time [us] mod. [s]      |
     +--------+--------+--------+--------+
-    
+
     uint32
     +--------+--------+--------+--------+
     |            Trigger type           |
     +--------+--------+--------+--------+
-    
-    
+
+
 ### Photon-Stream  (number photons + number pixel Byte)
-    
+
     uint32
     +--------+--------+--------+--------+
     |  Number of pixels plus photons    |
@@ -249,21 +249,21 @@ The content of the differnt event types is as follows:
     The size of the photon-stream in bytes.
 
 
-    Photon arrival times in slices 
+    Photon arrival times in slices
     EXAMPLE. The actual shape and structure depent on the specific event.
-  
-         uint8 
+
+         uint8
          +--------+--------+--------+--------+
        0 |     A  |     B  |     C  |   255  | <- Pixel CHID=0, 3 photons, arrival slices A, B, and C.
-         +--------+--------+--------+--------+   
+         +--------+--------+--------+--------+
        1 |   XXX  |   XXX  |   255  |
-         +--------+--------+--------+ 
+         +--------+--------+--------+
        2 |     C  |   255  | <- Pixel CHID=2, 1 photons, arriving in slice C.
          +--------+--------+--------+--------+--------+
        3 |   XXX  |   XXX  |   XXX  |   XXX  |   255  |
-         +--------+--------+--------+--------+--------+--------+--------+ 
+         +--------+--------+--------+--------+--------+--------+--------+
        4 |   XXX  |   XXX  |   XXX  |   XXX  |   XXX  |   XXX  |   255  |
-         +--------+--------+--------+--------+--------+--------+--------+   
+         +--------+--------+--------+--------+--------+--------+--------+
        5 |   XXX  |   255  |
          +--------+--------+
        6 |   255  | <- Pixel CHID=6, 0 photons, empty.
@@ -284,7 +284,7 @@ The content of the differnt event types is as follows:
     CHID
 
 A list of lists of photon arrival time slices in CHID pixel order.
-The line break from one pixel to the next pixel is marked by the linebreak 
+The line break from one pixel to the next pixel is marked by the linebreak
 symbol 2^8-1 = ```255```. This leaves 255 (0-254) slices to encode photon arrival times.
 
 ### Saturated Pixels (2 + 2*number saturated pixel Byte)
@@ -303,7 +303,7 @@ symbol 2^8-1 = ```255```. This leaves 255 (0-254) slices to encode photon arriva
 
 
 ## Integration into existing air shower reconstruction software
-When the idea of the photon-stream is inverted, the amplitude time lines of an individual pixel can be reconstructed from the photon-stream events which enables FACT to use ist usual air shower reconstruction programs right ahead without modifications.  
+When the idea of the photon-stream is inverted, the amplitude time lines of an individual pixel can be reconstructed from the photon-stream events which enables FACT to use ist usual air shower reconstruction programs right ahead without modifications.
 
 
 ## Where to go from here

@@ -118,7 +118,7 @@ def test_Descriptor_io():
     for i in range(len(out_descs)):
         out_h = out_descs[i]
         in_h = in_descss[i]
-        assert in_h.magic_1 == ps.io.binary.MAGIC_DESCRIPTOR_1 
+        assert in_h.magic_1 == ps.io.binary.MAGIC_DESCRIPTOR_1
         assert in_h.magic_2 == ps.io.binary.MAGIC_DESCRIPTOR_2
         assert in_h.magic_3 == ps.io.binary.MAGIC_DESCRIPTOR_3
         assert out_h.pass_version == in_h.pass_version

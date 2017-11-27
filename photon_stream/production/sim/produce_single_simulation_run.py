@@ -7,8 +7,8 @@ RUN_NUMBER_DIGITS = 5
 
 
 def produce_single_simulation_run(
-    ceres_events_path, 
-    corsika_path, 
+    ceres_events_path,
+    corsika_path,
     out_dir,
     fact_tools_jar_path='/net/big-tank/POOL/projects/fact/smueller/fact-tools/target/fact-tools-0.18.1.jar',
 ):

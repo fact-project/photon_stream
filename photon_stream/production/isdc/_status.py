@@ -63,9 +63,9 @@ def status(
                     fNight = int(np.round(run.fNight))
                     fRunID = int(np.round(run.fRunID))
                     std_path = tree_path(
-                        fNight, 
-                        fRunID, 
-                        prefix=obs_std_dir, 
+                        fNight,
+                        fRunID,
+                        prefix=obs_std_dir,
                         suffix=s['suffix']
                     )
                     std_size = np.nan
@@ -91,7 +91,7 @@ def status(
             )
 
             print(len(runs_to_be_checked_now),'runs are checked now for NumActualPhsEvents')
-            
+
             num_runs_for_qsub = max_jobs_in_qsub - len(runs_in_qstat)
             runstatus = runstatus.set_index(ri.ID_RUNINFO_KEYS)
 
@@ -108,7 +108,7 @@ def status(
                     if exists(phs_path):
                         phs_size = os.stat(phs_path).st_size
                         runstatus.set_value((fNight, fRunID), 'PhsSize', phs_size)
-                        # Submitt the intense task of event counting to qsub, and 
+                        # Submitt the intense task of event counting to qsub, and
                         # collect the output next time in phs/obs/.tmp_status
                         job = {
                             'name': template_to_path(fNight, fRunID, QSUB_OBS_STATUS_PREFIX+'_{N}_{R}'),
@@ -118,7 +118,7 @@ def status(
                             '--status_path': tree_path(fNight, fRunID, prefix=tmp_status_dir, suffix='.json'),
                         }
                         qsub(
-                            job=job, 
+                            job=job,
                             exe_path=which('phs.isdc.obs.status.worker'),
                             queue=queue
                         )
@@ -153,7 +153,7 @@ def runs_to_be_checked_now_and_incremented_runstatus(runstatus):
     raw_StatusIteration = runstatus['StatusIteration'].values
     raw_StatusIteration[np.invert(nanPhsSize)] = it_for_runs_not_checked_yet
     runstatus['StatusIteration'] = pd.Series(
-        raw_StatusIteration, 
+        raw_StatusIteration,
         index=runstatus.index
     )
     return runs_to_be_checked_now, runstatus
@@ -177,8 +177,8 @@ def add_tmp_status_to_runstatus(tmp_status, runstatus):
     irs = runstatus.set_index(ri.ID_RUNINFO_KEYS)
     for i, run in tmp_status.iterrows():
         irs.set_value(
-            (run['fNight'], run['fRunID']), 
-            'NumActualPhsEvents', 
+            (run['fNight'], run['fRunID']),
+            'NumActualPhsEvents',
             run['NumActualPhsEvents']
         )
     return irs.reset_index()

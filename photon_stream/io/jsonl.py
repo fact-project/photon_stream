@@ -49,7 +49,7 @@ def read_ObservationInformation_from_dict(event_dict):
         time_unix_us=event_dict['UnixTime_s_us'][1]
     )
     obs.trigger_type = np.uint32(event_dict['Trigger'])
-    return obs    
+    return obs
 
 
 def append_ObservationInformation_to_dict(obs, event_dict):
@@ -89,7 +89,7 @@ def read_SimulationTruth_from_dict(event_dict):
     truth.run = np.uint32(event_dict['Run'])
     truth.event = np.uint32(event_dict['Event'])
     truth.reuse = np.uint32(event_dict['Reuse'])
-    return truth    
+    return truth
 
 
 def append_SimulationTruth_to_dict(truth, event_dict):

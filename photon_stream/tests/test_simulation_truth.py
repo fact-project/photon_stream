@@ -25,7 +25,7 @@ def test_constructor():
 def test_equal():
     sim_truth_1A = ps.io.jsonl.read_SimulationTruth_from_dict(event_dict_A)
     sim_truth_1B = ps.io.jsonl.read_SimulationTruth_from_dict(event_dict_B)
-    
+
     sim_truth_2A = ps.io.jsonl.read_SimulationTruth_from_dict(event_dict_A)
     sim_truth_2B = ps.io.jsonl.read_SimulationTruth_from_dict(event_dict_B)
 
@@ -63,7 +63,7 @@ def test_hirachy():
     simC = ps.io.jsonl.read_SimulationTruth_from_dict(in_C)
     assert not hasattr(simC, 'air_shower')
 
-    simC2 = ps.io.jsonl.read_SimulationTruth_from_dict(in_C)   
+    simC2 = ps.io.jsonl.read_SimulationTruth_from_dict(in_C)
     assert simC == simC2
 
     back_C = {}

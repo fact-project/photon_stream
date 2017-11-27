@@ -5,7 +5,7 @@ from math import isclose
 class AirShowerTruth(object):
     """
     Simulation truth on the air-shower as particle type and particle energy.
-    Based on the inputs for the KIT CORSIKA air-shower simulation. 
+    Based on the inputs for the KIT CORSIKA air-shower simulation.
     See the KIT CORSKIA documentation:
     https://web.ikp.kit.edu/corsika/usersguide/usersguide.pdf
     """
@@ -17,12 +17,12 @@ class AirShowerTruth(object):
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
-            if len(self.raw_corsika_run_header) != len(other.raw_corsika_run_header): 
+            if len(self.raw_corsika_run_header) != len(other.raw_corsika_run_header):
                 return False
             for i in range(len(self.raw_corsika_run_header)):
                 if self.raw_corsika_run_header[i] != other.raw_corsika_run_header[i]:
                     return False
-            if len(self.raw_corsika_event_header) != len(other.raw_corsika_event_header): 
+            if len(self.raw_corsika_event_header) != len(other.raw_corsika_event_header):
                 return False
             for i in range(len(self.raw_corsika_event_header)):
                 if self.raw_corsika_event_header[i] != other.raw_corsika_event_header[i]:

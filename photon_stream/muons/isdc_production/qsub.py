@@ -12,7 +12,7 @@ fact_queues = ['fact_long', 'fact_medium', 'fact_short']
 
 def qsub(
     input_phs_dir,
-    out_muon_dir, 
+    out_muon_dir,
 ):
     """
     Run the Muon extraction on all photon-stream runs in the 'phs' directory.
@@ -25,7 +25,7 @@ def qsub(
 
 
     run_paths = glob.glob(join(input_phs_dir,'*/*/*/*.phs.jsonl.gz'))
-    
+
 
     print('Found', len(run_paths), 'potential runs.')
     print('Set up output paths for the potential runs...')
@@ -65,27 +65,27 @@ def qsub(
     for job in tqdm(jobs):
 
         job['job_path'] = join(
-            out_muon_dir, 
-            'job', 
-            job['year'], 
-            job['month'], 
-            job['night'], 
+            out_muon_dir,
+            'job',
+            job['year'],
+            job['month'],
+            job['night'],
             'fact_phs_muon_'+job['base']+'.sh')
 
         job['stdout_path'] = join(
-            out_muon_dir, 
-            'std', 
-            job['year'], 
-            job['month'], 
-            job['night'], 
+            out_muon_dir,
+            'std',
+            job['year'],
+            job['month'],
+            job['night'],
             job['base']+'.o')
 
         job['stderr_path'] = join(
-            out_muon_dir, 
-            'std', 
-            job['year'], 
-            job['month'], 
-            job['night'], 
+            out_muon_dir,
+            'std',
+            job['year'],
+            job['month'],
+            job['night'],
             job['base']+'.e')
 
         job_dir = os.path.split(job['job_path'])[0]
@@ -107,5 +107,5 @@ def qsub(
                 '-o', job['stdout_path'],
                 '-e', job['stderr_path'],
                 job['job_path']]
-   
+
         qsub_return_code = sp.call(cmd)

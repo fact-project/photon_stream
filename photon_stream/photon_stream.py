@@ -36,14 +36,14 @@ class PhotonStream(object):
     @property
     def list_of_lists(self):
         '''
-        Returns a list along all pixels of lists for each photon arrival time slice. 
+        Returns a list along all pixels of lists for each photon arrival time slice.
         '''
         return raw_phs_to_list_of_lists(self.raw)
 
 
     @property
     def image_sequence(self):
-        return raw_phs_to_image_sequence(self.raw) 
+        return raw_phs_to_image_sequence(self.raw)
 
 
     def __eq__(self, other):
@@ -51,7 +51,7 @@ class PhotonStream(object):
             if not np.abs(self.slice_duration - other.slice_duration) < MAX_RESIDUAL_SLICE_DURATION_NS: return False
 
             # Saturated Pixels
-            if not len(self.saturated_pixels) == len(other.saturated_pixels): return False            
+            if not len(self.saturated_pixels) == len(other.saturated_pixels): return False
             for i, saturated_pixel_in in enumerate(self.saturated_pixels):
                 if not saturated_pixel_in == other.saturated_pixels[i]: return False
 

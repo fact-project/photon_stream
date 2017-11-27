@@ -6,7 +6,7 @@ import qstat as qstat2dict
 def qstat(is_in_JB_name='phs_obs', xml=None):
     """
     Returns DataFrame(columns=['fNight','fRunID']) of all jobs in qstat
-    which contain 'name' in their qstat JB_name. fNight and fRunID are parsed 
+    which contain 'name' in their qstat JB_name. fNight and fRunID are parsed
     from the JB_name which is for the photon-stream:
 
     JB_name: phs_{key:%s}_{yyyymmnn:08d}_{rrr:03d}

@@ -12,22 +12,22 @@ import pandas as pd
 
 
 old_runstatus_path = pkg_resources.resource_filename(
-    'photon_stream', 
+    'photon_stream',
     os.path.join('tests','resources','runstatus_20161115_to_20161231.csv')
 )
 
 new_runstatus_path = pkg_resources.resource_filename(
-    'photon_stream', 
+    'photon_stream',
     os.path.join('tests','resources','runstatus_20161115_to_20170103.csv')
 )
 
 runinfo_path = pkg_resources.resource_filename(
-    'photon_stream', 
+    'photon_stream',
     os.path.join('tests','resources','runinfo_20161115_to_20170103.csv')
 )
 
 qstat_xml_path = pkg_resources.resource_filename(
-    'photon_stream', 
+    'photon_stream',
     os.path.join('tests','resources','qstat.xml')
 )
 with open(qstat_xml_path, 'rt') as fin:
@@ -66,7 +66,7 @@ def run_production_scenario(out_dir):
 
 
     ps.production.runstatus.init(
-        obs_dir=obs_dir, 
+        obs_dir=obs_dir,
         latest_runstatus=rs1
     )
 
@@ -83,7 +83,7 @@ def run_production_scenario(out_dir):
 
     # FIRST CHUNK
     ps.production.isdc.produce(
-        phs_dir=phs_dir, 
+        phs_dir=phs_dir,
         only_a_fraction=1.0,
         fact_raw_dir=join(fact_dir, 'raw'),
         fact_drs_dir=join(fact_dir, 'raw'),
@@ -110,7 +110,7 @@ def run_production_scenario(out_dir):
 
     # SECOND CHUNK
     ps.production.isdc.produce(
-        phs_dir=phs_dir, 
+        phs_dir=phs_dir,
         only_a_fraction=1.0,
         fact_raw_dir=join(fact_dir, 'raw'),
         fact_drs_dir=join(fact_dir, 'raw'),
@@ -118,7 +118,7 @@ def run_production_scenario(out_dir):
         java_path='/usr/java/jdk1.8.0_77/bin',
         fact_tools_jar_path=my_fact_tools_jar_path,
         fact_tools_xml_path=my_fact_tools_xml_path,
-        queue=TEST_DUMMY_QUEUE_NAME, 
+        queue=TEST_DUMMY_QUEUE_NAME,
         runqstat_dummy=runqstat,
         max_jobs_in_qsub=1000,
     )
@@ -140,7 +140,7 @@ def run_production_scenario(out_dir):
         java_path='/usr/java/jdk1.8.0_77/bin',
         fact_tools_jar_path=my_fact_tools_jar_path,
         fact_tools_xml_path=my_fact_tools_xml_path,
-        queue=TEST_DUMMY_QUEUE_NAME, 
+        queue=TEST_DUMMY_QUEUE_NAME,
         runqstat_dummy=runqstat,
         max_jobs_in_qsub=100,
     )

@@ -28,7 +28,7 @@ class SimulationReader(object):
         for idx in range(self.event_headers.shape[0]):
             event_id = self.event_headers[idx][IDX_EVTH_EVENT_NUMBER]
             self._event_to_idx[event_id] = idx
-        
+
     def __iter__(self):
         return self
 
@@ -71,7 +71,7 @@ class SimulationReader(object):
             return ch_path+'.gz'
 
 
-    def thrown_events(self): 
+    def thrown_events(self):
         _thrown_events = []
         for evtidx in range(self.event_headers.shape[0]):
             for reuseidx in range(int(self.event_headers[evtidx][IDX_EVTH_REUSE_NUMBER])):

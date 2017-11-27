@@ -21,7 +21,7 @@ def extract_single_run(cfg):
         cfg['output_dir'], cfg['output_base']+'_muons.phs.jsonl.gz')
     output_run_header_path = join(
         cfg['output_dir'], cfg['output_base']+'_muons.info')
-    
+
 
     if exists(output_run_path) and exists(output_run_header_path):
         print('Already done', cfg['input_run_path'])
@@ -58,7 +58,7 @@ if __name__ == '__main__':
             instructions.append(cfg)
 
         return_codes = list(scoop.futures.map(
-            extract_single_run, 
+            extract_single_run,
             instructions))
 
     except docopt.DocoptExit as e:

@@ -40,15 +40,15 @@ def jobs_and_directory_tree(
     phs_dir             Output directory of the photon-stream. In there is the
                         observations directory ./obs and simulations directory
                         ./sim
-    
+
     runstatus           A pandas DataFrame() of the FACT run-info-database which
                         is used as a reference for the runs to be processed.
                         All observation runs are taken into account. If you want
                         to process specific runs, remove the other runs from
                         runstatus.
 
-    only_a_fraction     A ratio between 0.0 and 1.0 to only process a 
-                        random fraction of the runs. Usefull for debugging over 
+    only_a_fraction     A ratio between 0.0 and 1.0 to only process a
+                        random fraction of the runs. Usefull for debugging over
                         long periodes of observations. (default 1.0)
 
     fact_raw_dir        The path to the FACT raw observation directory.
@@ -64,10 +64,10 @@ def jobs_and_directory_tree(
 
     fact_tools_xml_path The path to the fact-tools steering xml file.
 
-    tmp_dir_base_name   The base name of the temporary directory on the qsub 
+    tmp_dir_base_name   The base name of the temporary directory on the qsub
                         worker nodes. (default 'fact_photon_stream_JOB_ID_')
     """
-    
+
     phs_dir = abspath(phs_dir)
     fact_raw_dir = abspath(fact_raw_dir)
     fact_drs_dir = abspath(fact_drs_dir)
@@ -128,22 +128,22 @@ def jobs_and_directory_tree(
         job['o_path'] = tree_path(night, runid, prefix=p['std_dir'], suffix='.o')
         job['e_path'] = tree_path(night, runid, prefix=p['std_dir'], suffix='.e')
         jobs.append(job)
-        
+
     return jobs, p
 
 
 def output_tree(tree):
     os.makedirs(tree['phs_dir'], exist_ok=True, mode=0o755)
     readme_input_path = pkg_resources.resource_filename(
-        'photon_stream', 
+        'photon_stream',
         join('production','resources','phs_readme.md')
-    ) 
+    )
     shutil.copy(readme_input_path, tree['phs_readme_path'])
 
     introduction_input_path = pkg_resources.resource_filename(
-        'photon_stream', 
+        'photon_stream',
         join('production','resources','phs_introduction.pdf')
-    ) 
+    )
     shutil.copy(introduction_input_path, tree['phs_introduction_path'])
     os.makedirs(tree['obs_dir'], exist_ok=True, mode=0o755)
     os.makedirs(tree['std_dir'], exist_ok=True, mode=0o755)

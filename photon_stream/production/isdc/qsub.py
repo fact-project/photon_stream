@@ -20,7 +20,7 @@ def qsub(job, exe_path, queue=QUEUE_NAME):
         else:
             makedirs(dirname(p), exist_ok=True)
 
-    cmd = [ 
+    cmd = [
         'qsub',
         '-q', queue,
         '-o', o_path,
@@ -30,7 +30,7 @@ def qsub(job, exe_path, queue=QUEUE_NAME):
     ]
     for key in job:
         if '--' in key:
-            cmd += [key, job[key]] 
+            cmd += [key, job[key]]
 
     if 'test_dummy' in queue:
         dummy_qsub(cmd)
