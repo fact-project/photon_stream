@@ -32,7 +32,7 @@ def test_constructor():
 def test_equal():
     obs_info_1A = ps.io.jsonl.read_ObservationInformation_from_dict(event_dict_A)
     obs_info_1B = ps.io.jsonl.read_ObservationInformation_from_dict(event_dict_B)
-    
+
     obs_info_2A = ps.io.jsonl.read_ObservationInformation_from_dict(event_dict_A)
     obs_info_2B = ps.io.jsonl.read_ObservationInformation_from_dict(event_dict_B)
 

@@ -13,7 +13,7 @@ def extract_corsika_headers(
     Reads a MMCS CORSIKA 'cer' file from in_path and extracts al headers:
     run header, event header, and run end header (if present)
     Then writes only the headers back into the out_path.
-    
+
     Parameters
     ----------
     in_path=PATH    Input MMCS CORSIKA run path with (or without) the Cherenkov

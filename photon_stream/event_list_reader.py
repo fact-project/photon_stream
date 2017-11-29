@@ -30,7 +30,7 @@ class EventListReader:
                 else:
                     self.file = open(path, 'rt')
                     self.reader = io.jsonl.Reader(self.file)
-          
+
 
     def __enter__(self):
         return self
