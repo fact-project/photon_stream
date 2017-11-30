@@ -40,12 +40,12 @@ setup(
     ],
     entry_points={'console_scripts': [
         'phs_extract_muons = photon_stream.muons.isdc_production.worker_node_main:main',
-        
+
         'phs.isdc.obs.synclapalma = photon_stream.production.isdc.synclapalma_main:main',
 
         'phs.isdc.obs.produce = photon_stream.production.isdc.produce_main:main',
         'phs.isdc.obs.produce.worker = photon_stream.production.isdc.worker_node_produce:main',
-        
+
         'phs.isdc.obs.status = photon_stream.production.isdc.status_main:main',
         'phs.isdc.obs.status.worker = photon_stream.production.isdc.worker_node_status:main',
 
