@@ -58,7 +58,7 @@ def detection(
     full_clusters_fps = flat_photon_stream[full_cluster_mask]
 
     circle_model, inliers = ransac(
-        data=full_clusters_fps[:,0:2], # only cx and cy not the time
+        data=full_clusters_fps[:, 0:2], # only cx and cy not the time
         model_class=CircleModel,
         min_samples=initial_circle_model_min_samples,
         residual_threshold=initial_circle_model_residual_threshold,
@@ -87,12 +87,12 @@ def detection(
     if muon_ring_overlapp_with_field_of_view < min_overlap_of_muon_ring_with_field_of_view:
         return ret
 
-    arrival_time_stddev = full_clusters_fps[:,2].std()
+    arrival_time_stddev = full_clusters_fps[:, 2].std()
     ret['arrival_time_stddev'] = arrival_time_stddev
     if arrival_time_stddev > max_arrival_time_stddev:
         return ret
 
-    ret['mean_arrival_time_muon_cluster'] = full_clusters_fps[:,2].mean()
+    ret['mean_arrival_time_muon_cluster'] = full_clusters_fps[:, 2].mean()
 
     number_of_ring_photons = inliers.sum()
     initial_circle_model_photon_ratio = number_of_ring_photons/number_of_photons
@@ -113,7 +113,7 @@ def detection(
         cy=cy,
         r=r,
         residual_threshold=density_circle_model_residual_threshold,
-        xy=full_clusters_fps[:,0:2])
+        xy=full_clusters_fps[:, 0:2])
 
     on_density = onoff['on'].sum()/onoff['area_on']
     inner_off_density = onoff['inner_off'].sum()/onoff['area_inner_off']
@@ -135,18 +135,18 @@ def detection(
     # ring population
     #----------------
     xy_relative_to_ring_center = full_clusters_fps
-    xy_relative_to_ring_center[:,0] -= cx
-    xy_relative_to_ring_center[:,1] -= cy
+    xy_relative_to_ring_center[:, 0] -= cx
+    xy_relative_to_ring_center[:, 1] -= cy
 
-    rphi = xy2polar(xy=xy_relative_to_ring_center[:,0:2])
+    rphi = xy2polar(xy=xy_relative_to_ring_center[:, 0:2])
 
     number_bins = 3*int(np.ceil(np.sqrt(number_of_photons)))
     phi_bin_edgeds = np.linspace(-np.pi, np.pi, number_bins)
     ring_population_hist, phi_bin_edgeds = np.histogram(
-        rphi[:,1],
+        rphi[:, 1],
         bins=phi_bin_edgeds)
 
-    phi_bin_centers = phi_bin_edgeds[:-1]
+    phi_bin_centers = phi_bin_edgeds[: -1]
     bin_pos_x = np.cos(phi_bin_centers)*r + cx
     bin_pos_y = np.sin(phi_bin_centers)*r + cy
     bins_inside_fov = np.sqrt(bin_pos_x**2 + bin_pos_y**2) < field_of_view_radius
@@ -169,7 +169,7 @@ def detection(
     for i in range(ring_population_hist.shape[0]):
         section = np.take(
             ring_population_hist,
-            range(i,i+number_of_fraction_bins),
+            range(i, i+number_of_fraction_bins),
             mode='wrap')
 
         if (section > 0).sum() >= 0.5*number_of_fraction_bins:

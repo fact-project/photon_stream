@@ -24,7 +24,7 @@ def qsub(
     print('Start extracting muons...')
 
 
-    run_paths = glob.glob(join(input_phs_dir,'*/*/*/*.phs.jsonl.gz'))
+    run_paths = glob.glob(join(input_phs_dir, '*/*/*/*.phs.jsonl.gz'))
 
 
     print('Found', len(run_paths), 'potential runs.')

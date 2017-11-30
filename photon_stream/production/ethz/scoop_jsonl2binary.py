@@ -40,7 +40,7 @@ def main():
         out_dir = arguments['--out_dir']
 
         jobs = []
-        for jsonl_path in glob(join(obs_dir,'*','*','*','*.phs.jsonl.gz')):
+        for jsonl_path in glob(join(obs_dir, '*', '*', '*', '*.phs.jsonl.gz')):
             p = fact.path.parse(jsonl_path)
             phs_path = fact.path.tree_path(p['night'], p['run'], out_dir, '.phs.gz')
             if not exists(phs_path):
@@ -53,4 +53,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

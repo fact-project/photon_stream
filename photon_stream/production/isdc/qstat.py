@@ -45,4 +45,4 @@ def q_jobs_2_runqstat(q_jobs, is_in_JB_name):
     if len(jobs) > 0:
         return pd.DataFrame(jobs)
     else:
-        return pd.DataFrame(columns=['fNight','fRunID'])
+        return pd.DataFrame(columns=['fNight', 'fRunID'])

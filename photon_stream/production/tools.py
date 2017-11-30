@@ -60,7 +60,6 @@ def create_fake_fact_dir(path, runinfo):
                 dummy_run = {
                     'fNight': night,
                     'fRunID': run,
-                    'NumExpectedPhsEvents': np.random.randint(0,25000),
+                    'NumExpectedPhsEvents': np.random.randint(0, 25000),
                 }
                 raw_file.write(json.dumps(dummy_run))
-

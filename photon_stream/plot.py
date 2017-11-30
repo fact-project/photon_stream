@@ -47,12 +47,12 @@ def add_point_cloud_2_ax(
 ):
     fov_radius_deg = np.rad2deg(fov_radius)
     pcl = point_cloud.copy()
-    pcl[:,0] = np.rad2deg(pcl[:,0]) # to deg
-    pcl[:,1] = np.rad2deg(pcl[:,1]) # to deg
-    pcl[:,2] *= 1e9 # to nano seconds
+    pcl[:, 0] = np.rad2deg(pcl[:, 0]) # to deg
+    pcl[:, 1] = np.rad2deg(pcl[:, 1]) # to deg
+    pcl[:, 2] *= 1e9 # to nano seconds
 
-    min_time = pcl[:,2].min()
-    max_time = pcl[:,2].max()
+    min_time = pcl[:, 2].min()
+    max_time = pcl[:, 2].max()
 
     add_ring_2_ax(x=0.0, y=0.0, z=min_time, r=fov_radius_deg, ax=ax)
     ax.set_xlim(-fov_radius_deg, fov_radius_deg)
@@ -62,9 +62,9 @@ def add_point_cloud_2_ax(
     ax.set_ylabel('y/deg')
     ax.set_zlabel('t/ns')
     ax.scatter(
-        pcl[:,0],
-        pcl[:,1],
-        pcl[:,2],
+        pcl[:, 0],
+        pcl[:, 1],
+        pcl[:, 2],
         lw=0,
         alpha=0.075,
         s=55.,
@@ -72,7 +72,7 @@ def add_point_cloud_2_ax(
     )
 
 
-def add_ring_2_ax(x,y,z,r, ax, color='k', line_width=1.0):
+def add_ring_2_ax(x, y, z, r, ax, color='k', line_width=1.0):
     p = Circle((x, y), r, edgecolor=color, facecolor='none', lw=line_width)
     ax.add_patch(p)
     art3d.pathpatch_2d_to_3d(p, z=z, zdir="z")

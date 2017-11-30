@@ -5,7 +5,7 @@ import os
 
 runinfo_path = pkg_resources.resource_filename(
     'photon_stream',
-    os.path.join('tests','resources','runinfo_20161115_to_20170103.csv')
+    os.path.join('tests', 'resources', 'runinfo_20161115_to_20170103.csv')
 )
 
 def test_drs_run_assignment():

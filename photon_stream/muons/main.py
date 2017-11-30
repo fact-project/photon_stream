@@ -40,7 +40,7 @@ if __name__ == '__main__':
 
         phs_dir = arguments['--input_phs_dir']
         out_dir = arguments['--out_dir']
-        run_paths = glob.glob(join(phs_dir,'2014/01/**/*.phs.jsonl.gz'))
+        run_paths = glob.glob(join(phs_dir, '2014/01/**/*.phs.jsonl.gz'))
 
         instructions = []
         for run_path in run_paths:

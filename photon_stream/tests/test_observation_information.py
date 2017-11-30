@@ -5,7 +5,7 @@ event_dict_A = {
     'Run': 1337,
     'Event': 42,
     'Night': 20151224,
-    'UnixTime_s_us': [1234,5678],
+    'UnixTime_s_us': [1234, 5678],
     'Trigger': 4,
 }
 
@@ -13,7 +13,7 @@ event_dict_B = {
     'Run': 99,
     'Event': 56,
     'Night': 20170101,
-    'UnixTime_s_us': [9876,54321],
+    'UnixTime_s_us': [9876, 54321],
     'Trigger': 5,
 }
 

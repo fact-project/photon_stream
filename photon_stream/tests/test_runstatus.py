@@ -9,7 +9,7 @@ import os
 
 run_path = pkg_resources.resource_filename(
     'photon_stream',
-    os.path.join('tests','resources','20170119_229_pass4_100events.phs.jsonl.gz')
+    os.path.join('tests', 'resources', '20170119_229_pass4_100events.phs.jsonl.gz')
 )
 
 
@@ -19,12 +19,12 @@ def test_number_of_events_in_file():
 
 old_runstatus_path = pkg_resources.resource_filename(
     'photon_stream',
-    os.path.join('tests','resources','runstatus_20161115_to_20161231.csv')
+    os.path.join('tests', 'resources', 'runstatus_20161115_to_20161231.csv')
 )
 
 new_runstatus_path = pkg_resources.resource_filename(
     'photon_stream',
-    os.path.join('tests','resources','runstatus_20161115_to_20170103.csv')
+    os.path.join('tests', 'resources', 'runstatus_20161115_to_20170103.csv')
 )
 
 
