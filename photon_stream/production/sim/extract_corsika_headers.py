@@ -39,4 +39,3 @@ def extract_corsika_headers(
             append_corsika_headers_to_file(headers=headers, fout=fout)
 
     shutil.move(tmp_out_path, out_path)
-
