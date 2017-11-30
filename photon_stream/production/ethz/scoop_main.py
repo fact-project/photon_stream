@@ -37,7 +37,7 @@ def run_job(job):
     os.makedirs(job['std_yyyy_mm_nn_dir'], exist_ok=True, mode=0o755)
 
     with tempfile.TemporaryDirectory(prefix=job['worker_tmp_dir_base_name']) as tmp:
-         with open(job['std_out_path'],'w') as stdout, open(job['std_err_path'],'w') as stderr:
+         with open(job['std_out_path'], 'w') as stdout, open(job['std_err_path'], 'w') as stderr:
             rc = subprocess.call(
                 [
                     join(job['java_path'], 'bin', 'java'),

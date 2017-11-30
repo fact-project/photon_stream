@@ -119,7 +119,7 @@ def jobs_and_directory_tree(
             continue
 
         job['--aux_dir'] = aux_dir
-        job['--out_basename'] = fact.path.template_to_path(night, runid,'{N}_{R}')
+        job['--out_basename'] = fact.path.template_to_path(night, runid, '{N}_{R}')
         job['--out_dir'] = dirname(tree_path(night, runid, prefix=p['obs_dir'], suffix=''))
         job['--tmp_dir_basename'] = QSUB_OBS_PRODUCE_PREFIX
         job['--java_path'] = java_path
@@ -136,13 +136,13 @@ def output_tree(tree):
     os.makedirs(tree['phs_dir'], exist_ok=True, mode=0o755)
     readme_input_path = pkg_resources.resource_filename(
         'photon_stream',
-        join('production','resources','phs_readme.md')
+        join('production', 'resources', 'phs_readme.md')
     )
     shutil.copy(readme_input_path, tree['phs_readme_path'])
 
     introduction_input_path = pkg_resources.resource_filename(
         'photon_stream',
-        join('production','resources','phs_introduction.pdf')
+        join('production', 'resources', 'phs_introduction.pdf')
     )
     shutil.copy(introduction_input_path, tree['phs_introduction_path'])
     os.makedirs(tree['obs_dir'], exist_ok=True, mode=0o755)
@@ -154,7 +154,7 @@ def is_aux_dir_pointing_complete(aux_dir):
     if not exists(aux_dir):
         return False
     ok = np.zeros(len(tools.DRIVE_AUX_FILE_KEYS), dtype=np.bool)
-    for aux_file in glob(join(aux_dir,'*')):
+    for aux_file in glob(join(aux_dir, '*')):
         for i, aux_drive_key in enumerate(tools.DRIVE_AUX_FILE_KEYS):
             if aux_drive_key in aux_file: ok[i] = 1
     return np.all(ok)

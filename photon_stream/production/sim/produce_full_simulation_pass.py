@@ -17,8 +17,8 @@ def produce_full_simulation_pass(
     out_dir,
 ):
 
-    all_corsika = glob(join(corsika_dir,'*'))
-    all_ceres = glob(join(ceres_dir,'*'))
+    all_corsika = glob(join(corsika_dir, '*'))
+    all_ceres = glob(join(ceres_dir, '*'))
 
     args = []
     for corsika_path in all_corsika:
@@ -32,7 +32,7 @@ def produce_full_simulation_pass(
                 if run_number_str in cer_path:
                     break
 
-            all_in_cer_path = glob(join(cer_path,'*'))
+            all_in_cer_path = glob(join(cer_path, '*'))
             for cer_sub_path in all_in_cer_path:
                 if 'Events.fits.gz' in cer_sub_path:
                     break

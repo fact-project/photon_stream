@@ -8,12 +8,12 @@ import pkg_resources
 
 fact_tools_xml_path = pkg_resources.resource_filename(
     'photon_stream',
-    os.path.join('production','resources','simulations_pass4.xml')
+    os.path.join('production', 'resources', 'simulations_pass4.xml')
 )
 
 mc_drs_path = pkg_resources.resource_filename(
     'photon_stream',
-    os.path.join('production','resources','testMcDrsFile.drs.fits.gz')
+    os.path.join('production', 'resources', 'testMcDrsFile.drs.fits.gz')
 )
 
 

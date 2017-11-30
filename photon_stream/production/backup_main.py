@@ -38,7 +38,7 @@ def folder_wise_rsync_a(
 
 def backup():
     print('Start backup to ETH Zurich')
-    rsync_lock_path = join('/','home','guest','relleums','.phs.isdc.backup.to.ethz.lock')
+    rsync_lock_path = join('/', 'home', 'guest', 'relleums', '.phs.isdc.backup.to.ethz.lock')
     if not os.path.exists(rsync_lock_path):
         with open(rsync_lock_path, 'a') as out:
             os.utime(rsync_lock_path)
@@ -47,9 +47,9 @@ def backup():
         with rsync_lock.acquire(timeout=3600):
             folder_wise_rsync_a(
                 source_host='',
-                source_path=join('/','gpfs0','fact','processing','public','phs/'),
+                source_path=join('/', 'gpfs0', 'fact', 'processing', 'public', 'phs/'),
                 destination_host='relleums@ihp-pc41.ethz.ch',
-                destination_path=join('/','data','fact_public','phs/'),
+                destination_path=join('/', 'data', 'fact_public', 'phs/'),
             )
     except Timeout:
         print('Could not lock '+rsync_lock_path)

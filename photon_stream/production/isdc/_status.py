@@ -22,16 +22,16 @@ QSUB_OBS_STATUS_PREFIX = 'phs_obs_status'
 
 
 def status(
-    obs_dir=join('/gpfs0','fact','processing','public','phs','obs'),
+    obs_dir=join('/gpfs0', 'fact', 'processing', 'public', 'phs', 'obs'),
     max_jobs_in_qsub=256,
     queue=QUEUE_NAME,
     runs_in_qstat=None
 ):
     print('Start status')
 
-    runstatus_path = join(obs_dir,'runstatus.csv')
-    runstatus_lock_path = join(obs_dir,'.lock.runstatus.csv')
-    tmp_status_dir = join(obs_dir,'.tmp_status')
+    runstatus_path = join(obs_dir, 'runstatus.csv')
+    runstatus_lock_path = join(obs_dir, '.lock.runstatus.csv')
+    tmp_status_dir = join(obs_dir, '.tmp_status')
     obs_std_dir = obs_dir+'.std'
 
     assert exists(runstatus_path)
@@ -50,8 +50,8 @@ def status(
             print('Add '+str(len(tmp_status))+' new stati')
 
             std = [
-                {'key':'StdOutSize','suffix':'.o'},
-                {'key':'StdErrorSize','suffix':'.e'}
+                {'key': 'StdOutSize', 'suffix': '.o'},
+                {'key': 'StdErrorSize', 'suffix': '.e'}
             ]
 
             # StdOutSize and StdErrorSize
@@ -80,7 +80,7 @@ def status(
                 runstatus
             )
 
-            print(len(runstatus)-len(runs_to_be_checked_now),'are not checked again for NumActualPhsEvents')
+            print(len(runstatus)-len(runs_to_be_checked_now), 'are not checked again for NumActualPhsEvents')
 
             if runs_in_qstat is None:
                 runs_in_qstat = qstat(is_in_JB_name=QSUB_OBS_STATUS_PREFIX)
@@ -90,7 +90,7 @@ def status(
                 second=runs_in_qstat,
             )
 
-            print(len(runs_to_be_checked_now),'runs are checked now for NumActualPhsEvents')
+            print(len(runs_to_be_checked_now), 'runs are checked now for NumActualPhsEvents')
 
             num_runs_for_qsub = max_jobs_in_qsub - len(runs_in_qstat)
             runstatus = runstatus.set_index(ri.ID_RUNINFO_KEYS)
@@ -161,7 +161,7 @@ def runs_to_be_checked_now_and_incremented_runstatus(runstatus):
 
 def read_and_remove_tmp_status(tmp_status_dir):
     tmp_status_list = []
-    for tmp_status_path in glob(join(tmp_status_dir,'*','*','*','*.json')):
+    for tmp_status_path in glob(join(tmp_status_dir, '*', '*', '*', '*.json')):
         with open(tmp_status_path, 'rt') as fin:
             tmp_status_list.append(json.loads(fin.read()))
         os.remove(tmp_status_path)

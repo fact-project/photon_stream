@@ -40,13 +40,13 @@ def test_muon_detection():
 
     muon_truth_path = pkg_resources.resource_filename(
         'photon_stream',
-        os.path.join('tests','resources','muon_sample_20140101_104.csv')
+        os.path.join('tests', 'resources', 'muon_sample_20140101_104.csv')
     )
     muon_truth = np.genfromtxt(muon_truth_path)
 
     muon_sample_path = pkg_resources.resource_filename(
         'photon_stream',
-        os.path.join('tests','resources','20140101_104_muon_sample.phs.jsonl.gz')
+        os.path.join('tests', 'resources', '20140101_104_muon_sample.phs.jsonl.gz')
     )
 
     run = ps.EventListReader(muon_sample_path)

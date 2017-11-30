@@ -15,7 +15,7 @@ QSUB_OBS_PRODUCE_PREFIX = 'phs_obs_produce'
 
 fact_tools_xml_path = pkg_resources.resource_filename(
     'photon_stream',
-    os.path.join('production','resources','observations_pass4.xml')
+    os.path.join('production', 'resources', 'observations_pass4.xml')
 )
 
 

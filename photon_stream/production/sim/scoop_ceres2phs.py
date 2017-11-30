@@ -39,7 +39,7 @@ def main():
         java_path = '/home/relleums/java8/jdk1.8.0_111'
         jobs = []
 
-        all_ceres = glob(join(ceres_dir,'*'))
+        all_ceres = glob(join(ceres_dir, '*'))
         for ceres_sub_dir in all_ceres:
             cor_basename = os.path.basename(ceres_sub_dir)
             run_number = int(cor_basename)

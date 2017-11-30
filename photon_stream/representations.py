@@ -42,16 +42,16 @@ def number_photons_in_list_of_list(lol):
 
 def raw_phs_to_point_cloud(raw_phs, cx, cy):
     number_photons = len(raw_phs) - io.magic_constants.NUMBER_OF_PIXELS
-    cloud = np.zeros(shape=(number_photons,3))
+    cloud = np.zeros(shape=(number_photons, 3))
     pixel_chid = 0
     p = 0
     for s in raw_phs:
         if s == io.binary.LINEBREAK:
             pixel_chid += 1
         else:
-            cloud[p,0] = cx[pixel_chid]
-            cloud[p,1] = cy[pixel_chid]
-            cloud[p,2] = s*io.magic_constants.TIME_SLICE_DURATION_S
+            cloud[p, 0] = cx[pixel_chid]
+            cloud[p, 1] = cy[pixel_chid]
+            cloud[p, 2] = s*io.magic_constants.TIME_SLICE_DURATION_S
             p += 1
     return cloud
 

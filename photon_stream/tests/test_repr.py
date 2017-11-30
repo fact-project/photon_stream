@@ -6,7 +6,7 @@ import os
 
 run_path = pkg_resources.resource_filename(
     'photon_stream',
-    os.path.join('tests','resources','20170119_229_pass4_100events.phs.jsonl.gz')
+    os.path.join('tests', 'resources', '20170119_229_pass4_100events.phs.jsonl.gz')
 )
 
 reader = ps.EventListReader(run_path)
@@ -36,12 +36,12 @@ def test_PhotonTimeLineCluster():
 
 sim_path = pkg_resources.resource_filename(
     'photon_stream',
-    os.path.join('tests','resources','011014.phs.jsonl.gz')
+    os.path.join('tests', 'resources', '011014.phs.jsonl.gz')
 )
 
 sim_corsika_path = pkg_resources.resource_filename(
     'photon_stream',
-    os.path.join('tests','resources','011014.ch')
+    os.path.join('tests', 'resources', '011014.ch')
 )
 
 sim_reader = ps.SimulationReader(sim_path, sim_corsika_path)

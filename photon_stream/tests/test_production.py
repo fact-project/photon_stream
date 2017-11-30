@@ -13,22 +13,22 @@ import pandas as pd
 
 old_runstatus_path = pkg_resources.resource_filename(
     'photon_stream',
-    os.path.join('tests','resources','runstatus_20161115_to_20161231.csv')
+    os.path.join('tests', 'resources', 'runstatus_20161115_to_20161231.csv')
 )
 
 new_runstatus_path = pkg_resources.resource_filename(
     'photon_stream',
-    os.path.join('tests','resources','runstatus_20161115_to_20170103.csv')
+    os.path.join('tests', 'resources', 'runstatus_20161115_to_20170103.csv')
 )
 
 runinfo_path = pkg_resources.resource_filename(
     'photon_stream',
-    os.path.join('tests','resources','runinfo_20161115_to_20170103.csv')
+    os.path.join('tests', 'resources', 'runinfo_20161115_to_20170103.csv')
 )
 
 qstat_xml_path = pkg_resources.resource_filename(
     'photon_stream',
-    os.path.join('tests','resources','qstat.xml')
+    os.path.join('tests', 'resources', 'qstat.xml')
 )
 with open(qstat_xml_path, 'rt') as fin:
     qstat_xml = fin.read()
@@ -71,9 +71,9 @@ def run_production_scenario(out_dir):
     )
 
     assert exists(phs_dir)
-    assert exists(join(phs_dir,'obs'))
-    assert exists(join(phs_dir,'obs','runstatus.csv'))
-    assert exists(join(phs_dir,'obs','.lock.runstatus.csv'))
+    assert exists(join(phs_dir, 'obs'))
+    assert exists(join(phs_dir, 'obs', 'runstatus.csv'))
+    assert exists(join(phs_dir, 'obs', '.lock.runstatus.csv'))
 
     ps.production.isdc.status(
         obs_dir=obs_dir,
@@ -96,7 +96,7 @@ def run_production_scenario(out_dir):
         max_jobs_in_qsub=1000,
     )
 
-    t = len(glob.glob(join(obs_dir,'*','*','*','*phs.jsonl.gz')))
+    t = len(glob.glob(join(obs_dir, '*', '*', '*', '*phs.jsonl.gz')))
     assert t == 952
 
     ps.production.isdc.status(
@@ -154,7 +154,7 @@ def run_production_scenario(out_dir):
 
 
 def runs_in_obs_dir(obs_dir):
-    runs_produced_paths = glob.glob(join(obs_dir,'*','*','*','*phs.jsonl.gz'))
+    runs_produced_paths = glob.glob(join(obs_dir, '*', '*', '*', '*phs.jsonl.gz'))
     runs_produced = []
     for run_produced_path in runs_produced_paths:
         r = fact.path.parse(run_produced_path)

@@ -7,7 +7,7 @@ import gzip
 
 run_path = pkg_resources.resource_filename(
     'photon_stream',
-    os.path.join('tests','resources','20170119_229_pass4_100events.phs.jsonl.gz')
+    os.path.join('tests', 'resources', '20170119_229_pass4_100events.phs.jsonl.gz')
 )
 
 
@@ -128,7 +128,7 @@ def test_Descriptor_io():
 def test_io_simulation_events():
     photon_stream_path = pkg_resources.resource_filename(
         'photon_stream',
-        os.path.join('tests','resources','011014.phs.jsonl.gz')
+        os.path.join('tests', 'resources', '011014.phs.jsonl.gz')
     )
 
     run = ps.EventListReader(photon_stream_path)

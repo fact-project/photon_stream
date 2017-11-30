@@ -6,7 +6,7 @@ import qstat as qstat2dict
 
 qstat_xml_path = pkg_resources.resource_filename(
     'photon_stream',
-    os.path.join('tests','resources','qstat.xml')
+    os.path.join('tests', 'resources', 'qstat.xml')
 )
 
 

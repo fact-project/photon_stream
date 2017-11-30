@@ -52,14 +52,14 @@ def assign_drs_runs(runinfo):
     current_drs_fNight = np.nan
     for i in range(raw.shape[0]):
         if (
-            raw[i,k['fRunTypeKey']]==DRS_RUN_TYPE_KEY and
-            raw[i,k['fDrsStep']]==DRS_STEP_KEY
+            raw[i, k['fRunTypeKey']]==DRS_RUN_TYPE_KEY and
+            raw[i, k['fDrsStep']]==DRS_STEP_KEY
         ):
-            current_drs_fRunID = raw[i,k['fRunID']]
-            current_drs_fNight = raw[i,k['fNight']]
+            current_drs_fRunID = raw[i, k['fRunID']]
+            current_drs_fNight = raw[i, k['fNight']]
         else:
-            if current_drs_fNight == raw[i,k['fNight']]:
-                raw[i,k['DrsRunID']] = current_drs_fRunID
+            if current_drs_fNight == raw[i, k['fNight']]:
+                raw[i, k['DrsRunID']] = current_drs_fRunID
     ri = pd.DataFrame(raw, columns=ri.keys().tolist())
     ri.sort_values(inplace=True, ascending=False, by=ID_RUNINFO_KEYS)
     return ri

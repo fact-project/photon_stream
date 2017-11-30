@@ -49,8 +49,8 @@ def tight_circle_on_off_region(cx, cy, r, residual_threshold, xy):
     Returns masks for the 2D points in 'xy' whether they belong to the
     circle model or not.
     """
-    x = xy[:,0] - cx
-    y = xy[:,1] - cy
+    x = xy[:, 0] - cx
+    y = xy[:, 1] - cy
     R = np.sqrt(x*x + y*y)
 
     r_inner_off_start = r - 1.5*residual_threshold
@@ -84,6 +84,6 @@ def xy2polar(xy):
     Returns the radius and azimuth for 2D points 'xy' in polar coordinates.
     """
     rphi = np.zeros(shape=xy.shape)
-    rphi[:,0] = np.sqrt(xy[:,0]**2, xy[:,1]**2)
-    rphi[:,1] = np.arctan2(xy[:,1], xy[:,0])
+    rphi[:, 0] = np.sqrt(xy[:, 0]**2, xy[:, 1]**2)
+    rphi[:, 1] = np.arctan2(xy[:, 1], xy[:, 0])
     return rphi

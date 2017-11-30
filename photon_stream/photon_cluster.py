@@ -6,7 +6,7 @@ class PhotonStreamCluster(object):
     def __init__(self, photon_stream, eps=0.1, min_samples=20, deg_over_s=0.35e9):
         self.point_cloud = photon_stream.point_cloud
         self.xyt = self.point_cloud.copy()
-        self.xyt[:,2] *= np.deg2rad(deg_over_s)
+        self.xyt[:, 2] *= np.deg2rad(deg_over_s)
 
         if self.xyt.shape[0] == 0:
             self.labels = np.array([])
@@ -38,7 +38,7 @@ class PhotonTimeLineCluster(object):
             return
 
         time_series_array = np.array(time_series)
-        time_series_array_rs = time_series_array.reshape(-1,1)
+        time_series_array_rs = time_series_array.reshape(-1, 1)
 
         dbscan = DBSCAN(eps=eps, min_samples=2)
         dbfit = dbscan.fit(time_series_array_rs)
