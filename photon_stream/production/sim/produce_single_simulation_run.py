@@ -5,12 +5,16 @@ from .extract_corsika_headers import extract_corsika_headers
 
 RUN_NUMBER_DIGITS = 5
 
+_fact_tools_jar_path = join(
+    '/', 'net', 'big-tank', 'POOL', 'projects', 'fact', 'smueller',
+    'fact-tools', 'target', 'fact-tools-0.18.1.jar'
+)
 
 def produce_single_simulation_run(
     ceres_events_path,
     corsika_path,
     out_dir,
-    fact_tools_jar_path='/net/big-tank/POOL/projects/fact/smueller/fact-tools/target/fact-tools-0.18.1.jar',
+    fact_tools_jar_path=_fact_tools_jar_path
 ):
     ceres_basename = os.path.basename(ceres_events_path)
     corsika_basename = os.path.basename(corsika_path)

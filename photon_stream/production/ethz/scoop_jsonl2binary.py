@@ -25,7 +25,10 @@ def jsonl_to_phs(job):
     try:
         with tempfile.TemporaryDirectory(prefix='phs_jsonl2binary_') as tmp:
             tmp_phs_path = join(tmp, basename(job['phs_path']))
-            ps.jsonl2binary(input_path=job['jsonl_path'], output_path=tmp_phs_path)
+            ps.jsonl2binary(
+                input_path=job['jsonl_path'],
+                output_path=tmp_phs_path
+            )
             makedirs(dirname(job['phs_path']), exist_ok=True, mode=0o755)
             shutil.move(tmp_phs_path, job['phs_path'])
     except Exception as e:
@@ -42,7 +45,12 @@ def main():
         jobs = []
         for jsonl_path in glob(join(obs_dir, '*', '*', '*', '*.phs.jsonl.gz')):
             p = fact.path.parse(jsonl_path)
-            phs_path = fact.path.tree_path(p['night'], p['run'], out_dir, '.phs.gz')
+            phs_path = fact.path.tree_path(
+                p['night'],
+                p['run'],
+                out_dir,
+                '.phs.gz'
+            )
             if not exists(phs_path):
                 jobs.append({'jsonl_path': jsonl_path, 'phs_path': phs_path})
 

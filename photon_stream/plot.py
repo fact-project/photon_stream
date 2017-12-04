@@ -135,15 +135,15 @@ def save_video(
                 (Default is None)
 
     steps       The number of images used within an 10 degree intervall.
-                (Default is 12, which results in 12*36=432 images for the video)
+                (Default is 12, which results in 12*36=432 images)
 
-    threads     Tells the avconv video converter to use multiple threads or not.
-                (Default is avconv's 'auto' option)
+    threads     Tells the avconv video converter to use multiple threads or
+                not. (Default is avconv's 'auto' option)
 
-    work_dir    The intermediate working directory to host the raw images of the
-                video sequence. If work_dir is None, a temporary directory is
-                created automatically, otherwise the work_dir remains after the
-                video processing to access the raw images.
+    work_dir    The intermediate working directory to host the raw images of
+                the video sequence. If work_dir is None, a temporary
+                directory is created automatically, otherwise the work_dir
+                remains after the video processing to access the raw images.
                 (Default is None)
     """
 

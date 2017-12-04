@@ -76,11 +76,16 @@ def status(
             # PhsSize and NumActualPhsEvents
             #-------------------------------
             print('Collect NumActualPhsEvents')
-            runs_to_be_checked_now, runstatus = runs_to_be_checked_now_and_incremented_runstatus(
-                runstatus
+            runs_to_be_checked_now, runstatus = (
+                runs_to_be_checked_now_and_incremented_runstatus(
+                    runstatus
+                )
             )
 
-            print(len(runstatus)-len(runs_to_be_checked_now), 'are not checked again for NumActualPhsEvents')
+            print(
+                len(runstatus)-len(runs_to_be_checked_now),
+                'are not checked again for NumActualPhsEvents'
+            )
 
             if runs_in_qstat is None:
                 runs_in_qstat = qstat(is_in_JB_name=QSUB_OBS_STATUS_PREFIX)
@@ -90,7 +95,10 @@ def status(
                 second=runs_in_qstat,
             )
 
-            print(len(runs_to_be_checked_now), 'runs are checked now for NumActualPhsEvents')
+            print(
+                len(runs_to_be_checked_now),
+                'runs are checked now for NumActualPhsEvents'
+            )
 
             num_runs_for_qsub = max_jobs_in_qsub - len(runs_in_qstat)
             runstatus = runstatus.set_index(ri.ID_RUNINFO_KEYS)
@@ -103,19 +111,40 @@ def status(
                 fNight = int(np.round(run.fNight))
                 fRunID = int(np.round(run.fRunID))
 
-                phs_path = tree_path(fNight, fRunID, prefix=obs_dir, suffix='.phs.jsonl.gz')
+                phs_path = tree_path(
+                    fNight,
+                    fRunID,
+                    prefix=obs_dir,
+                    suffix='.phs.jsonl.gz'
+                )
                 if np.isnan(run.PhsSize):
                     if exists(phs_path):
                         phs_size = os.stat(phs_path).st_size
-                        runstatus.set_value((fNight, fRunID), 'PhsSize', phs_size)
-                        # Submitt the intense task of event counting to qsub, and
-                        # collect the output next time in phs/obs/.tmp_status
+                        runstatus.set_value(
+                            (fNight, fRunID),
+                            'PhsSize',
+                            phs_size
+                        )
+                        # Submitt the intense task of event counting to qsub,
+                        # and collect the output next time in
+                        # phs/obs/.tmp_status
                         job = {
-                            'name': template_to_path(fNight, fRunID, QSUB_OBS_STATUS_PREFIX+'_{N}_{R}'),
-                            'o_path': None, #tree_path(fNight, fRunID, tmp_status_dir, '.o'),
-                            'e_path': None, #tree_path(fNight, fRunID, tmp_status_dir, '.e'),
+                            'name': template_to_path(
+                                fNight,
+                                fRunID,
+                                QSUB_OBS_STATUS_PREFIX+'_{N}_{R}'
+                            ),
+                            'o_path': None,
+                            #tree_path(fNight, fRunID, tmp_status_dir, '.o'),
+                            'e_path': None,
+                            #tree_path(fNight, fRunID, tmp_status_dir, '.e'),
                             '--phs_path': phs_path,
-                            '--status_path': tree_path(fNight, fRunID, prefix=tmp_status_dir, suffix='.json'),
+                            '--status_path': tree_path(
+                                fNight,
+                                fRunID,
+                                prefix=tmp_status_dir,
+                                suffix='.json'
+                            ),
                         }
                         qsub(
                             job=job,
@@ -124,10 +153,22 @@ def status(
                         )
                         i += 1
                     else:
-                        runstatus.set_value((fNight, fRunID), 'PhsSize', np.nan)
-                        runstatus.set_value((fNight, fRunID), 'NumActualPhsEvents', np.nan)
+                        runstatus.set_value(
+                            (fNight, fRunID),
+                            'PhsSize',
+                            np.nan
+                        )
+                        runstatus.set_value(
+                            (fNight, fRunID),
+                            'NumActualPhsEvents',
+                            np.nan
+                        )
 
-                runstatus.set_value((fNight, fRunID), 'StatusIteration', run['StatusIteration'] + 1)
+                runstatus.set_value(
+                    (fNight, fRunID),
+                    'StatusIteration',
+                    run['StatusIteration'] + 1
+                )
 
             runstatus = runstatus.reset_index()
             runstatus['StatusIteration'] -= runstatus['StatusIteration'].min()

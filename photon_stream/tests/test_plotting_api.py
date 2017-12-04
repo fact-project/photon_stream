@@ -11,7 +11,11 @@ def test_event_can_plot_itself():
 
     run_path = pkg_resources.resource_filename(
         'photon_stream',
-        os.path.join('tests', 'resources', '20170119_229_pass4_100events.phs.jsonl.gz')
+        os.path.join(
+            'tests',
+            'resources',
+            '20170119_229_pass4_100events.phs.jsonl.gz'
+        )
     )
 
     event = next(ps.EventListReader(run_path))
@@ -24,7 +28,11 @@ def test_event_can_be_converted_into_a_video():
 
     run_path = pkg_resources.resource_filename(
         'photon_stream',
-        os.path.join('tests', 'resources', '20170119_229_pass4_100events.phs.jsonl.gz')
+        os.path.join(
+            'tests',
+            'resources',
+            '20170119_229_pass4_100events.phs.jsonl.gz'
+        )
     )
 
     event = next(ps.EventListReader(run_path))

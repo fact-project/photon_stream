@@ -41,20 +41,35 @@ def create_fake_fact_dir(path, runinfo):
 
         if n != night:
             n = night
-            nightly_aux_dir = dirname(tree_path(night, run, prefix=fact_aux, suffix=''))
+            nightly_aux_dir = dirname(
+                tree_path(night, run, prefix=fact_aux, suffix='')
+            )
             os.makedirs(nightly_aux_dir, exist_ok=True, mode=0o755)
             for daux in DRIVE_AUX_FILE_KEYS:
-                with open(join(nightly_aux_dir, str(night)+'_'+daux+'.fits'), 'w') as auxf:
+                with open(
+                        join(nightly_aux_dir, str(night)+'_'+daux+'.fits'),
+                        'w'
+                    ) as auxf:
                     auxf.write('I am a fake '+daux+'aux file.')
 
         if run_type == DRS_RUN_TYPE_KEY:
-            drs_path = tree_path(night, run, prefix=fact_raw, suffix='.drs.fits.gz')
+            drs_path = tree_path(
+                night,
+                run,
+                prefix=fact_raw,
+                suffix='.drs.fits.gz'
+            )
             os.makedirs(dirname(drs_path), exist_ok=True, mode=0o755)
             with open(drs_path, 'w') as drs_file:
                 drs_file.write('I am a fake FACT drs file.')
 
         if run_type == OBSERVATION_RUN_TYPE_KEY:
-            run_path = tree_path(night, run, prefix=fact_raw, suffix='.fits.fz')
+            run_path = tree_path(
+                night,
+                run,
+                prefix=fact_raw,
+                suffix='.fits.fz'
+            )
             os.makedirs(dirname(run_path), exist_ok=True, mode=0o755)
             with open(run_path, 'w') as raw_file:
                 dummy_run = {

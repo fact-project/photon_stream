@@ -17,12 +17,14 @@ class AirShowerTruth(object):
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
-            if (len(self.raw_corsika_run_header) !=
+            if (
+                len(self.raw_corsika_run_header) !=
                 len(other.raw_corsika_run_header)
             ):
                 return False
             for i in range(len(self.raw_corsika_run_header)):
-                if (self.raw_corsika_run_header[i] !=
+                if (
+                    self.raw_corsika_run_header[i] !=
                     other.raw_corsika_run_header[i]
                 ):
                     return False
@@ -32,7 +34,8 @@ class AirShowerTruth(object):
             ):
                 return False
             for i in range(len(self.raw_corsika_event_header)):
-                if (self.raw_corsika_event_header[i] !=
+                if (
+                    self.raw_corsika_event_header[i] !=
                     other.raw_corsika_event_header[i]
                 ):
                     return False

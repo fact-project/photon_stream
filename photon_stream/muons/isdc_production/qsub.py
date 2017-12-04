@@ -45,7 +45,15 @@ def qsub(
             'month': month,
             'night': night,
             'base': base,
-            'output_muon_path': join(out_muon_dir, 'muons', year, month, night, base)}
+            'output_muon_path': join(
+                out_muon_dir,
+                'muons',
+                year,
+                month,
+                night,
+                base
+            )
+        }
         potential_jobs.append(job)
 
 

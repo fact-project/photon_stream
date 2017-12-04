@@ -6,7 +6,11 @@ import os
 
 run_path = pkg_resources.resource_filename(
     'photon_stream',
-    os.path.join('tests', 'resources', '20170119_229_pass4_100events.phs.jsonl.gz')
+    os.path.join(
+        'tests',
+        'resources',
+        '20170119_229_pass4_100events.phs.jsonl.gz'
+    )
 )
 
 reader = ps.EventListReader(run_path)

@@ -41,8 +41,7 @@ def read_corsika_headers_from_file(fin):
         event_header = c[start:end].copy()
         if (
             event_header[0] ==
-            CORSIKA_EVENT_MARKER
-            and
+            CORSIKA_EVENT_MARKER and
             event_header[IDX_EVTH_RUN_NUMBER] ==
             run_header[IDX_RUNH_RUN_NUMBER]
         ):

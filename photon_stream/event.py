@@ -49,13 +49,26 @@ class Event(object):
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
-            if not isclose(self.zd, other.zd, abs_tol=MAX_RESIDUAL_POINTING_DEG): return False
-            if not isclose(self.az, other.az, abs_tol=MAX_RESIDUAL_POINTING_DEG): return False
-            if not self.photon_stream == other.photon_stream: return False
+            if not isclose(
+                self.zd,
+                other.zd,
+                abs_tol=MAX_RESIDUAL_POINTING_DEG
+            ):
+                return False
+            if not isclose(
+                self.az,
+                other.az,
+                abs_tol=MAX_RESIDUAL_POINTING_DEG
+            ):
+                return False
+            if not self.photon_stream == other.photon_stream:
+                return False
             if hasattr(self, 'simulation_truth'):
-                if not self.simulation_truth == other.simulation_truth: return False
+                if not self.simulation_truth == other.simulation_truth:
+                    return False
             if hasattr(self, 'observation_info'):
-                if not self.observation_info == other.observation_info: return False
+                if not self.observation_info == other.observation_info:
+                    return False
             return True
         else:
             return NotImplemented

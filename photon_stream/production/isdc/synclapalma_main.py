@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 """
-Syncronize the local phs/obs/runstatus.csv with the latest runinfo database from
-La Palma.
+Syncronize the local phs/obs/runstatus.csv with the latest runinfo database
+from La Palma.
 Export the FACT password: export FACT_PASSWORD=*********
 
 Usage: phs.isdc.obs.synclapalma [options]

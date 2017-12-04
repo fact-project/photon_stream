@@ -18,6 +18,10 @@ fact_tools_xml_path = pkg_resources.resource_filename(
     os.path.join('production', 'resources', 'observations_pass4.xml')
 )
 
+_fact_tools_jar_path = join(
+    '/', 'home', 'guest', 'relleums', 'fact_photon_stream', 'fact-tools',
+    'target', 'fact-tools-0.18.1.jar',
+)
 
 def produce(
     only_a_fraction=1.0,
@@ -26,7 +30,7 @@ def produce(
     fact_aux_dir='/fact/aux',
     phs_dir='/gpfs0/fact/processing/public/phs',
     java_path='/home/guest/relleums/java8/jdk1.8.0_111',
-    fact_tools_jar_path='/home/guest/relleums/fact_photon_stream/fact-tools/target/fact-tools-0.18.1.jar',
+    fact_tools_jar_path=_fact_tools_jar_path,
     fact_tools_xml_path=fact_tools_xml_path,
     tmp_dir_base_name='phs_obs_',
     queue=QUEUE_NAME,

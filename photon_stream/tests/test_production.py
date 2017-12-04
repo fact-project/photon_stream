@@ -154,7 +154,9 @@ def run_production_scenario(out_dir):
 
 
 def runs_in_obs_dir(obs_dir):
-    runs_produced_paths = glob.glob(join(obs_dir, '*', '*', '*', '*phs.jsonl.gz'))
+    runs_produced_paths = glob.glob(
+        join(obs_dir, '*', '*', '*', '*phs.jsonl.gz')
+    )
     runs_produced = []
     for run_produced_path in runs_produced_paths:
         r = fact.path.parse(run_produced_path)

@@ -14,11 +14,13 @@ def overview_str(runstatus, max_trigger_rate=120):
     info                The extended FACT run-info-database of 'known runs'.
                         Created by photon_stream.production.status.status().
 
-    max_trigger_rate    Cuts all runs with less then 300*max_trigger_rate events
-                        in it.
+    max_trigger_rate    Cuts all runs with less then 300*max_trigger_rate
+                        events in it.
     """
     rs = runstatus
-    rate_below_max_trigger_rate = rs.NumExpectedPhsEvents < 300*max_trigger_rate # 300seconds per run
+    rate_below_max_trigger_rate = (
+        rs.NumExpectedPhsEvents < 300*max_trigger_rate
+    ) # 300seconds per run
     has_at_least_one_expected_trigger = rs.NumExpectedPhsEvents > 0
     valid = rate_below_max_trigger_rate&has_at_least_one_expected_trigger
 
@@ -32,7 +34,9 @@ def overview_str(runstatus, max_trigger_rate=120):
     out += 'Photon-Stream for FACT\n'
     out += '----------------------\n'
     out += '\n'
-    out += '    from '+str(rs['fNight'].min())+' to '+str(rs['fNight'].max())+'\n'
+    out += '    from '+str(rs['fNight'].min())
+    out += ' to '
+    out += str(rs['fNight'].max())+'\n'
 
     out += '    '+table_header_str()
     out += '    '+table_line_str()
@@ -53,8 +57,12 @@ def overview_str(runstatus, max_trigger_rate=120):
         before_end_of_year = rs['fNight'] < (year+1)*100*100
         is_in_year =  after_start_of_year&before_end_of_year
 
-        expected_triggers_in_year = int(rs.NumExpectedPhsEvents[valid&is_in_year].sum())
-        actual_triggers_in_year = int(rs.NumActualPhsEvents[valid&is_in_year].sum())
+        expected_triggers_in_year = int(
+            rs.NumExpectedPhsEvents[valid&is_in_year].sum()
+        )
+        actual_triggers_in_year = int(
+            rs.NumActualPhsEvents[valid&is_in_year].sum()
+        )
         out += '    {year:04d}'.format(year=year)
         out += '  ' + table_row_str(
             expected_events=expected_triggers_in_year,
@@ -65,15 +73,17 @@ def overview_str(runstatus, max_trigger_rate=120):
     out += 'cuts\n'
     out += '----\n'
     out += '- only observation runs (fRunTypeKey == 1)\n'
-    out += '- only expected trigger types: [4:physics, 1024:pedestal, 1:ext1, 2:ext2]\n'
-    out += '- expected trigger intensity < 300s * '+str(max_trigger_rate)+'Hz\n'
+    out += '- only expected trigger types: '
+    out += '[4:physics, 1024:pedestal, 1:ext1, 2:ext2]\n'
+    out += '- expected trigger intensity < 300s * '
+    out += str(max_trigger_rate)+'Hz\n'
     out += '\n'
     return out
 
 
 def table_header_str():
-    #       0        1         2         3         4          5         6         7
-    #       12345678901234567890123456789012345678901234567898012345678901234567890
+    #       0        1         2         3         4          5         6
+    #       123456789012345678901234567890123456789012345678980123456789012345
     out =  'phs-events           [#]  raw-events      [#]  ratio [%]\n'
     return out
 
@@ -85,8 +95,10 @@ def table_line_str():
 
 def table_row_str(actual_events, expected_events):
     out =  '{actual_events:>24d}  {expected_events:>19d}'.format(
-        actual_events=actual_events,
-        expected_events=expected_events)+'  '+progress(actual_events/expected_events)+'\n'
+                actual_events=actual_events,
+                expected_events=expected_events
+            )
+    out += '  '+progress(actual_events/expected_events)+'\n'
     return out
 
 

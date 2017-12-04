@@ -4,9 +4,9 @@ The magic constants of the photon-stream pass4
 
 TIME_SLICE_DURATION_S = 0.5e-9;
 """
-The duration of a single sampling time slice in the photon-stream. This duration
-in combination with the fix size integer arrival slice of a photon gives the
-arrival time of the photon.
+The duration of a single sampling time slice in the photon-stream.
+This duration in combination with the fix size integer arrival slice of a
+photon gives the arrival time of the photon.
 """
 SINGLEPULSE_EXTRACTOR_PASS = 4
 """
@@ -42,7 +42,8 @@ slice.
 - output window
     The photon-stream output time window 100 slices (50ns)
 
-see also: https://github.com/fact-project/fact-tools/blob/master/src/main/java/fact/photonstream/SinglePulseExtraction.java
+see also: https://github.com/fact-project/fact-tools/blob/master/src/main/java/
+fact/photonstream/SinglePulseExtraction.java
 """
 NUMBER_OF_TIME_SLICES = 100
 """
@@ -54,6 +55,6 @@ Number of independent read out picture cells in the FACT camera.
 """
 NUMBER_OF_PHOTONS_IN_PIXEL_BEFORE_SATURATION = 500
 """
-When there are 500 photons in a pixel, this pixel is saturated. The single pulse
-extraction stops after 500 extractions.
+When there are 500 photons in a pixel, this pixel is saturated.
+The single pulse extraction stops after 500 extractions.
 """

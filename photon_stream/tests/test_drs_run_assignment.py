@@ -8,6 +8,8 @@ runinfo_path = pkg_resources.resource_filename(
     os.path.join('tests', 'resources', 'runinfo_20161115_to_20170103.csv')
 )
 
+drs_fRunID_for_obs_run = ps.production.drs_run._drs_fRunID_for_obs_run
+
 def test_drs_run_assignment():
 
     ri = ps.production.runinfo.read(runinfo_path)
@@ -22,8 +24,10 @@ def test_drs_run_assignment():
 
         if row.fRunTypeKey == ps.production.runinfo.OBSERVATION_RUN_TYPE_KEY:
 
-            first_method_drs_run_id = ps.production.drs_run._drs_fRunID_for_obs_run(
-                runinfo=ri, fNight=row.fNight, fRunID=row.fRunID
+            first_method_drs_run_id = drs_fRunID_for_obs_run(
+                runinfo=ri,
+                fNight=row.fNight,
+                fRunID=row.fRunID
             )
             second_method_drs_run_id = ro.loc[i, 'DrsRunID']
 

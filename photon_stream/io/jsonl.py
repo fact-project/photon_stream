@@ -30,11 +30,20 @@ def event_to_dict(event):
     evt = {}
     evt['Zd_deg'] = float(event.zd)
     evt['Az_deg'] = float(event.az)
-    evt = append_PhotonStream_to_dict(event.photon_stream, evt)
+    evt = append_PhotonStream_to_dict(
+        event.photon_stream,
+        evt
+    )
     if hasattr(event, 'observation_info'):
-        evt = append_ObservationInformation_to_dict(event.observation_info, evt)
+        evt = append_ObservationInformation_to_dict(
+            event.observation_info,
+            evt
+        )
     if hasattr(event, 'simulation_truth'):
-        evt = append_SimulationTruth_to_dict(event.simulation_truth, evt)
+        evt = append_SimulationTruth_to_dict(
+            event.simulation_truth,
+            evt
+        )
     return evt
 
 

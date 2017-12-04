@@ -43,7 +43,11 @@ def assign_drs_runs(runinfo):
     ri = runinfo.copy()
     ri.sort_values(inplace=True, ascending=True, by=ID_RUNINFO_KEYS)
 
-    ri.insert(loc=2, column='DrsRunID', value=pd.Series(np.nan, index=ri.index))
+    ri.insert(
+        loc=2,
+        column='DrsRunID',
+        value=pd.Series(np.nan, index=ri.index)
+    )
     raw = ri.as_matrix()
     k = {}
     for c, key in enumerate(ri.keys()):
