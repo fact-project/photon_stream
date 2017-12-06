@@ -41,7 +41,10 @@ def test_to_dict():
     sim_truth_A = ps.io.jsonl.read_SimulationTruth_from_dict(event_dict_A)
 
     dict_back = {'Test': True}
-    dict_back = ps.io.jsonl.append_SimulationTruth_to_dict(sim_truth_A, dict_back)
+    dict_back = ps.io.jsonl.append_SimulationTruth_to_dict(
+        sim_truth_A,
+        dict_back
+    )
 
     for key in event_dict_A:
         assert key in dict_back

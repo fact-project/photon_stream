@@ -10,8 +10,9 @@ def write_worker_node_script(
     """
     sh = '#!/bin/bash\n'
     sh+= 'source /home/guest/relleums/.bashrc\n'
-    sh+= 'eval "phs_extract_muons -i '+input_run_path+' -o '+output_muon_path+'"\n'
-
+    sh+= 'eval "phs_extract_muons'
+    sh+= ' -i ' + input_run_path
+    sh+= ' -o ' + output_muon_path + '"\n'
     with open(path, 'w') as fout:
         fout.write(sh)
 

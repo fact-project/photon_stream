@@ -19,7 +19,12 @@ def finger_histogram(time_series, max_multiplicity=20):
         if number_of_photons_in_cluster <= max_multiplicity:
             counts[number_of_photons_in_cluster - 1] += 1
         else:
-            print('Warning, found cluster of', number_of_photons_in_cluster, 'p.e, but max_multiplicity is only ', max_multiplicity)
+            print(
+                'Warning, found cluster of',
+                number_of_photons_in_cluster,
+                'p.e, but max_multiplicity is only ',
+                max_multiplicity
+            )
     return counts
 
 
@@ -30,7 +35,13 @@ def finger_histogram_of_event(event, max_multiplicity=20):
 
         tl_counts = finger_histogram(time_line, max_multiplicity)
 
-        if tl_counts[0] > 16 or tl_counts[1] > 8 or tl_counts[2] > 4 or tl_counts[3] > 2 or tl_counts[4] > 1:
+        if (
+            tl_counts[0] > 16 or
+            tl_counts[1] > 8 or
+            tl_counts[2] > 4 or
+            tl_counts[3] > 2 or
+            tl_counts[4] > 1
+        ):
             #print('Warning, time series is spooky', tl_counts)
             continue
         else:

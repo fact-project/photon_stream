@@ -20,7 +20,9 @@ class SimulationReader(object):
     def __init__(self, photon_stream_path, mmcs_corsika_path=None):
         self._phs_reader = EventListReader(photon_stream_path)
         if mmcs_corsika_path is None:
-            self._mmcs_corsika_path = self._guess_corresponding_mmcs_corsika_path(photon_stream_path)
+            self._mmcs_corsika_path = (
+                self._guess_corresponding_mmcs_corsika_path(photon_stream_path)
+            )
         else:
             self._mmcs_corsika_path = mmcs_corsika_path
         self._read_mmcs_corsika_headers()
@@ -34,12 +36,21 @@ class SimulationReader(object):
 
     def __next__(self):
         event = next(self._phs_reader)
-        assert event.simulation_truth.run == self.run_header[IDX_RUNH_RUN_NUMBER]
+        assert (
+            event.simulation_truth.run ==
+            self.run_header[IDX_RUNH_RUN_NUMBER]
+        )
         idx = self._event_to_idx[event.simulation_truth.event]
         total_reuses = int(self.event_headers[idx][IDX_EVTH_REUSE_NUMBER])
 
-        assert event.simulation_truth.run == self.event_headers[idx][IDX_EVTH_RUN_NUMBER]
-        assert event.simulation_truth.event == self.event_headers[idx][IDX_EVTH_EVENT_NUMBER]
+        assert (
+            event.simulation_truth.run ==
+            self.event_headers[idx][IDX_EVTH_RUN_NUMBER]
+        )
+        assert (
+            event.simulation_truth.event ==
+            self.event_headers[idx][IDX_EVTH_EVENT_NUMBER]
+        )
         assert event.simulation_truth.reuse <= total_reuses
 
         event.simulation_truth.air_shower =  AirShowerTruth(
@@ -74,19 +85,29 @@ class SimulationReader(object):
     def thrown_events(self):
         _thrown_events = []
         for evtidx in range(self.event_headers.shape[0]):
-            for reuseidx in range(int(self.event_headers[evtidx][IDX_EVTH_REUSE_NUMBER])):
+            for reuseidx in range(
+                int(self.event_headers[evtidx][IDX_EVTH_REUSE_NUMBER])
+            ):
                 evt = {
                     'run': self.event_headers[evtidx][IDX_EVTH_RUN_NUMBER],
                     'event': self.event_headers[evtidx][IDX_EVTH_EVENT_NUMBER],
                     'reuse': reuseidx,
-                    'particle': self.event_headers[evtidx][3-1],
-                    'energy': self.event_headers[evtidx][4-1],
-                    'theta': self.event_headers[evtidx][11-1],
-                    'phi': self.event_headers[evtidx][12-1],
-                    'impact_x': self.event_headers[evtidx][98+int(1+reuseidx)-1]/1e2,
-                    'impact_y': self.event_headers[evtidx][118+int(1+reuseidx)-1]/1e2,
-                    'starting_altitude': self.event_headers[evtidx][5-1]/1e2,
-                    'hight_of_first_interaction': self.event_headers[evtidx][7-1]/1e2,
+                    'particle':
+                        self.event_headers[evtidx][3-1],
+                    'energy':
+                        self.event_headers[evtidx][4-1],
+                    'theta':
+                        self.event_headers[evtidx][11-1],
+                    'phi':
+                        self.event_headers[evtidx][12-1],
+                    'impact_x':
+                        self.event_headers[evtidx][98+int(1+reuseidx)-1]/1e2,
+                    'impact_y':
+                        self.event_headers[evtidx][118+int(1+reuseidx)-1]/1e2,
+                    'starting_altitude':
+                        self.event_headers[evtidx][5-1]/1e2,
+                    'hight_of_first_interaction':
+                        self.event_headers[evtidx][7-1]/1e2,
                 }
                 _thrown_events.append(evt)
         return _thrown_events

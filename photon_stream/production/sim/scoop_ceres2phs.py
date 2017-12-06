@@ -29,14 +29,19 @@ def produce_run(job):
     )
     return 1
 
+_fact_tools_jar_path = join(
+    '/', 'home', 'relleums', 'fact-tools', 'target', 'fact-tools-0.18.1.jar'
+)
+_java_path = join('/', 'home', 'relleums', 'java8', 'jdk1.8.0_111')
+
 
 def main():
     try:
         arguments = docopt.docopt(__doc__)
         ceres_dir = arguments['--ceres_dir']
         out_dir = arguments['--out_dir']
-        fact_tools_jar_path = '/home/relleums/fact-tools/target/fact-tools-0.18.1.jar'
-        java_path = '/home/relleums/java8/jdk1.8.0_111'
+        fact_tools_jar_path = _fact_tools_jar_path
+        java_path = _java_path
         jobs = []
 
         all_ceres = glob(join(ceres_dir, '*'))

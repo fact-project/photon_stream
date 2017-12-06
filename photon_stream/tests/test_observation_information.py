@@ -30,11 +30,19 @@ def test_constructor():
 
 
 def test_equal():
-    obs_info_1A = ps.io.jsonl.read_ObservationInformation_from_dict(event_dict_A)
-    obs_info_1B = ps.io.jsonl.read_ObservationInformation_from_dict(event_dict_B)
+    obs_info_1A = ps.io.jsonl.read_ObservationInformation_from_dict(
+        event_dict_A
+    )
+    obs_info_1B = ps.io.jsonl.read_ObservationInformation_from_dict(
+        event_dict_B
+    )
 
-    obs_info_2A = ps.io.jsonl.read_ObservationInformation_from_dict(event_dict_A)
-    obs_info_2B = ps.io.jsonl.read_ObservationInformation_from_dict(event_dict_B)
+    obs_info_2A = ps.io.jsonl.read_ObservationInformation_from_dict(
+        event_dict_A
+    )
+    obs_info_2B = ps.io.jsonl.read_ObservationInformation_from_dict(
+        event_dict_B
+    )
 
     assert obs_info_1A == obs_info_1A
     assert obs_info_1A != obs_info_1B
@@ -50,11 +58,17 @@ def test_to_dict():
     obs_A = ps.io.jsonl.read_ObservationInformation_from_dict(event_dict_A)
 
     dict_back = {'Test': True}
-    dict_back = ps.io.jsonl.append_ObservationInformation_to_dict(obs_A, dict_back)
+    dict_back = ps.io.jsonl.append_ObservationInformation_to_dict(
+        obs_A,
+        dict_back
+    )
 
     for key in event_dict_A:
         assert key in dict_back
-        if (isinstance(event_dict_A[key], int) or isinstance(event_dict_A[key], float)):
+        if (
+            isinstance(event_dict_A[key], int) or
+            isinstance(event_dict_A[key], float)
+        ):
             assert np.abs(dict_back[key] - event_dict_A[key]) < 1e-3
 
         elif isinstance(event_dict_A[key], list):

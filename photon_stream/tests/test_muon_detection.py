@@ -46,7 +46,11 @@ def test_muon_detection():
 
     muon_sample_path = pkg_resources.resource_filename(
         'photon_stream',
-        os.path.join('tests', 'resources', '20140101_104_muon_sample.phs.jsonl.gz')
+        os.path.join(
+            'tests',
+            'resources',
+            '20140101_104_muon_sample.phs.jsonl.gz'
+        )
     )
 
     run = ps.EventListReader(muon_sample_path)

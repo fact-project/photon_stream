@@ -83,8 +83,13 @@ def detection(
     if r < min_muon_ring_radius or r > max_muon_ring_radius:
         return ret
 
-    ret['muon_ring_overlapp_with_field_of_view'] = muon_ring_overlapp_with_field_of_view
-    if muon_ring_overlapp_with_field_of_view < min_overlap_of_muon_ring_with_field_of_view:
+    ret['muon_ring_overlapp_with_field_of_view'] = (
+        muon_ring_overlapp_with_field_of_view
+    )
+    if (
+        muon_ring_overlapp_with_field_of_view <
+        min_overlap_of_muon_ring_with_field_of_view
+    ):
         return ret
 
     arrival_time_stddev = full_clusters_fps[:, 2].std()
@@ -95,14 +100,24 @@ def detection(
     ret['mean_arrival_time_muon_cluster'] = full_clusters_fps[:, 2].mean()
 
     number_of_ring_photons = inliers.sum()
-    initial_circle_model_photon_ratio = number_of_ring_photons/number_of_photons
-    ret['initial_circle_model_photon_ratio'] = initial_circle_model_photon_ratio
-    if initial_circle_model_photon_ratio < initial_circle_model_min_photon_ratio:
+    initial_circle_model_photon_ratio = (
+        number_of_ring_photons/number_of_photons
+    )
+    ret['initial_circle_model_photon_ratio'] = (
+        initial_circle_model_photon_ratio
+    )
+    if (
+        initial_circle_model_photon_ratio <
+        initial_circle_model_min_photon_ratio
+    ):
         return ret
 
     visible_ring_circumfance = r*2*np.pi*muon_ring_overlapp_with_field_of_view
     ret['visible_muon_ring_circumfance'] = visible_ring_circumfance
-    if visible_ring_circumfance < min_circumference_of_muon_ring_in_field_of_view:
+    if (
+        visible_ring_circumfance <
+        min_circumference_of_muon_ring_in_field_of_view
+    ):
         return ret
 
     # circle model ON/OFF ratio
@@ -149,7 +164,10 @@ def detection(
     phi_bin_centers = phi_bin_edgeds[: -1]
     bin_pos_x = np.cos(phi_bin_centers)*r + cx
     bin_pos_y = np.sin(phi_bin_centers)*r + cy
-    bins_inside_fov = np.sqrt(bin_pos_x**2 + bin_pos_y**2) < field_of_view_radius
+    bins_inside_fov = (
+        np.sqrt(bin_pos_x**2 + bin_pos_y**2) <
+        field_of_view_radius
+    )
     mean_photons = ring_population_hist[bins_inside_fov].mean()
 
     # continues ring population

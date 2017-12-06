@@ -17,6 +17,28 @@ from .runinfo import DRS_RUN_TYPE_KEY
 from .runinfo import DRS_STEP_KEY
 from . import tools
 
+_fact_tools_jar_path = os.path.join(
+    '/home',
+    'guest',
+    'relleums',
+    'fact_photon_stream',
+    'fact-tools',
+    'target',
+    'fact-tools-0.18.0.jar',
+)
+
+_fact_tools_xml_path = os.path.join(
+    '/home',
+    'guest',
+    'relleums',
+    'fact_photon_stream',
+    'photon_stream',
+    'photon_stream',
+    'production',
+    'resources',
+    'observations_pass4.xml',
+)
+
 
 def jobs_and_directory_tree(
     runstatus,
@@ -26,8 +48,8 @@ def jobs_and_directory_tree(
     fact_drs_dir='/fact/raw',
     fact_aux_dir='/fact/aux',
     java_path='/home/guest/relleums/java8/jdk1.8.0_111',
-    fact_tools_jar_path='/home/guest/relleums/fact_photon_stream/fact-tools/target/fact-tools-0.18.0.jar',
-    fact_tools_xml_path='/home/guest/relleums/fact_photon_stream/photon_stream/photon_stream/production/resources/observations_pass4.xml',
+    fact_tools_jar_path=_fact_tools_jar_path,
+    fact_tools_xml_path=_fact_tools_xml_path,
     tmp_dir_base_name='phs_obs_',
 ):
     """
@@ -41,11 +63,11 @@ def jobs_and_directory_tree(
                         observations directory ./obs and simulations directory
                         ./sim
 
-    runstatus           A pandas DataFrame() of the FACT run-info-database which
-                        is used as a reference for the runs to be processed.
-                        All observation runs are taken into account. If you want
-                        to process specific runs, remove the other runs from
-                        runstatus.
+    runstatus           A pandas DataFrame() of the FACT run-info-database
+                        which is used as a reference for the runs to be
+                        processed. All observation runs are taken into account.
+                        If you want to process specific runs, remove the other
+                        runs from runstatus.
 
     only_a_fraction     A ratio between 0.0 and 1.0 to only process a
                         random fraction of the runs. Usefull for debugging over
@@ -57,8 +79,8 @@ def jobs_and_directory_tree(
 
     fact_aux_dir        The path to the FACT auxiliary directory.
 
-    java_path           The path to the JAVA run time environment to be used for
-                        fact-tools.
+    java_path           The path to the JAVA run time environment to be used
+                        for fact-tools.
 
     fact_tools_jar_path The path to the fact-tools java-jar executable file.
 
@@ -93,12 +115,22 @@ def jobs_and_directory_tree(
         night = int(np.round(r.fNight))
         runid = int(np.round(r.fRunID))
         job = {}
-        job['name'] = fact.path.template_to_path(night, runid, QSUB_OBS_PRODUCE_PREFIX+'_{N}_{R}')
+        job['name'] = fact.path.template_to_path(
+            night,
+            runid,
+            QSUB_OBS_PRODUCE_PREFIX+'_{N}_{R}'
+        )
         job['--raw_path'] = tree_path(
             night, runid, prefix=fact_raw_dir, suffix='.fits.fz'
         )
         if not exists(job['--raw_path']):
-            print(night, runid, 'raw path', job['--raw_path'], 'does not exist.')
+            print(
+                night,
+                runid,
+                'raw path',
+                job['--raw_path'],
+                'does not exist.'
+            )
             continue
 
         if np.isnan(r.DrsRunID):
@@ -110,23 +142,47 @@ def jobs_and_directory_tree(
             night, drs_runid , prefix=fact_drs_dir, suffix='.drs.fits.gz'
         )
         if not exists(job['--drs_path']):
-            print(night, runid, 'drs path', job['--drs_path'], 'does not exist.')
+            print(
+                night,
+                runid,
+                'drs path',
+                job['--drs_path'],
+                'does not exist.'
+            )
             continue
 
-        aux_dir = dirname(tree_path(night, runid, prefix=fact_aux_dir, suffix=''))
+        aux_dir = dirname(
+            tree_path(night, runid, prefix=fact_aux_dir, suffix='')
+        )
         if not is_aux_dir_pointing_complete(aux_dir):
             print(night, runid, 'aux dir', aux_dir, 'is not complete yet.')
             continue
 
         job['--aux_dir'] = aux_dir
-        job['--out_basename'] = fact.path.template_to_path(night, runid, '{N}_{R}')
-        job['--out_dir'] = dirname(tree_path(night, runid, prefix=p['obs_dir'], suffix=''))
+        job['--out_basename'] = fact.path.template_to_path(
+            night,
+            runid,
+            '{N}_{R}'
+        )
+        job['--out_dir'] = dirname(
+            tree_path(night, runid, prefix=p['obs_dir'], suffix='')
+        )
         job['--tmp_dir_basename'] = QSUB_OBS_PRODUCE_PREFIX
         job['--java_path'] = java_path
         job['--fact_tools_jar_path'] = fact_tools_jar_path
         job['--fact_tools_xml_path'] = fact_tools_xml_path
-        job['o_path'] = tree_path(night, runid, prefix=p['std_dir'], suffix='.o')
-        job['e_path'] = tree_path(night, runid, prefix=p['std_dir'], suffix='.e')
+        job['o_path'] = tree_path(
+            night,
+            runid,
+            prefix=p['std_dir'],
+            suffix='.o'
+        )
+        job['e_path'] = tree_path(
+            night,
+            runid,
+            prefix=p['std_dir'],
+            suffix='.e'
+        )
         jobs.append(job)
 
     return jobs, p

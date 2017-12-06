@@ -26,11 +26,15 @@ header_dtype = np.dtype([
 
 FACT_PHYSICS_SELF_TRIGGER = 4
 
-def extract_muons_from_run(input_run_path, output_run_path, output_run_header_path):
+def extract_muons_from_run(
+    input_run_path,
+    output_run_path,
+    output_run_header_path
+):
     """
     Detects and extracts muon candidate events from a run. The muon candidate
-    events are exported into a new output run. In addidion a header for the muon
-    candidates is exported.
+    events are exported into a new output run. In addidion a header for the
+    muon candidates is exported.
 
 
     Parameter
@@ -61,11 +65,15 @@ def extract_muons_from_run(input_run_path, output_run_path, output_run_header_pa
    13)      float32     number of photons muon cluster [1]
     """
     run = EventListReader(input_run_path)
-    with gzip.open(output_run_path, 'wt') as f_muon_run, open(output_run_header_path, 'wb') as f_muon_run_header:
+    with gzip.open(output_run_path, 'wt') as f_muon_run, \
+        open(output_run_header_path, 'wb') as f_muon_run_header:
 
         for event in run:
 
-            if event.observation_info.trigger_type == FACT_PHYSICS_SELF_TRIGGER:
+            if (
+                event.observation_info.trigger_type ==
+                FACT_PHYSICS_SELF_TRIGGER
+            ):
 
                 photon_clusters = PhotonStreamCluster(event.photon_stream)
                 muon_features = detection(event, photon_clusters)
@@ -92,7 +100,9 @@ def extract_muons_from_run(input_run_path, output_run_path, output_run_header_pa
                     head2[3] = muon_features['muon_ring_cy']*rad2deg
                     head2[4] = muon_features['muon_ring_r']*rad2deg
                     head2[5] = muon_features['mean_arrival_time_muon_cluster']
-                    head2[6] = muon_features['muon_ring_overlapp_with_field_of_view']
+                    head2[6] = muon_features[
+                        'muon_ring_overlapp_with_field_of_view'
+                    ]
                     head2[7] = muon_features['number_of_photons']
 
                     f_muon_run_header.write(head1.tobytes())

@@ -36,7 +36,10 @@ class TimeDeltaInfo(object):
         else:
             now = dt.datetime.now()
             delta = now - self.last
-            delta_seconds = float(delta.seconds) + float(delta.microseconds)/1e6
+            delta_seconds = (
+                float(delta.seconds) +
+                float(delta.microseconds)/1e6
+            )
             info = '['+now.isoformat()+' + '+str(delta_seconds)+'s] '+text
             self.last = now
             return info

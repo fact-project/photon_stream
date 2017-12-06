@@ -7,7 +7,11 @@ import gzip
 
 run_path = pkg_resources.resource_filename(
     'photon_stream',
-    os.path.join('tests', 'resources', '20170119_229_pass4_100events.phs.jsonl.gz')
+    os.path.join(
+        'tests',
+        'resources',
+        '20170119_229_pass4_100events.phs.jsonl.gz'
+    )
 )
 
 
@@ -22,7 +26,7 @@ def test_binary_check():
 def test_binary_io():
     run = ps.EventListReader(run_path)
 
-    with tempfile.TemporaryDirectory(prefix='photon_stream_test_binary') as tmp:
+    with tempfile.TemporaryDirectory(prefix='phs_test_binary') as tmp:
 
         bin_run_path = os.path.join(tmp, '20151001_011.phs')
 
@@ -30,15 +34,23 @@ def test_binary_io():
         with open(bin_run_path, 'wb') as bf:
             for evt in run:
                 run_ps.append(evt.photon_stream)
-                ps.io.binary.append_photonstream_to_file(evt.photon_stream, bf)
-                ps.io.binary.append_saturated_pixels_to_file(evt.photon_stream.saturated_pixels, bf)
+                ps.io.binary.append_photonstream_to_file(
+                    evt.photon_stream,
+                    bf
+                )
+                ps.io.binary.append_saturated_pixels_to_file(
+                    evt.photon_stream.saturated_pixels,
+                    bf
+                )
 
         run_ps_back = []
         with open(bin_run_path, 'rb') as bf:
             while True:
                 try:
                     phs = ps.io.binary.read_photonstream_from_file(bf)
-                    phs.saturated_pixels = ps.io.binary.read_saturated_pixels_from_file(bf)
+                    phs.saturated_pixels = (
+                        ps.io.binary.read_saturated_pixels_from_file(bf)
+                    )
                     run_ps_back.append(phs)
                 except:
                     break

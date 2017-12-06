@@ -40,8 +40,10 @@ def read_corsika_headers_from_file(fin):
         end = start + 273
         event_header = c[start:end].copy()
         if (
-            event_header[0] == CORSIKA_EVENT_MARKER and
-            event_header[IDX_EVTH_RUN_NUMBER] == run_header[IDX_RUNH_RUN_NUMBER]
+            event_header[0] ==
+            CORSIKA_EVENT_MARKER and
+            event_header[IDX_EVTH_RUN_NUMBER] ==
+            run_header[IDX_RUNH_RUN_NUMBER]
         ):
             event_headers.append(event_header)
     event_headers = np.array(event_headers)

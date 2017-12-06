@@ -16,6 +16,16 @@ mc_drs_path = pkg_resources.resource_filename(
     os.path.join('production', 'resources', 'testMcDrsFile.drs.fits.gz')
 )
 
+_java_path = join(
+    '/', 'net', 'big-tank', 'POOL', 'projects', 'fact', 'smueller', 'java'
+)
+
+_fact_tools_jar_path = join(
+    '/', 'net', 'big-tank', 'POOL', 'projects', 'fact', 'smueller',
+    'fact-tools', 'target', 'fact-tools-0.18.1.jar',
+)
+
+
 
 def extract_single_photons(
     ceres_path,
@@ -23,8 +33,8 @@ def extract_single_photons(
     out_basename,
     o_path,
     e_path,
-    java_path='/net/big-tank/POOL/projects/fact/smueller/java',
-    fact_tools_jar_path='/net/big-tank/POOL/projects/fact/smueller/fact-tools/target/fact-tools-0.18.1.jar',
+    java_path=_java_path,
+    fact_tools_jar_path=_fact_tools_jar_path,
     fact_tools_xml_path=fact_tools_xml_path,
     mc_drs_path=mc_drs_path,
     tmp_dir_prefix='phs_sim_produce_',

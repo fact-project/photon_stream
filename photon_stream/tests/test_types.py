@@ -10,7 +10,11 @@ import os
 
 run_jsonl_path = pkg_resources.resource_filename(
     'photon_stream',
-    os.path.join('tests', 'resources', '20170119_229_pass4_100events.phs.jsonl.gz')
+    os.path.join(
+        'tests',
+        'resources',
+        '20170119_229_pass4_100events.phs.jsonl.gz'
+    )
 )
 
 def type_check(event):
@@ -45,7 +49,10 @@ def type_check(event):
         assert isinstance(event.simulation_truth.theta, np.float32)
         assert isinstance(event.simulation_truth.impact_x, np.float32)
         assert isinstance(event.simulation_truth.impact_y, np.float32)
-        assert isinstance(event.simulation_truth.first_interaction_altitude, np.float32)
+        assert isinstance(
+            event.simulation_truth.first_interaction_altitude,
+            np.float32
+        )
 
 
 def test_types_from_json():

@@ -20,12 +20,13 @@ class PhotonStream(object):
     @property
     def point_cloud(self):
         ''' Returns a Nx3 matrix for N photons in the stream. Each row
-        represents a photon in the three dimensinal space of x-direction [rad],
+        represents a photon in the three dimensinal space of x-direction,
         y-direction [rad], and arrival time [s].
 
         This is an alternative, but equally complete representation of the raw
-        photon-stream. It is useful for e.g. directly plotting the photon stream
-        into its 3 dimensional space, or for density clustering in the stream.
+        photon-stream. It is useful for e.g. directly plotting the
+        photon-stream into its 3 dimensional space, or for density clustering
+        in the stream.
         '''
         return raw_phs_to_point_cloud(
             self.raw,
@@ -36,7 +37,8 @@ class PhotonStream(object):
     @property
     def list_of_lists(self):
         '''
-        Returns a list along all pixels of lists for each photon arrival time slice.
+        Returns a list along all pixels of lists for each photon arrival
+        time slice.
         '''
         return raw_phs_to_list_of_lists(self.raw)
 
@@ -48,12 +50,18 @@ class PhotonStream(object):
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
-            if not np.abs(self.slice_duration - other.slice_duration) < MAX_RESIDUAL_SLICE_DURATION_NS: return False
+            if not (
+                np.abs(self.slice_duration - other.slice_duration) <
+                MAX_RESIDUAL_SLICE_DURATION_NS
+            ):
+                return False
 
             # Saturated Pixels
-            if not len(self.saturated_pixels) == len(other.saturated_pixels): return False
+            if not len(self.saturated_pixels) == len(other.saturated_pixels):
+                return False
             for i, saturated_pixel_in in enumerate(self.saturated_pixels):
-                if not saturated_pixel_in == other.saturated_pixels[i]: return False
+                if not saturated_pixel_in == other.saturated_pixels[i]:
+                    return False
 
             # Raw Photon-Stream
             if not self.raw.shape[0] == other.raw.shape[0]:

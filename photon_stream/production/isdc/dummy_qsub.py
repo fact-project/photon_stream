@@ -70,7 +70,8 @@ def dummy_produce(args, o_path, e_path):
         out.write(json.dumps(xo))
 
     with open(o_path, 'w') as stdout:
-        stdout.write('Here dummy fact-tools tells its tail of argony and pain...\n')
+        stdout.write('Here dummy fact-tools ')
+        stdout.write('tells its tail of argony and pain...\n')
         stdout.write('stdout path: '+o_path+'\n')
         stdout.write('stderr path: '+e_path+'\n')
 

@@ -6,17 +6,22 @@ import pkg_resources
 
 run_path = pkg_resources.resource_filename(
     'photon_stream',
-    os.path.join('tests', 'resources', '20170119_229_pass4_100events.phs.jsonl.gz')
+    os.path.join(
+        'tests',
+        'resources',
+        '20170119_229_pass4_100events.phs.jsonl.gz'
+    )
 )
 
 def random_list_of_lists_event(seed=1337):
+    mc = ps.io.magic_constants
     np.random.seed(seed)
     lol = []
-    for pixel in range(ps.io.magic_constants.NUMBER_OF_PIXELS):
+    for pixel in range(mc.NUMBER_OF_PIXELS):
         time_series = np.random.randint(
             100,
             size=np.random.randint(10)
-        ) + ps.io.magic_constants.NUMBER_OF_TIME_SLICES_OFFSET_AFTER_BEGIN_OF_ROI
+        ) + mc.NUMBER_OF_TIME_SLICES_OFFSET_AFTER_BEGIN_OF_ROI
         lol.append(time_series.tolist())
     return lol
 

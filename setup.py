@@ -39,19 +39,22 @@ setup(
         'filelock'
     ],
     entry_points={'console_scripts': [
-        'phs_extract_muons = photon_stream.muons.isdc_production.worker_node_main:main',
-
-        'phs.isdc.obs.synclapalma = photon_stream.production.isdc.synclapalma_main:main',
-
-        'phs.isdc.obs.produce = photon_stream.production.isdc.produce_main:main',
-        'phs.isdc.obs.produce.worker = photon_stream.production.isdc.worker_node_produce:main',
-
-        'phs.isdc.obs.status = photon_stream.production.isdc.status_main:main',
-        'phs.isdc.obs.status.worker = photon_stream.production.isdc.worker_node_status:main',
-
-        'phs.sim.produce.worker = photon_stream.production.sim.worker_node_produce:main',
-
-        'phs.isdc.backup.to.ethz = photon_stream.production.backup_main:main',
+        'phs_extract_muons = ' +
+        'photon_stream.muons.isdc_production.worker_node_main:main',
+        'phs.isdc.obs.synclapalma = ' +
+        'photon_stream.production.isdc.synclapalma_main:main',
+        'phs.isdc.obs.produce = ' +
+        'photon_stream.production.isdc.produce_main:main',
+        'phs.isdc.obs.produce.worker = ' +
+        'photon_stream.production.isdc.worker_node_produce:main',
+        'phs.isdc.obs.status = '+
+        'photon_stream.production.isdc.status_main:main',
+        'phs.isdc.obs.status.worker = ' +
+        'photon_stream.production.isdc.worker_node_status:main',
+        'phs.sim.produce.worker = '+
+        'photon_stream.production.sim.worker_node_produce:main',
+        'phs.isdc.backup.to.ethz = ' +
+        'photon_stream.production.backup_main:main',
     ]},
     zip_safe=False,
 )
