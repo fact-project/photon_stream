@@ -304,6 +304,17 @@ A two dimensional histogram along the the arrival time slices and the pixel dire
 ## Point-cloud
 A list of three dimensional direction and time coordinates of all photons in the stream of an event. Two of the three dimensions describe the angular incoming direction of a photon, which correspond to a specific pixel. The third dimension is the arrival time of the photon. This point-cloud in-memory representation is ideal for plotting the 3D point cloud, or to perform the density based clustering to tell apart air-shower photons from night-sky-background photons.
 
+# Known Limitations and outlook
+The photon-stream ```pass4``` was created based on best effort. However, we are aware of a few shortcomings which might be adressed in future processing passes. Here is a list of possible improvements for the future in no particular order.
+
+### Arrival time ordering
+The List-of-list representations of photon-stream ```pass4``` store the arrival times of the individual photons in the order of their extraction. This ordering information was not found to be of any use yet. If it was of any use it would mean that our single pulse extractor is not optimal as we know that all relevant information has to be in the independent photon arrival times and must not show up elese where. On the other hand we found an argument to sort the arrival times in future passes. This is because of the density clustering (DBSCAN) used for air-shower photon classification. In the future, the runtime of a dedicated DBSCAN will profit from a pre ordered list of single photon arrival times.
+
+### Time-series calibration
+When ```pass4``` was implemented, it was assumed that the time-series used for the extraction was already treated with all known calibration steps of FACT. This turned out to be not the case. Now we know, that in none of the analysis chains ([fact-tools](https://github.com/fact-project/fact-tools), [FACT-MARS](https://trac.fact-project.org/browser/trunk/Mars)) of FACT there exists a fully calibrated time-series. The ```pass4``` is missing at least two calibration steps. First, it misses the individual time-series gain calibration of our pre-amps. And second, it misses a global time deleay among the pixels. The global time deleay is still under debate and we do not know it for all epochs. Anyhow both effects are 'minor'. We highly recommand for future passes to treat all known calibration steps on the time-series before starting the single pulse extraction. A fully calibrated time-sereis has the same sampling times for all pixels, and has an amplitude in units of single pulses which are common for the individual pixel. 
+
+
+
 ## Integration into existing air shower reconstruction software
 When the idea of the photon-stream is inverted, the amplitude time lines of an individual pixel can be reconstructed from the photon-stream events which enables FACT to use ist usual air shower reconstruction programs right ahead without modifications.
 
