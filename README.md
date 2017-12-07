@@ -120,7 +120,7 @@ Since a single photon is now defined by only one sharp arrival time in contrast 
 ```
 A list of pixels in ```CHID``` to indicate that the corresponding pixel had an saturated analog time line out of the raw DRS4 chip. The maximim number of saturated pixels is ```100```, as the event is skipped then anyhow. Usually this list is empty. Such saturations happen not only for ultra high energy air showers, but also when the DRS4 calibration was not possible or is broken elseway.
 
-# Dedicated binary format
+## Dedicated binary format
 The ```phs``` format is a binary format with exactly the same content as the Json-Lines ```phs.jsonl``` format.
 There is no run header of footer. This is just a list of events.
 Binary run files are named ```YYYYmmnn_RRR.phs.gz```.
