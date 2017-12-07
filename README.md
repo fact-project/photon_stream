@@ -316,9 +316,7 @@ When ```pass4``` was implemented, it was assumed that the time-series used for t
 ### Dropping the time-series baseline
 In pass ```pass4``` we put out an estimate for the baseline amplitude of the time-series after the single pulse extraction. It is the same argument as for the arrival time ordering. If it turns out that this baseline matters, something is wrong with either the extractor or with our time-series main-pulse extraction tools which can not tolerate floating baselines. We recommand to drop the baseline ```bsl``` output files ``` YYYYmmnn_RRR.bsl.jsonl.gz```in the future passes for the sake of simplicity. So far we do not use it anyhow.
 
-### Try to move the time region of interest further to the front
-In ```pass4``` the output window of the photon-stream spans from 15ns to 65ns with respect to the whole recorded time series. This turned out to be sufficient. There are even hints that the window could be shortened in the end. However, the stating point at 15ns (30 time slices) is very close to the air-shower starting point. It is still acceptable but very close. We only have a small region in the beginning of our output window before the air-shower photons arrive.
-This was done to avoid artifact on the time-series. We can not simply move the start of the output window to improve this. We have two ways to improve here. First the artifacts in the beginning of the time-series (0ns - 10ns) need to be understood and corrected for. Second, the single pulse extractor needs to be improved to produce less artifacts at the beginning of its extraction window. Only this way the output window can move further to the front of the whole recorded time-series.
+### Try to move the 'output window' further to the front
 ```
                         whole time series
  |.......................................................................|
@@ -330,3 +328,5 @@ This was done to avoid artifact on the time-series. We can not simply move the s
  0        20       | <- length=100 ->  |                       245      300
                   30                  130
 ```
+In ```pass4``` the output window of the photon-stream spans from 15ns to 65ns with respect to the whole recorded time series. This turned out to be sufficient. There are even hints that the window could be shortened in the end. However, the stating point at 15ns (30 time slices) is very close to the air-shower starting point. It is still acceptable but very close. We only have a small region in the beginning of our output window before the air-shower photons arrive.
+This was done to avoid artifact on the time-series. We can not simply move the start of the output window to improve this. We have two ways to improve here. First the artifacts in the beginning of the time-series (0ns - 10ns) need to be understood and corrected for. Second, the single pulse extractor needs to be improved to produce less artifacts at the beginning of its extraction window. Only this way the output window can move further to the front of the whole recorded time-series.
