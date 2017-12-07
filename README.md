@@ -1,4 +1,4 @@
-# The FACT Photon-Stream [![Build Status](https://travis-ci.org/fact-project/photon_stream.svg?branch=master)](https://travis-ci.org/fact-project/photon_stream)
+# Photon-Stream [![Build Status](https://travis-ci.org/fact-project/photon_stream.svg?branch=master)](https://travis-ci.org/fact-project/photon_stream)
 
  - [All FACT events (observations and simulations)](https://ihp-pc41.ethz.ch/public/phs/)
  - [White Paper ICRC2017](https://pos.sissa.it/301/801/pdf)
