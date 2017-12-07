@@ -338,5 +338,22 @@ This was done to avoid artifact on the time-series. We can not simply move the s
 The implementation of the [production grade ```pass4``` single photon extractor](https://github.com/fact-project/fact-tools/tree/master/src/main/java/fact/photonstream) has several unit tests. However, it does not have unit tests which redo the performance studies e.g. presented [on the ICRC2017](https://pos.sissa.it/301/801/pdf). Those tests were so far only done for the [initial](https://github.com/fact-project/single_photon_extractor) implementation of the single pulse extractor but not for the production grade one. We recommand to implement the arrival time reconstruction benchmark for typical observation conditions on FACT as a unit test before applying any changes to the extractor. Otherwise, it will be difficult to imporve certain aspects without losing performance in other aspects.  
 
 ### Alternative Single Pulse Templates
+In ```pass4``` we use the SiPM single pulse template from the [FACT-MARS simulation standard configuration](
+https://trac.fact-project.org/browser/trunk/Mars/ceres.rc#L218). See extract below:
+```
+212	# The number of sampling points is almost irrelevant because they
+213	# are equidistant, i.e. calculated and no search is necessary.
+214	# Nevertheless, you must make sure that there are enough points
+215	# to sample the function accuratly enough.
+216	# Attention: x in the function is given in slices, so if you change the sampling
+217	# frequency you have to change also this function
+218	PulseShape.Function.Name:  (1.626*(1-exp(-0.3803*0.5*x))*exp(-0.0649*0.5*x))
+219	PulseShape.Function.Npx:   300
+220	PulseShape.Function.Xmin:   0
+221	PulseShape.Function.Xmax:   300
+```
+However, there exists also a second, different single pulse template in [JINST 9 (2014) P10012](http://iopscience.iop.org/article/10.1088/1748-0221/9/10/P10012/meta). 
+See both pulses below.
 ![img](example/fact_sipm_template_pulses.png)
-
+The template pulse from our standard simulation configuration starts instantly at zero. The template from our performance paper starts slowly which conflicts with the single pulse extractor implementation of ```pass4```.
+The pulse template of our performance paper was not evaluated yet for the single pulse extractor. We recommand to investigate which of those templates is suited best for a future single pulse extractor.
