@@ -65,9 +65,12 @@ A two dimensional histogram along the the arrival time slices and the pixel dire
 ## Point-cloud
 A list of three dimensional direction and time coordinates of all photons in the stream of an event. Two of the three dimensions describe the angular incoming direction of a photon, which correspond to a specific pixel. The third dimension is the arrival time of the photon. This point-cloud in-memory representation is ideal for plotting the 3D point cloud, or to perform the density based clustering to tell apart air-shower photons from night-sky-background photons.
 
+# Storage
+We explore two storage formats. First the [Json](https://www.json.org/)-Lines format, and second a dedicated binary format. Json excellent to share data with collegues or new comers. Json is human readable and fortunately surprisingly efficient to store the photon-stream. Many programming languages can read and write Json.
+Our dedicated binary format ```phs``` is fast to read and write, and it is only about 2/3 of the Json size.
 
-# Storage: Json-Lines format
-This human readable format is easy to understand and used as widely as the internet is wide. Fortunately gzipped Json-Lines is only ```15%``` to ```35%``` larger than the smallest custom binary format we could come up with. The read and right speed is sufficient for physics analysis (DBSCAN clustering).
+## Json-Lines
+[Json](https://www.json.org/)-Lines is a text file where each line is a valid Json object. Json turned out to store our photon-stream efficiently. Here we see one example event:
 ```json
 {"Night":20170119,"Run":229,"Event":1,"UnixTime_s_us":[1484895178,532244],"Trigger":4,"Az_deg":-63.253664797474336,"Zd_deg":33.06900475126648,"PhotonArrivals_500ps":[[59,84],[102,93,103],[58],[65,79,97],[],[125,43,68],[102],[68,100,123],[52,52,79,113,61,78,112,87]],"SaturatedPixels":[]}
 ```
@@ -128,10 +131,9 @@ Since a single photon is now defined by only one sharp arrival time in contrast 
 ```
 A list of pixels in ```CHID``` to indicate that the corresponding pixel had an saturated analog time line out of the raw DRS4 chip. The maximim number of saturated pixels is ```100```, as the event is skipped then anyhow. Usually this list is empty. Such saturations happen not only for ultra high energy air showers, but also when the DRS4 calibration was not possible or is broken elseway.
 
-# Storage: phs binary format
+# Dedicated binary format
 The ```phs``` format is a binary format with exactly the same content as the Json-Lines ```phs.jsonl``` format.
-The binary format is about ```15%``` to ```35%``` smaller than the Json-Lines and allows much higher read speeds.
-There is no run header of footer. This is just a list of events. Each event hat its full ID.
+There is no run header of footer. This is just a list of events.
 Binary run files are named ```YYYYmmnn_RRR.phs.gz```.
 
 The content of the differnt event types is as follows:
