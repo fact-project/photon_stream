@@ -313,13 +313,5 @@ The List-of-list representations of photon-stream ```pass4``` store the arrival 
 ### Time-series calibration
 When ```pass4``` was implemented, it was assumed that the time-series used for the extraction was already treated with all known calibration steps of FACT. This turned out to be not the case. Now we know, that in none of the analysis chains ([fact-tools](https://github.com/fact-project/fact-tools), [FACT-MARS](https://trac.fact-project.org/browser/trunk/Mars)) of FACT there exists a fully calibrated time-series. The ```pass4``` is missing at least two calibration steps. First, it misses the individual time-series gain calibration of our pre-amps. And second, it misses a global time deleay among the pixels. The global time deleay is still under debate and we do not know it for all epochs. Anyhow both effects are 'minor'. We highly recommand for future passes to treat all known calibration steps on the time-series before starting the single pulse extraction. A fully calibrated time-sereis has the same sampling times for all pixels, and has an amplitude in units of single pulses which are common for the individual pixel. 
 
-
-
-## Integration into existing air shower reconstruction software
-When the idea of the photon-stream is inverted, the amplitude time lines of an individual pixel can be reconstructed from the photon-stream events which enables FACT to use ist usual air shower reconstruction programs right ahead without modifications.
-
-
-## Where to go from here
-- explore an intermediate file format based on the photon stream, only photons no noise
-- explore novel image cleaning by combining the temporal and directional information of all pixels before cutting (DBSCAN clustering)
-- ...
+### Dropping the time-series baseline
+In pass ```pass4``` we put out an estimate for the baseline amplitude of a time-series after the single pulse extraction. This was found to be beneficial during the back converting of single pulses to emulated time-series. However, it turns out that we did not use this. It is the same argument as for the arrival time ordering. If it turns out that the baseline matters, something is wrong with either the extractor or with our time-series main-pulse extraction tools which can not tolerate floating baselines. We recommand to drop the baseline ```bsl``` output files ``` YYYYmmnn_RRR.bsl.jsonl.gz```in the future passes.
