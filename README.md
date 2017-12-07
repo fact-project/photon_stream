@@ -337,3 +337,6 @@ This was done to avoid artifact on the time-series. We can not simply move the s
 ### Make the arrival time reconstruction benchmark a unit test
 The implementation of the [production grade ```pass4``` single photon extractor](https://github.com/fact-project/fact-tools/tree/master/src/main/java/fact/photonstream) has several unit tests. However, it does not have unit tests which redo the performance studies e.g. presented [on the ICRC2017](https://pos.sissa.it/301/801/pdf). Those tests were so far only done for the [initial](https://github.com/fact-project/single_photon_extractor) implementation of the single pulse extractor but not for the production grade one. We recommand to implement the arrival time reconstruction benchmark for typical observation conditions on FACT as a unit test before applying any changes to the extractor. Otherwise, it will be difficult to imporve certain aspects without losing performance in other aspects.  
 
+### Alternative Single Pulse Templates
+![img](example/fact_sipm_template_pulses.png)
+
