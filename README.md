@@ -1,6 +1,7 @@
 # Photon-Stream [![Build Status](https://travis-ci.org/fact-project/photon_stream.svg?branch=master)](https://travis-ci.org/fact-project/photon_stream)
-Representing Imaging Atmospheric Cherenkov Telescope (IACT) events using single photons.
 ![img](example/example_event_small.gif)
+
+Representing Imaging Atmospheric Cherenkov Telescope (IACT) events using single photons.
 
  - [All FACT events (observations and simulations)](https://ihp-pc41.ethz.ch/public/phs/)
  - [White Paper ICRC2017](https://pos.sissa.it/301/801/pdf)
