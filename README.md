@@ -231,7 +231,7 @@ The content of the differnt event types is as follows:
 
 
 ### Photon-Stream  (number photons + number pixel Byte)
-The arrival time slice for a single photon is between 0 (0ns) and 100 (50ns) and thus fits comfortably into a single unsigned integer of eight bits width (```uint8```). A list of ```uint8``` is a valid list of arrival times for the photons found in a single pixel. To separate the photon arrival time lists of the individual pixels, we introduce a dedicated next-pixel-symbol which is not a valid photon arrival slice i.e. the digit ```255```. The concept of a list of symbols separated from the next list by a dedicated symbol is very common to store digital text.
+The arrival time slice for a single photon is between 0 (0ns) and 100 (50ns) and thus fits comfortably into a single unsigned integer of eight bits width (```uint8```). A list of ```uint8``` is a valid list of arrival times for the photons found in a single pixel. To separate the photon arrival time lists of the individual pixels, we introduce a dedicated next-pixel-symbol which is not a valid photon arrival slice i.e. the digit ```255```. The concept of a list of symbols separated from the next list by a dedicated symbol is very common to [store digital text](https://en.wikipedia.org/wiki/Newline).
 
     uint32
     +--------+--------+--------+--------+
