@@ -54,18 +54,6 @@ The photon-stream format is already calibrated and thus does not need additional
 
 The photon-stream format is intended to do __astronomy__. We belive that astronomy can only proceed when access to the observations is easy. We want to enable a Bachelor student to analyse years of FACT observations on her notebook! We want to enable students to transfer 5min of FACT observations via email. We want to give students something that they are familiar with, i.e. the concept of single photons. Everybody knows single photons. But only established IACT experts knows the concept of 'main-pulses' which carry photon equivalents, know readout calibration and artifact mayhem. We want to keep the air-shower physics and even gain additional timing knowledge which was not accessible with the established 'main-pulse' representation which is still a heritage of our PMT based ancestors. Finally, we want to reveal, for the first time ever, the true potential of an SiPM based IACT. This is the photon-stream.
 
-# Memory representations
-Depending on the computaional task, the information in the photon-stream can be represented in different ways in memory which can ease the processing. These different representations can be converted into each other without information losses.
-
-## List-of-lists
-The list-of-lists in-memory representation is an outer list of all pixels (CHID ordering) that loops over the extracted arrival time lists for each pixel. The list-of-lists in-memory representation is the most compact one. We use the list-of-lists in-memory representation for permanent storage.
-
-## Image-sequence
-A two dimensional histogram along the the arrival time slices and the pixel directions. Each bin counts the number of single photons arriving at its corresponding pixel and corresponding arrival time slice. The image-sequence in-memory representation is suitable when a fixed event size is preferred. The histogram is always the same size in memory regardless of the number or structure of the photons. Slicing and integrating along the time axis can produce classic images with one intensity for each pixel.
-
-## Point-cloud
-A list of three dimensional direction and time coordinates of all photons in the stream of an event. Two of the three dimensions describe the angular incoming direction of a photon, which correspond to a specific pixel. The third dimension is the arrival time of the photon. This point-cloud in-memory representation is ideal for plotting the 3D point cloud, or to perform the density based clustering to tell apart air-shower photons from night-sky-background photons.
-
 # Storage
 We explore two storage formats. First the [Json](https://www.json.org/)-Lines format, and second a dedicated binary format. Json excellent to share data with collegues or new comers. Json is human readable and fortunately surprisingly efficient to store the photon-stream. Many programming languages can read and write Json.
 Our dedicated binary format ```phs``` is fast to read and write, and it is only about 2/3 of the Json size.
@@ -303,6 +291,18 @@ symbol 2^8-1 = ```255```. This leaves 255 (0-254) slices to encode photon arriva
     +--------+--------+--------+--------+     +--------+--------+
     A list of CHIDs of saturated pixels
 
+
+# Memory representations
+Depending on the computaional task, the information in the photon-stream can be represented in different ways in memory which can ease the processing. These different representations can be converted into each other without information losses.
+
+## List-of-lists
+The list-of-lists in-memory representation is an outer list of all pixels (CHID ordering) that loops over the extracted arrival time lists for each pixel. The list-of-lists in-memory representation is the most compact one. We use the list-of-lists in-memory representation for permanent storage.
+
+## Image-sequence
+A two dimensional histogram along the the arrival time slices and the pixel directions. Each bin counts the number of single photons arriving at its corresponding pixel and corresponding arrival time slice. The image-sequence in-memory representation is suitable when a fixed event size is preferred. The histogram is always the same size in memory regardless of the number or structure of the photons. Slicing and integrating along the time axis can produce classic images with one intensity for each pixel.
+
+## Point-cloud
+A list of three dimensional direction and time coordinates of all photons in the stream of an event. Two of the three dimensions describe the angular incoming direction of a photon, which correspond to a specific pixel. The third dimension is the arrival time of the photon. This point-cloud in-memory representation is ideal for plotting the 3D point cloud, or to perform the density based clustering to tell apart air-shower photons from night-sky-background photons.
 
 ## Integration into existing air shower reconstruction software
 When the idea of the photon-stream is inverted, the amplitude time lines of an individual pixel can be reconstructed from the photon-stream events which enables FACT to use ist usual air shower reconstruction programs right ahead without modifications.
