@@ -357,3 +357,7 @@ See both pulses below.
 ![img](example/fact_sipm_template_pulses.png)
 The template pulse from our standard simulation configuration starts instantly at zero. The template from our performance paper starts slowly which conflicts with the single pulse extractor implementation of ```pass4```.
 The pulse template of our performance paper was not evaluated yet for the single pulse extractor. We recommand to investigate which of those templates is suited best for a future single pulse extractor.
+
+### Accelerating DBSCAN air-shower photon classification
+This is independent of ```pass4``` but a general future wish. The air-shower photon classification using density clustering in the photon-stream turned out to be highly successful. We currently use the DBSCAN implementation of [sklearn](http://scikit-learn.org/stable/modules/generated/sklearn.cluster.DBSCAN.html). This general implementation works great on our point-cloud photon-stream representation but has become the bottleneck with 50 events/s on a single thread. It might be beneficial to implement a non-general DBSCAN which exploits the previouly available knowledge of the FACT imagesensor geometry. This might accelerate the creation of the distance matrix between points internally created by DBSCAN. We already started a [first investigation](https://github.com/fact-project/photon_stream/tree/accelerate_dbscan).
+
