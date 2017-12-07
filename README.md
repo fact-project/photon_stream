@@ -15,7 +15,7 @@ This python package collects tools to produce, visualize and analyse photon-stre
 pip install git+https://github.com/fact-project/photon_stream
 ```
 
-## Python API
+## Usage
 ```python
 import photon_stream as ps
 import matplotlib.pyplot as plt
