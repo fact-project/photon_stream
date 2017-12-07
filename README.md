@@ -45,7 +45,7 @@ for event in sim_reader:
 thrown_events = pd.DataFrame(sim_reader.thrown_events())
 ```
 
-# The Photon-Stream Rationale
+# Rationale
 As a technology demonstrater, the FACT telescope records its observations in a format which is close to the read out hardware. This was a great choice to explore the novel SiPM and DRS4 readout chain, but turns out to be tedious to do  astronomy as the raw events are rather bulky, full of artifacts and not calibrated. The raw events are ```1440``` pixels X  ```300``` time slices X ```16```bit dynamic range = 864kB in size. The raw events can not be analyzed independent of each other (readout artifacts) and furhter need additional calibration files, which are not straight forward to identify. Although effort was spent to compress the raw events with our dedicated [zfits](https://arxiv.org/pdf/1506.06045.pdf) format, the events from 2011 to 2017 still need >500TB of disk storage. The years passed by and FACT is not longer a demonstrater, but a part of the high energy gamma-ray astronomy community. It is time to access and analyse our observations in an easier way. It is time for a physics format.
 
 The photon-stream can compress FACT events down to a size of 2.7kB for dark nights. Based on this, the idea was born to create a no compromise, physics only file format with the potential to fit all events of FACT onto a single hard disk drive of 10TB.
