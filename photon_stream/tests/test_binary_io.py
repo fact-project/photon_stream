@@ -118,14 +118,12 @@ def test_Descriptor_io():
             for descs in out_descs:
                 ps.io.binary.append_Descriptor_to_file(descs, fout)
 
-
         in_descss = []
         with gzip.open(binary_path, 'rb') as fin:
             for i in range(len(out_descs)):
                 in_descss.append(
                     ps.io.binary.read_Descriptor_from_file(fin)
                 )
-
 
     for i in range(len(out_descs)):
         out_h = out_descs[i]

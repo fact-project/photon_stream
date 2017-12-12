@@ -156,7 +156,6 @@ def save_video(
         os.mkdir(work_dir)
         work_dir_has_to_be_removed_again = False
 
-
     azimuths = np.linspace(0, 360, 10, endpoint=False)
     for i, az in enumerate(azimuths):
 

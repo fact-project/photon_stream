@@ -35,15 +35,12 @@ class ObservationInformation(object):
                         observation time in seconds = (
                             _time_unix_s + _time_unix_us*1e6)
     """
-
-
     def set_time_unix(self, time_unix_s, time_unix_us):
         self._time_unix_s = np.uint32(time_unix_s)
         self._time_unix_us = np.uint32(time_unix_us)
         self.time = dt.datetime.utcfromtimestamp(
             self._time_unix_s + self._time_unix_us/1e6
         )
-
 
     def __eq__(self, other):
 
@@ -61,13 +58,11 @@ class ObservationInformation(object):
         else:
             return NotImplemented
 
-
     def _info(self):
         out  = 'night '+str(self.night)+', '
         out += 'run '+str(self.run)+', '
         out += 'event '+str(self.event)
         return out
-
 
     def __repr__(self):
         out = '{}('.format(self.__class__.__name__)

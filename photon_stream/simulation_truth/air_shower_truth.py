@@ -14,7 +14,6 @@ class AirShowerTruth(object):
         self.raw_corsika_run_header = raw_corsika_run_header
         self.raw_corsika_event_header = raw_corsika_event_header
 
-
     def __eq__(self, other):
         if isinstance(other, self.__class__):
             if (
@@ -43,14 +42,12 @@ class AirShowerTruth(object):
         else:
             return NotImplemented
 
-
     def _info(self):
         out  = 'particle ID {:1.0f}'.format(self.particle)+', '
         out += 'energy {:1.2f}'.format(self.energy)+', '
         out += 'phi {:1.2f}'.format(self.phi)+', '
         out += 'theta {:1.2f}'.format(self.theta)
         return out
-
 
     def __repr__(self):
         out = '{}('.format(self.__class__.__name__)

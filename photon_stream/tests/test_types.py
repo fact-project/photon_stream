@@ -37,7 +37,6 @@ def type_check(event):
         assert isinstance(event.observation_info._time_unix_us, np.uint32)
         assert isinstance(event.observation_info.time, dt.datetime)
 
-
     if hasattr(event, 'simulation_truth'):
         assert isinstance(event.simulation_truth.run, np.uint32)
         assert isinstance(event.simulation_truth.event, np.uint32)
@@ -54,12 +53,10 @@ def type_check(event):
             np.float32
         )
 
-
 def test_types_from_json():
     run = ps.EventListReader(run_jsonl_path)
     for event in run:
         type_check(event)
-
 
 def test_types_from_binary():
     with tempfile.TemporaryDirectory(prefix='photon_stream_types') as tmp:

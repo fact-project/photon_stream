@@ -60,7 +60,6 @@ class SimulationReader(object):
 
         return event
 
-
     def _read_mmcs_corsika_headers(self):
         if is_gzipped_file(self._mmcs_corsika_path):
             with gzip.open(self._mmcs_corsika_path, 'rb') as fin:
@@ -71,7 +70,6 @@ class SimulationReader(object):
         self.run_header = headers['run_header']
         self.event_headers = headers['event_headers']
 
-
     def _guess_corresponding_mmcs_corsika_path(self, photon_stream_path):
         run_number = int(os.path.basename(photon_stream_path).split('.')[0])
         dirname = os.path.dirname(photon_stream_path)
@@ -80,7 +78,6 @@ class SimulationReader(object):
             return ch_path
         else:
             return ch_path+'.gz'
-
 
     def thrown_events(self):
         _thrown_events = []
@@ -111,7 +108,6 @@ class SimulationReader(object):
                 }
                 _thrown_events.append(evt)
         return _thrown_events
-
 
     def __repr__(self):
         out = '{}('.format(self.__class__.__name__)
