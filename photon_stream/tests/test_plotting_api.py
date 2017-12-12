@@ -1,5 +1,6 @@
 import pytest
 import photon_stream as ps
+from photon_stream import plot as ps_plot
 import pkg_resources
 import tempfile
 import os
@@ -19,7 +20,7 @@ def test_event_can_plot_itself():
     )
 
     event = next(ps.EventListReader(run_path))
-    ps.plot.event(event)
+    ps_plot.event(event)
 
 
 @pytest.mark.slow
@@ -38,7 +39,7 @@ def test_event_can_be_converted_into_a_video():
     event = next(ps.EventListReader(run_path))
 
     with tempfile.NamedTemporaryFile(suffix='.mp4') as fname:
-        ps.plot.save_video(event, fname.name, steps=1)
+        ps_plot.save_video(event, fname.name, steps=1)
 
         assert os.path.isfile(fname.name)
         assert os.path.getsize(fname.name) > 0
