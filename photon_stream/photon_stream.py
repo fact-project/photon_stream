@@ -42,11 +42,9 @@ class PhotonStream(object):
         '''
         return raw_phs_to_list_of_lists(self.raw)
 
-
     @property
     def image_sequence(self):
         return raw_phs_to_image_sequence(self.raw)
-
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
@@ -74,11 +72,9 @@ class PhotonStream(object):
         else:
             return NotImplemented
 
-
     def _info(self):
         info = str(self.number_photons) + ' photons'
         return info
-
 
     def __repr__(self):
         out = '{}('.format(self.__class__.__name__)

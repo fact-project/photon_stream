@@ -55,8 +55,6 @@ def test_muon_detection():
 
     run = ps.EventListReader(muon_sample_path)
 
-
-
     true_positives = 0
     true_negatives = 0
 

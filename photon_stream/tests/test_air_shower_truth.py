@@ -189,7 +189,6 @@ evth = np.array([
      0.00000000e+00,   0.00000000e+00,   0.00000000e+00], dtype=np.float32)
 
 
-
 def test_constructor():
     ast = ps.simulation_truth.AirShowerTruth(
         raw_corsika_run_header=runh,

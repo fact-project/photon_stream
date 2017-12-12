@@ -26,7 +26,6 @@ _fact_tools_jar_path = join(
 )
 
 
-
 def extract_single_photons(
     ceres_path,
     out_dir,

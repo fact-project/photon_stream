@@ -23,13 +23,10 @@ def qsub(
 
     print('Start extracting muons...')
 
-
     run_paths = glob.glob(join(input_phs_dir, '*/*/*/*.phs.jsonl.gz'))
-
 
     print('Found', len(run_paths), 'potential runs.')
     print('Set up output paths for the potential runs...')
-
 
     potential_jobs = []
     for run_path in tqdm(run_paths):
@@ -55,7 +52,6 @@ def qsub(
             )
         }
         potential_jobs.append(job)
-
 
     print('Set up paths for', len(potential_jobs), 'potential runs.')
     print('Sort out all potential runs which were already processed...')

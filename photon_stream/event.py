@@ -29,7 +29,6 @@ class Event(object):
     def __init__(self):
         pass
 
-
     def _info(self):
         out = ''
         if hasattr(self, 'observation_info'):
@@ -38,14 +37,12 @@ class Event(object):
             out += 'simulation, ' + self.simulation_truth._info()
         return out
 
-
     def __repr__(self):
         out = '{}('.format(self.__class__.__name__)
         out += self._info() + ', '
         out += 'photon-stream ' + self.photon_stream._info()
         out += ')\n'
         return out
-
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):

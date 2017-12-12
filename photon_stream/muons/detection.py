@@ -41,7 +41,6 @@ def detection(
     max_muon_ring_radius *= deg2rad
     min_circumference_of_muon_ring_in_field_of_view *= deg2rad
 
-
     ret = {}
     ret['is_muon'] = False
 
@@ -198,7 +197,6 @@ def detection(
 
     if is_populated_at_all and most_even_population_std < 0.8:
         is_populated_evenly = True
-
 
     if is_populated_evenly:
         ret['is_muon'] = True
