@@ -3,6 +3,7 @@ from .io import magic_constants
 from .representations import raw_phs_to_point_cloud
 from .representations import raw_phs_to_list_of_lists
 from .representations import raw_phs_to_image_sequence
+from .representations import raw_phs_to_image
 from .geometry import GEOMETRY
 
 MAX_RESIDUAL_SLICE_DURATION_NS = 1e-9
@@ -71,6 +72,36 @@ class PhotonStream(object):
             return True
         else:
             return NotImplemented
+
+    def _is_adc_saturated(self):
+        """
+        Check if there is a pixel where the Analog to Digital Converter
+        (ADC) was saturated on the original pixel time-series.
+        """
+        return self.saturated_pixels.shape[0] > 0
+
+    def _is_single_pulse_extractor_saturated(self):
+        """
+        Check if there is a pixel where the single pulse extraction was aborted
+        because of too many pulses on the original pixel time-series.
+        """
+        integrated_image = raw_phs_to_image(self.raw)
+        return (
+            np.max(integrated_image) >=
+            magic_constants.NUMBER_OF_PHOTONS_IN_PIXEL_BEFORE_SATURATION
+        )
+
+    def is_saturated(self):
+        """
+        Check if either the Analog to Digital Converter (ADC) or the single
+        pulse extractor is saturated.
+        """
+        if self._is_adc_saturated():
+            return True
+        elif self._is_single_pulse_extractor_saturated():
+            return True
+        else:
+            return False
 
     def _info(self):
         info = str(self.number_photons) + ' photons'
