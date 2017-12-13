@@ -7,9 +7,6 @@ import os
 
 
 def test_event_can_plot_itself():
-    import matplotlib
-    matplotlib.use('Agg')
-
     run_path = pkg_resources.resource_filename(
         'photon_stream',
         os.path.join(

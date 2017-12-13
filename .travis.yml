@@ -2,6 +2,7 @@ language: python
 python:
 - '3.5'
 before_install:
+  - export MPLBACKEND='Agg'
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
 install:
