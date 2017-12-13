@@ -92,6 +92,10 @@ class PhotonStream(object):
         )
 
     def is_saturated(self):
+        """
+        Check if either the Analog to Digital Converter (ADC) or the single
+        pulse extractor is saturated.
+        """
         if self._is_adc_saturated():
             return True
         elif self._is_single_pulse_extractor_saturated():
