@@ -23,7 +23,7 @@ def saturated_raw_phs():
     )
 
 
-def test_non_adc_saturated():
+def test_adc_not_saturated():
     phs = ps.PhotonStream()
     phs.saturated_pixels = np.arange(0)
     assert not phs._is_adc_saturated()
@@ -47,34 +47,28 @@ def test_extractor_is_saturated():
     assert phs._is_single_pulse_extractor_saturated()
 
 
-def test_non_adc_saturated():
-    phs = ps.PhotonStream()
-    phs.saturated_pixels = np.arange(0)
-    assert not phs._is_adc_saturated()
-
-
-def test_is_saturated_no_adc_no_spe():
+def test_saturation_no_adc_no_extractor():
     phs = ps.PhotonStream()
     phs.saturated_pixels = np.arange(0)
     phs.raw = non_saturated_raw_phs()
     assert not phs.is_saturated()
 
 
-def test_is_saturated_is_adc_no_spe():
+def test_saturation_is_adc_no_extractor():
     phs = ps.PhotonStream()
     phs.saturated_pixels = np.arange(1)
     phs.raw = non_saturated_raw_phs()
     assert phs.is_saturated()
 
 
-def test_is_saturated_no_adc_is_spe():
+def test_saturation_no_adc_is_extractor():
     phs = ps.PhotonStream()
     phs.saturated_pixels = np.arange(0)
     phs.raw = saturated_raw_phs()
     assert phs.is_saturated()
 
 
-def test_is_saturated_is_adc_is_spe():
+def test_saturation_is_adc_is_extractor():
     phs = ps.PhotonStream()
     phs.saturated_pixels = np.arange(1)
     phs.raw = saturated_raw_phs()
