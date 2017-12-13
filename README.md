@@ -19,12 +19,13 @@ pip install git+https://github.com/fact-project/photon_stream
 ## Usage
 ```python
 import photon_stream as ps
+from photon_stream import plot as ps_plot
 import matplotlib.pyplot as plt
 
 reader = ps.EventListReader('20151001_011.phs.jsonl.gz')
 event = next(reader)
 
-ps.plot.event(event)
+ps_plot.event(event)
 plt.show()
 ```
 Read in the full CORSIKA simulation truth and estimate instrument response functions:
