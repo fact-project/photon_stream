@@ -212,5 +212,6 @@ def is_aux_dir_pointing_complete(aux_dir):
     ok = np.zeros(len(tools.DRIVE_AUX_FILE_KEYS), dtype=np.bool)
     for aux_file in glob(join(aux_dir, '*')):
         for i, aux_drive_key in enumerate(tools.DRIVE_AUX_FILE_KEYS):
-            if aux_drive_key in aux_file: ok[i] = 1
+            if aux_drive_key in aux_file:
+                ok[i] = 1
     return np.all(ok)
