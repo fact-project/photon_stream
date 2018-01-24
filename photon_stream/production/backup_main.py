@@ -45,9 +45,6 @@ def backup():
         'relleums',
         '.phs.isdc.backup.to.ethz.lock'
     )
-    if not os.path.exists(rsync_lock_path):
-        with open(rsync_lock_path, 'a') as out:
-            os.utime(rsync_lock_path)
     try:
         rsync_lock = FileLock(rsync_lock_path)
         with rsync_lock.acquire(timeout=3600):

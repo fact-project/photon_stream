@@ -10,7 +10,6 @@ import filelock
 
 from . import runinfo as ri
 from .runinfo import ID_RUNINFO_KEYS
-from . import tools
 from .runinfo2runstatus import runinfo2runstatus
 
 
@@ -31,7 +30,6 @@ def init(obs_dir, latest_runstatus=None):
         if latest_runstatus is None:
             latest_runstatus = _download_latest()
         ri.write(latest_runstatus, runstatus_path)
-    tools.touch(runstatus_lock_path)
 
 
 def update_to_latest(obs_dir, latest_runstatus=None, lock_timeout=1):

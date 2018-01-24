@@ -34,12 +34,7 @@ def status(
     tmp_status_dir = join(obs_dir, '.tmp_status')
     obs_std_dir = obs_dir+'.std'
 
-    all_paths_in_obs_dir = glob(join(obs_dir, '*'))
-    all_paths_in_obs_dir += glob(join(obs_dir, '.*'))
-    print(all_paths_in_obs_dir)
-
     assert exists(runstatus_path)
-    assert exists(runstatus_lock_path)
     os.makedirs(tmp_status_dir, exist_ok=True)
 
     try:
