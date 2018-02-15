@@ -10,11 +10,6 @@ import numpy as np
 import json
 
 
-def touch(path):
-    with open(path, 'a') as out:
-        os.utime(path)
-
-
 def number_of_events_in_file(path):
     reader = EventListReader(path)
     number_of_events = 0
