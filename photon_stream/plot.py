@@ -87,9 +87,6 @@ def save_image_sequence(
     end_azimuth=360.0,
     mask=None,
     image_format='png'):
-    plt.rcParams.update({'font.size': 12})
-    plt.rc('text', usetex=True)
-    plt.rc('font', family='serif')
 
     fig = plt.figure(figsize=(12, 6.75))
     ax = fig.gca(projection='3d')
