@@ -47,11 +47,11 @@ setup(
         'photon_stream.production.isdc.produce_main:main',
         'phs.isdc.obs.produce.worker = ' +
         'photon_stream.production.isdc.worker_node_produce:main',
-        'phs.isdc.obs.status = '+
+        'phs.isdc.obs.status = ' +
         'photon_stream.production.isdc.status_main:main',
         'phs.isdc.obs.status.worker = ' +
         'photon_stream.production.isdc.worker_node_status:main',
-        'phs.sim.produce.worker = '+
+        'phs.sim.produce.worker = ' +
         'photon_stream.production.sim.worker_node_produce:main',
         'phs.isdc.backup.to.ethz = ' +
         'photon_stream.production.backup_main:main',

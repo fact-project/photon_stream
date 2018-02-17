@@ -23,9 +23,9 @@ def folder_wise_rsync_a(
     destination_host='',
 ):
     if destination_host:
-        destination_host+=':'
+        destination_host += ':'
     if source_host:
-        source_host+=':'
+        source_host += ':'
 
     for dirname, subdirs, files in os.walk(source_path):
         rel_path = os.path.relpath(dirname, source_path)
