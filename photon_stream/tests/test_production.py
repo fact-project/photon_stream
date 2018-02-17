@@ -69,7 +69,6 @@ def run_production_scenario(out_dir):
     assert exists(phs_dir)
     assert exists(join(phs_dir, 'obs'))
     assert exists(join(phs_dir, 'obs', 'runstatus.csv'))
-    assert exists(join(phs_dir, 'obs', '.lock.runstatus.csv'))
 
     ps.production.isdc.status(
         obs_dir=obs_dir,
