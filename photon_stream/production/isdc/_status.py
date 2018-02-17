@@ -35,7 +35,6 @@ def status(
     obs_std_dir = obs_dir+'.std'
 
     assert exists(runstatus_path)
-    assert exists(runstatus_lock_path)
     os.makedirs(tmp_status_dir, exist_ok=True)
 
     try:
