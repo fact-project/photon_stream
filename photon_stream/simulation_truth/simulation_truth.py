@@ -21,11 +21,15 @@ class SimulationTruth(object):
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
-            if self.run != other.run: return False
-            if self.event != other.event: return False
-            if self.reuse != other.reuse: return False
+            if self.run != other.run:
+                return False
+            if self.event != other.event:
+                return False
+            if self.reuse != other.reuse:
+                return False
             if hasattr(self, 'air_shower'):
-                if self.air_shower != other.air_shower: return False
+                if self.air_shower != other.air_shower:
+                    return False
             return True
         else:
             return NotImplemented
