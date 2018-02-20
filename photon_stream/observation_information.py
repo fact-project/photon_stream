@@ -46,13 +46,19 @@ class ObservationInformation(object):
 
         if isinstance(other, self.__class__):
             # identification
-            if self.run != other.run: return False
-            if self.night != other.night: return False
-            if self.event != other.event: return False
+            if self.run != other.run:
+                return False
+            if self.night != other.night:
+                return False
+            if self.event != other.event:
+                return False
 
-            if self._time_unix_s != other._time_unix_s: return False
-            if self._time_unix_us != other._time_unix_us: return False
-            if self.trigger_type != other.trigger_type: return False
+            if self._time_unix_s != other._time_unix_s:
+                return False
+            if self._time_unix_us != other._time_unix_us:
+                return False
+            if self.trigger_type != other.trigger_type:
+                return False
 
             return True
         else:
