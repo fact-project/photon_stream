@@ -80,7 +80,7 @@ class AirShowerTruth(object):
         return self.raw_corsika_event_header[5-1]/1e2
 
     @property
-    def hight_of_first_interaction(self):
+    def height_of_first_interaction(self):
         return self.raw_corsika_event_header[7-1]/1e2
 
     def impact_x(self, reuse):
