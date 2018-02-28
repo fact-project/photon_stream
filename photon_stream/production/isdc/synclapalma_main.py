@@ -19,7 +19,7 @@ def main():
         docopt.docopt(__doc__)
         print('Start syncronize La Palma')
         ps.production.runstatus.update_to_latest(
-        	obs_dir=os.path.join(
+            obs_dir=os.path.join(
                 '/gpfs0',
                 'fact',
                 'processing',
@@ -27,7 +27,7 @@ def main():
                 'phs',
                 'obs'
             ),
-        	lock_timeout=23*60*60
+            lock_timeout=23*60*60
         )
         print('End')
     except docopt.DocoptExit as e:

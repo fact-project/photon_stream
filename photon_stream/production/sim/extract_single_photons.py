@@ -54,8 +54,8 @@ def extract_single_photons(
         with open(o_path, 'w') as o, open(e_path, 'w') as e:
             subprocess.call([
                 os.path.join(java_path, 'bin', 'java'),
-           	'-XX:MaxHeapSize=1024m',
-           	'-XX:InitialHeapSize=512m',
+            '-XX:MaxHeapSize=1024m',
+            '-XX:InitialHeapSize=512m',
                 '-XX:CompressedClassSpaceSize=64m',
                 '-XX:MaxMetaspaceSize=128m',
                 '-XX:+UseConcMarkSweepGC',
