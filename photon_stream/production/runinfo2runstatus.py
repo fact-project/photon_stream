@@ -22,7 +22,7 @@ def runinfo2runstatus(runinfo):
 
 def drop_not_obs_runs(runinfo):
     return runinfo[
-        runinfo.fRunTypeKey==OBSERVATION_RUN_TYPE_KEY
+        runinfo.fRunTypeKey == OBSERVATION_RUN_TYPE_KEY
     ].copy()
 
 

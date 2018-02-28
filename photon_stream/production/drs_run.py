@@ -24,9 +24,9 @@ def _drs_fRunID_for_obs_run(runinfo, fNight, fRunID):
     ri.sort_values(inplace=True, ascending=False, by=ID_RUNINFO_KEYS)
 
     drs_candidates = ri[
-        (ri.fNight == fNight)&
-        (ri.fDrsStep == DRS_STEP_KEY)&
-        (ri.fRunTypeKey == DRS_RUN_TYPE_KEY)&
+        (ri.fNight == fNight) &
+        (ri.fDrsStep == DRS_STEP_KEY) &
+        (ri.fRunTypeKey == DRS_RUN_TYPE_KEY) &
         (ri.fRunID < fRunID)
     ]
     if len(drs_candidates) >= 1:
@@ -56,8 +56,8 @@ def assign_drs_runs(runinfo):
     current_drs_fNight = np.nan
     for i in range(raw.shape[0]):
         if (
-            raw[i, k['fRunTypeKey']]==DRS_RUN_TYPE_KEY and
-            raw[i, k['fDrsStep']]==DRS_STEP_KEY
+            raw[i, k['fRunTypeKey']] == DRS_RUN_TYPE_KEY and
+            raw[i, k['fDrsStep']] == DRS_STEP_KEY
         ):
             current_drs_fRunID = raw[i, k['fRunID']]
             current_drs_fNight = raw[i, k['fNight']]

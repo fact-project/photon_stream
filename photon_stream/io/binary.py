@@ -111,7 +111,7 @@ def append_pointing_to_file(event, fout):
 
 
 def read_pointing_from_file(event, fout):
-    raw_pointing= np.fromstring(
+    raw_pointing = np.fromstring(
         fout.read(8),
         dtype=np.float32,
         count=2
