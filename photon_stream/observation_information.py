@@ -30,7 +30,7 @@ class ObservationInformation(object):
     _time_unix_s        The raw unix time in full seconds from the raw
                         observation event header.
 
-    _time_unix_us       The additional raw milli seconds from the raw
+    _time_unix_us       The additional raw micro seconds from the raw
                         observation event header.
                         observation time in seconds = (
                             _time_unix_s + _time_unix_us*1e6)
