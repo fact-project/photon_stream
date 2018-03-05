@@ -1,6 +1,7 @@
 import numpy as np
 import struct
 
+
 def fourChars2float32(four_byte_string):
     '''
     Interpret a string of 4 chars like 'EVTH' as a 4 byte float.
@@ -17,6 +18,7 @@ IDX_RUNH_RUN_NUMBER = 2-1
 IDX_EVTH_EVENT_NUMBER = 2-1
 IDX_EVTH_RUN_NUMBER = 44-1
 IDX_EVTH_REUSE_NUMBER = 98-1
+
 
 def read_corsika_headers_from_file(fin):
     '''

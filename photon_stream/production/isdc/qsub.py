@@ -7,6 +7,7 @@ from os.path import dirname
 
 QUEUE_NAME = 'fact_medium'
 
+
 def qsub(job, exe_path, queue=QUEUE_NAME):
 
     o_path = job['o_path'] if job['o_path'] is not None else '/dev/null'

@@ -16,6 +16,7 @@ import tempfile
 import photon_stream as ps
 import fact
 
+
 def produce_run(job):
     makedirs(job['out_dir'], exist_ok=True, mode=0o755)
     ps.production.sim.extract_single_photons(

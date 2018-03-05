@@ -23,6 +23,7 @@ _fact_tools_jar_path = join(
     'target', 'fact-tools-0.18.1.jar',
 )
 
+
 def produce(
     only_a_fraction=1.0,
     fact_raw_dir='/fact/raw',

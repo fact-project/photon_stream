@@ -1,9 +1,9 @@
 import fact
 import numpy as np
 
-
 pixels = fact.instrument.get_pixel_dataframe()
 pixels.sort_values('CHID', inplace=True)
+
 
 class Geometry():
     def __init__(self):

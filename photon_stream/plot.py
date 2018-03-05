@@ -106,6 +106,7 @@ def save_image_sequence(
 
     plt.close()
 
+
 def save_video(
     event,
     outpath,

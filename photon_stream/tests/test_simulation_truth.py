@@ -14,6 +14,7 @@ event_dict_B = {
     'Reuse': 0,
 }
 
+
 def test_constructor():
     a = np.abs
     sim_truth_A = ps.io.jsonl.read_SimulationTruth_from_dict(event_dict_A)
@@ -21,6 +22,7 @@ def test_constructor():
     assert sim_truth_A.event == 42
     assert sim_truth_A.reuse == 13
     assert not hasattr(sim_truth_A, 'air_shower')
+
 
 def test_equal():
     sim_truth_1A = ps.io.jsonl.read_SimulationTruth_from_dict(event_dict_A)
@@ -33,9 +35,11 @@ def test_equal():
     assert sim_truth_1A != sim_truth_1B
     assert sim_truth_1A == sim_truth_2A
 
+
 def test_repr():
     sim_truth = ps.io.jsonl.read_SimulationTruth_from_dict(event_dict_A)
     print(sim_truth.__repr__())
+
 
 def test_to_dict():
     sim_truth_A = ps.io.jsonl.read_SimulationTruth_from_dict(event_dict_A)

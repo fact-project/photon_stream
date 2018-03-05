@@ -43,11 +43,13 @@ def test_reading_phs_jsonl():
             do_gunzip(run_path, path)
             assert_event_lists_in_files_are_equal(run_path, path)
 
+
 def test_reading_phs_jsonl_gz():
     for run_path in phs_jsonl_gz_paths:
         with tempfile.TemporaryDirectory(prefix='phs_') as tmp:
             path = run_path
             assert_event_lists_in_files_are_equal(run_path, path)
+
 
 def test_reading_phs():
     for run_path in phs_jsonl_gz_paths:
@@ -56,6 +58,7 @@ def test_reading_phs():
             ps.jsonl2binary(run_path, path+'.gz')
             do_gunzip(path+'.gz', path)
             assert_event_lists_in_files_are_equal(run_path, path)
+
 
 def test_reading_phs_gz():
     for run_path in phs_jsonl_gz_paths:

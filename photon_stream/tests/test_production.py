@@ -34,6 +34,7 @@ with open(qstat_xml_path, 'rt') as fin:
     qstat_xml = fin.read()
     runs_in_qstat = ps.production.isdc.qstat.qstat(xml=qstat_xml)
 
+
 def test_production_scenario(out_dir):
     if out_dir is None:
         with tempfile.TemporaryDirectory(prefix='phs_') as tmp:
@@ -41,6 +42,7 @@ def test_production_scenario(out_dir):
     else:
         os.makedirs(out_dir, exist_ok=True)
         run_production_scenario(out_dir=out_dir)
+
 
 def run_production_scenario(out_dir):
     TEST_DUMMY_QUEUE_NAME = 'test_dummy'
@@ -146,6 +148,7 @@ def run_production_scenario(out_dir):
         runstatus_qstat=runqstat
     )
     """
+
 
 def runs_in_obs_dir(obs_dir):
     runs_produced_paths = glob.glob(

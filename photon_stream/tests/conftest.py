@@ -1,11 +1,13 @@
 import pytest
 
+
 def pytest_addoption(parser):
     parser.addoption(
         "--out_dir",
         action="store",
         default=None
     )
+
 
 @pytest.fixture
 def out_dir(request):

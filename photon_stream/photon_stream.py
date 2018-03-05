@@ -8,6 +8,7 @@ from .geometry import GEOMETRY
 
 MAX_RESIDUAL_SLICE_DURATION_NS = 1e-9
 
+
 class PhotonStream(object):
     def __init__(self):
         self.slice_duration = magic_constants.TIME_SLICE_DURATION_S

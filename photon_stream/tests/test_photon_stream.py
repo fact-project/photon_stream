@@ -11,6 +11,7 @@ run_path = pkg_resources.resource_filename(
     )
 )
 
+
 def test_properties():
     event = next(ps.EventListReader(run_path))
     assert event.photon_stream.number_photons == 4984

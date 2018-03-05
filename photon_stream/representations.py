@@ -5,6 +5,7 @@ from .io.magic_constants import NUMBER_OF_TIME_SLICES_OFFSET_AFTER_BEGIN_OF_ROI
 from .io.magic_constants import TIME_SLICE_DURATION_S
 from . import io
 
+
 def list_of_lists_to_raw_phs(lol):
     number_photons = number_photons_in_list_of_list(lol)
     number_symbols = number_photons + NUMBER_OF_PIXELS

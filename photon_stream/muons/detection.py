@@ -9,6 +9,7 @@ from .tools import xy2polar
 
 deg2rad = np.deg2rad(1)
 
+
 def detection(
     event,
     clusters,
