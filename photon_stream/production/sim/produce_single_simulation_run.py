@@ -42,5 +42,5 @@ def produce_single_simulation_run(
         out_basename=phs_basename,
         fact_tools_jar_path=fact_tools_jar_path,
         o_path=join(out_dir, '{run:06d}.o'.format(run=ceres_run)),
-	e_path=join(out_dir, '{run:06d}.e'.format(run=ceres_run)),
+    e_path=join(out_dir, '{run:06d}.e'.format(run=ceres_run)),
     )
