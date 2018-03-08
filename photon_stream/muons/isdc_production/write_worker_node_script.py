@@ -1,5 +1,6 @@
 import os, stat
 
+
 def write_worker_node_script(
     path,
     input_run_path,

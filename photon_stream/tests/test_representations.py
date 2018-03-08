@@ -13,6 +13,7 @@ run_path = pkg_resources.resource_filename(
     )
 )
 
+
 def random_list_of_lists_event(seed=1337):
     mc = ps.io.magic_constants
     np.random.seed(seed)

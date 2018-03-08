@@ -26,6 +26,7 @@ header_dtype = np.dtype([
 
 FACT_PHYSICS_SELF_TRIGGER = 4
 
+
 def extract_muons_from_run(
     input_run_path,
     output_run_path,

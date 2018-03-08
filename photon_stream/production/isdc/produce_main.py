@@ -14,6 +14,7 @@ Options:
 import docopt
 import photon_stream as ps
 
+
 def main():
     try:
         docopt.docopt(__doc__)

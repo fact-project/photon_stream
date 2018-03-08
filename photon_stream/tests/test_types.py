@@ -17,6 +17,7 @@ run_jsonl_path = pkg_resources.resource_filename(
     )
 )
 
+
 def type_check(event):
     assert isinstance(event.zd, np.float32)
     assert isinstance(event.az, np.float32)
@@ -53,10 +54,12 @@ def type_check(event):
             np.float32
         )
 
+
 def test_types_from_json():
     run = ps.EventListReader(run_jsonl_path)
     for event in run:
         type_check(event)
+
 
 def test_types_from_binary():
     with tempfile.TemporaryDirectory(prefix='photon_stream_types') as tmp:

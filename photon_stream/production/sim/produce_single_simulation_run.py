@@ -10,6 +10,7 @@ _fact_tools_jar_path = join(
     'fact-tools', 'target', 'fact-tools-0.18.1.jar'
 )
 
+
 def produce_single_simulation_run(
     ceres_events_path,
     corsika_path,

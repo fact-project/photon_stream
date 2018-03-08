@@ -10,6 +10,7 @@ runinfo_path = pkg_resources.resource_filename(
 
 drs_fRunID_for_obs_run = ps.production.drs_run._drs_fRunID_for_obs_run
 
+
 def test_drs_run_assignment():
 
     ri = ps.production.runinfo.read(runinfo_path)
