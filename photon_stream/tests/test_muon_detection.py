@@ -5,6 +5,7 @@ import tempfile
 import os
 import pkg_resources
 
+
 @pytest.mark.slow
 def test_muon_detection():
 
