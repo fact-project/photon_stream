@@ -2,6 +2,13 @@ import numpy as np
 
 
 def circle_overlapp(cx1, cy1, r1, cx2, cy2, r2):
+    if r1 >= r2:
+        return circle_overlapp_r1_gt_r2(cx1, cy1, r1, cx2, cy2, r2)
+    else:
+        return circle_overlapp_r1_gt_r2(cx2, cy2, r2, cx1, cy1, r1)
+
+
+def circle_overlapp_r1_gt_r2(cx1, cy1, r1, cx2, cy2, r2):
     """
     Returns the fraction [0,1] of the circumference of circle 2 with circle 1.
 
