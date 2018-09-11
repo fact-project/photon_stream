@@ -5,34 +5,6 @@ import tempfile
 import os
 import pkg_resources
 
-
-def test_ring_overlapp():
-    overlapp = ps.muons.tools.circle_overlapp(
-        cx1=0.0, cy1=0.0, r1=1.0,
-        cx2=0.0, cy2=2.0, r2=1.0)
-    assert overlapp == 0.0
-
-    overlapp = ps.muons.tools.circle_overlapp(
-        cx1=0.0, cy1=0.0, r1=2.0,
-        cx2=0.0, cy2=0.0, r2=1.0)
-    assert overlapp == 1.0
-
-    overlapp = ps.muons.tools.circle_overlapp(
-        cx1=0.0, cy1=0.0, r1=100.0,
-        cx2=0.0, cy2=100.0, r2=1.0)
-    assert np.abs(overlapp - 0.5) < 2e-3
-
-    overlapp = ps.muons.tools.circle_overlapp(
-        cx1=0.0, cy1=0.0, r1=100.0,
-        cx2=0.0, cy2=99.0, r2=1.0)
-    assert overlapp == 1.0
-
-    overlapp = ps.muons.tools.circle_overlapp(
-        cx1=0.0, cy1=0.0, r1=100.0,
-        cx2=0.0, cy2=101.0, r2=1.0)
-    assert overlapp == 0.0
-
-
 @pytest.mark.slow
 def test_muon_detection():
 
