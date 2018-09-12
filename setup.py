@@ -15,9 +15,7 @@ setup(
         'photon_stream.production.ethz',
         'photon_stream.production.isdc',
         'photon_stream.production.sim',
-        'photon_stream.muons',
         'photon_stream.simulation_truth',
-        'photon_stream.muons.isdc_production',
     ],
     package_data={
         'photon_stream': [
