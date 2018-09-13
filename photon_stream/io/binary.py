@@ -42,7 +42,7 @@ def append_Descriptor_to_file(descriptor, fout):
 
 
 def read_Descriptor_from_file(fin):
-    raw_header = np.fromstring(fin.read(5), dtype=np.uint8, count=5)
+    raw_header = np.frombuffer(fin.read(5), dtype=np.uint8, count=5)
     d = Descriptor()
     d.magic_1 = raw_header[0]
     d.magic_2 = raw_header[1]
