@@ -217,8 +217,11 @@ def read_event_from_file(fin):
 
 
 def is_phs_binary(fin):
-    d = read_Descriptor_from_file(fin)
-    return d.is_valid()
+    try:
+        d = read_Descriptor_from_file(fin)
+        return d.is_valid()
+    except ValueError:
+        return False
 
 
 class Reader(object):
