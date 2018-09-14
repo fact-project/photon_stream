@@ -9,4 +9,6 @@ def is_gzipped_file(path):
     """
     with open(path, 'rb') as fin:
         marker = fin.read(2)
+        if len(marker) < 2:
+            return False
         return marker[0] == 31 and marker[1] == 139
