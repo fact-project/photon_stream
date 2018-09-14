@@ -1,4 +1,5 @@
 import photon_stream as ps
+import pytest
 import tempfile
 import os
 import pkg_resources
@@ -66,3 +67,23 @@ def test_reading_phs_gz():
             path = os.path.join(tmp, 'run.phs.gz')
             ps.jsonl2binary(run_path, path)
             assert_event_lists_in_files_are_equal(run_path, path)
+
+
+def test_reading_empty_phs_gz():
+    with tempfile.TemporaryDirectory(prefix='phs_') as tmp:
+        path = os.path.join(tmp, 'ampty.phs.gz')
+        with gzip.open(path, 'wt') as fout:
+            pass
+        run = ps.EventListReader(path)
+        with pytest.raises(StopIteration):
+            event = next(run)
+
+
+def test_reading_empty_phs():
+    with tempfile.TemporaryDirectory(prefix='phs_') as tmp:
+        path = os.path.join(tmp, 'ampty.phs')
+        with open(path, 'wt') as fout:
+            pass
+        run = ps.EventListReader(path)
+        with pytest.raises(StopIteration):
+            event = next(run)
