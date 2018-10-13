@@ -7,6 +7,8 @@ from .observation_information import ObservationInformation
 from .photon_cluster import PhotonStreamCluster
 from .photon_cluster import PhotonTimeLineCluster
 
+from .jsonl2binary import jsonl2binary
+
 from . import io
 from . import simulation_truth
 from . import representations
