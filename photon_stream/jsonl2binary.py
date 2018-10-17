@@ -11,3 +11,4 @@ def jsonl2binary(input_path, output_path):
         for event in run_in:
             binary.append_event_to_file(event, fout)
     shutil.move(tmp_out_path, output_path)
+
