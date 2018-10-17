@@ -25,7 +25,7 @@ def read_corsika_headers_from_file(fin):
     Read in a MMCS CORSIKA run and return the raw run header and the
     raw event headers.
     '''
-    c = np.fromstring(fin.read(), dtype=np.float32)
+    c = np.frombuffer(fin.read(), dtype=np.float32)
 
     # RUN HEADER
     run_header = c[0:273]
