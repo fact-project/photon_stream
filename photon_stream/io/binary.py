@@ -59,7 +59,7 @@ def append_simulation_id_to_file(simulation_truth, fout):
 
 
 def read_simulation_id_from_file(simulation_truth, fin):
-    raw_id = np.fromstring(
+    raw_id = np.frombuffer(
         fin.read(12),
         dtype=np.uint32,
         count=3
@@ -76,7 +76,7 @@ def append_observation_id_to_file(observation_info, fout):
 
 
 def read_observation_id_from_file(observation_info, fin):
-    raw_id = np.fromstring(
+    raw_id = np.frombuffer(
         fin.read(12),
         dtype=np.uint32,
         count=3
@@ -93,7 +93,7 @@ def append_observation_info_to_file(observation_info, fout):
 
 
 def read_observation_info_from_file(observation_info, fin):
-    raw_info = np.fromstring(
+    raw_info = np.frombuffer(
         fin.read(12),
         dtype=np.uint32,
         count=3
@@ -111,7 +111,7 @@ def append_pointing_to_file(event, fout):
 
 
 def read_pointing_from_file(event, fout):
-    raw_pointing = np.fromstring(
+    raw_pointing = np.frombuffer(
         fout.read(8),
         dtype=np.float32,
         count=2
@@ -133,14 +133,14 @@ def read_photonstream_from_file(fin):
     phs.slice_duration = np.float32(magic.TIME_SLICE_DURATION_S)
 
     # read number of pixels and time lines
-    number_of_pixels_and_photons = np.fromstring(
+    number_of_pixels_and_photons = np.frombuffer(
         fin.read(4),
         dtype=np.uint32,
         count=1
     )[0]
 
     # read photon-stream
-    phs.raw = np.fromstring(
+    phs.raw = np.frombuffer(
         fin.read(number_of_pixels_and_photons),
         dtype=np.uint8
     )
@@ -158,14 +158,14 @@ def append_saturated_pixels_to_file(saturated_pixels, fout):
 
 def read_saturated_pixels_from_file(fin):
     # READ NUMBER OF PIXELS
-    number_of_pixels = np.fromstring(
+    number_of_pixels = np.frombuffer(
         fin.read(2),
         dtype=np.uint16,
         count=1
     )[0]
 
     # READ saturated pixel CHIDs
-    saturated_pixels_raw = np.fromstring(
+    saturated_pixels_raw = np.frombuffer(
         fin.read(number_of_pixels*2),
         dtype=np.uint16
     )
