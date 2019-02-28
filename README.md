@@ -148,18 +148,19 @@ The content of the different event types is as follows:
     +--------+--------+--------+
     |    p   |    h   |    s   |
     +--------+--------+--------+                      (same)
-    - A magic descriptor 'phs'
+    - Magic descriptor 'phs'
 
     uint8
     +--------+
     |   4    |
     +--------+                                        (same)
-    - Number of production-pass
+    - Version of production-pass
     
     uint8                                             uint8
     +--------+                                        +--------+
     |   0    |                                        |   1    |
     +--------+                                        +--------+
+    - Event-type
 
 
 ### Event Identifier (12 Byte)
@@ -204,17 +205,17 @@ The content of the different event types is as follows:
     uint32
     +--------+--------+--------+--------+
     |          UNIX time [s]            |
-    +--------+--------+--------+--------+
+    +--------+--------+--------+--------+             (does not exist)
 
     uint32
     +--------+--------+--------+--------+
     |      UNIX time [us] mod. [s]      |
-    +--------+--------+--------+--------+
+    +--------+--------+--------+--------+             (does not exist)
 
     uint32
     +--------+--------+--------+--------+
     |            Trigger type           |
-    +--------+--------+--------+--------+
+    +--------+--------+--------+--------+             (does not exist)
 
 
 ### Photon-Stream  (number photons + number pixel Byte)
