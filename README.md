@@ -128,107 +128,94 @@ Binary run files are named ```YYYYmmnn_RRR.phs.gz```.
 
 The content of the different event types is as follows:
 
-## Observation Event
-    - Descriptor
-    - Observation Event Identifier
-    - Observation Information
-    - Pointing
-    - Photon-Stream
-    - Saturated Pixels
+### Events  
 
-
-## Simulation Event
-    - Descriptor
-    - Simulation Event Identifier
-    - Pointing
-    - Photon-Stream
-    - Saturated Pixels
+    Observation Event                                 Simulation Event   
+    -----------------                                 ----------------
+    - Descriptor                                      - Descriptor
+    - Observation Event Identifier                    - Simulation Event Identifier
+    - Observation Information                         - Pointing
+    - Pointing                                        - Photon-Stream
+    - Photon-Stream                                   - Saturated Pixels
+    - Saturated Pixels                              
 
 
 ### Descriptor (5 Byte)
+    Observation                                       Simulation
+    -----------                                       ----------
+    
     char
     +--------+--------+--------+
     |    p   |    h   |    s   |
-    +--------+--------+--------+
-    - A magic descriptor 'phs'
+    +--------+--------+--------+                      (same)
+    - Magic descriptor 'phs'
 
     uint8
     +--------+
-    |VERSION |
-    +--------+
-    - VERSION == 4 is pass4
+    |   4    |
+    +--------+                                        (same)
+    - Version of production-pass
+    
+    uint8                                             uint8
+    +--------+                                        +--------+
+    |   0    |                                        |   1    |
+    +--------+                                        +--------+
+    - Event-type
 
-    uint8
-    +--------+
-    |  Type  |
-    +--------+
-    - Type == 0 is Observation
-    - Type == 1 is Simulation
 
+### Event Identifier (12 Byte)
+    Observation                                       Simulation
+    -----------                                       ----------
+ 
+    uint32                                            uint32
+    +--------+--------+--------+--------+             +--------+--------+--------+--------+
+    |              Night Id             |             |           CORSIKA RUN Id          |
+    +--------+--------+--------+--------+             +--------+--------+--------+--------+
 
-### Observation Event Identifier (12 Byte)
+    uint32                                            uint32
+    +--------+--------+--------+--------+             +--------+--------+--------+--------+
+    |               Run Id              |             |         CORSIKA EVENT Id          |
+    +--------+--------+--------+--------+             +--------+--------+--------+--------+
 
-    uint32
-    +--------+--------+--------+--------+
-    |              Night Id             |
-    +--------+--------+--------+--------+
+    uint32                                            uint32
+    +--------+--------+--------+--------+             +--------+--------+--------+--------+
+    |             Event Id              |             |      CORSIKA Event Reuse Id       |
+    +--------+--------+--------+--------+             +--------+--------+--------+--------+
 
-    uint32
-    +--------+--------+--------+--------+
-    |               Run Id              |
-    +--------+--------+--------+--------+
-
-    uint32
-    +--------+--------+--------+--------+
-    |             Event Id              |
-    +--------+--------+--------+--------+
-
-### Simulation Event Identifier (12 Byte)
-
-    uint32
-    +--------+--------+--------+--------+
-    |           CORSIKA RUN Id          |
-    +--------+--------+--------+--------+
-
-    uint32
-    +--------+--------+--------+--------+
-    |         CORSIKA EVENT Id          |
-    +--------+--------+--------+--------+
-
-    uint32
-    +--------+--------+--------+--------+
-    |      CORSIKA Event Reuse Id       |
-    +--------+--------+--------+--------+
 
 ### Pointing (8 Byte)
+    Observation                                       Simulation
+    -----------                                       ----------
 
     float32
     +--------+--------+--------+--------+
     |       Zenith Distance [Deg]       |
-    +--------+--------+--------+--------+
+    +--------+--------+--------+--------+             (same)
 
     float32
     +--------+--------+--------+--------+
     |         Azimuth  [Deg]            |
-    +--------+--------+--------+--------+
+    +--------+--------+--------+--------+             (same)
 
 
 ### Observation Information (12 Byte)
+    Observation                                       Simulation
+    -----------                                       ----------
 
     uint32
     +--------+--------+--------+--------+
     |          UNIX time [s]            |
-    +--------+--------+--------+--------+
+    +--------+--------+--------+--------+             (does not exist)
 
     uint32
     +--------+--------+--------+--------+
     |      UNIX time [us] mod. [s]      |
-    +--------+--------+--------+--------+
+    +--------+--------+--------+--------+             (does not exist)
 
     uint32
     +--------+--------+--------+--------+
     |            Trigger type           |
-    +--------+--------+--------+--------+
+    +--------+--------+--------+--------+             (does not exist)
 
 
 ### Photon-Stream  (number photons + number pixel Byte)
