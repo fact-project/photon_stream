@@ -6,6 +6,15 @@ import pkg_resources
 import gzip
 import json
 
+def test_empty_lines():
+    path = pkg_resources.resource_filename(
+        'photon_stream',
+        os.path.join('tests', 'resources', 'empty_lines.jsonl')
+    )
+    events = []
+    for event in ps.EventListReader(path):
+        events.append(event)
+    assert len(events) == 5 # two empty lines are skipped
 
 def test_run_inspection():
     run_path = pkg_resources.resource_filename(
