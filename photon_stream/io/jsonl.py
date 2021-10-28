@@ -116,10 +116,13 @@ class Reader:
     def __iter__(self):
         return self
 
+    def __readline(self):
+        return self.fin.__next__().strip().rstrip(',') # raises StopIteration
+
     def __next__(self):
-        line = self.fin.readline().strip().rstrip(',')
-        if not line:
-            raise StopIteration
+        line = self.__readline()
+        while not line: # skip empty lines
+            line = self.__readline()
         event_dict = json.loads(line)
         return read_event_from_dict(event_dict)
 
